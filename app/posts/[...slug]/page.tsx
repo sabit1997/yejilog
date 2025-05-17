@@ -14,7 +14,7 @@ import { formatDateTime } from "@/utils/formatDateTime";
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   const slugs = getAllSlugs();
   return slugs.map((slugArr) => ({
-    slug: slugArr.map(encodeURIComponent),
+    slug: slugArr,
   }));
 }
 
@@ -87,7 +87,7 @@ export default async function PostPage({
       <nav className="flex justify-between items-center pt-6 px-6 mt-10 gap-6">
         {prev ? (
           <Link
-            href={`/posts/${prev.slug}`}
+            href={`/posts/${encodeURI(prev.slug)}`}
             className="text-sm text-white dark:text-white bg-point2 px-3 py-2 font-bold rounded-md overflow-ellipsis overflow-hidden hover:bg-point hover:text-point2 whitespace-nowrap max-w-[260px] w-full"
           >
             ← 이전 글: {prev.title}
@@ -97,7 +97,7 @@ export default async function PostPage({
         )}
         {next ? (
           <Link
-            href={`/posts/${next.slug}`}
+            href={`/posts/${encodeURI(next.slug)}`}
             className="text-sm text-white dark:text-white bg-point2 px-3 py-2 font-bold rounded-md overflow-ellipsis overflow-hidden hover:bg-point hover:text-point2 whitespace-nowrap max-w-[260px] w-full"
           >
             다음 글: {next.title} →

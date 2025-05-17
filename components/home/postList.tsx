@@ -12,7 +12,7 @@ export default function PostList({ displayedPosts }: PostListProps) {
           key={post.slug}
           className="border-b border-grey py-4 last:border-0 group cursor-pointer hover:bg-point/50"
         >
-          <Link href={`/posts/${post.slug}`}>
+          <Link href={`/posts/${encodeURI(post.slug)}`}>
             <h2 className="text-xl font-semibold mb-3 group-hover:underline">
               {post.title}
             </h2>
