@@ -13,11 +13,11 @@ export default function ProfileSection() {
         />
       </div>
       <div className="w-full relative">
-        <div className="w-full bg-white rounded-4xl flex items-center justify-center text-center border-3 border-point2 relative shadow-lg float py-8 dark:bg-dark-point2 whitespace-pre-line dark:border-dark-point">
+        <div className="w-full bg-white rounded-4xl flex items-center justify-center text-center border-3 border-point2 relative shadow-lg  py-8 dark:bg-dark-point2 whitespace-pre-line dark:border-dark-point">
           {blogConfig.introduction}
         </div>
-        <div className="bg-white w-4 h-4 rounded-full absolute top-16 -left-16 border-3 border-point2 float-sm dark:bg-dark-point2 dark:border-dark-point" />
-        <div className="bg-white w-6 h-6 rounded-full absolute top-10 -left-10 border-3 border-point2 float-lg dark:bg-dark-point2 dark:border-dark-point" />
+        <div className="bg-white w-4 h-4 rounded-full absolute top-13 -left-16 border-3 border-point2 dark:bg-dark-point2 dark:border-dark-point" />
+        <div className="bg-white w-6 h-6 rounded-full absolute top-10 -left-10 border-3 border-point2 dark:bg-dark-point2 dark:border-dark-point" />
       </div>
     </section>
   );

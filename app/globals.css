@@ -43,48 +43,6 @@ body {
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer {
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
-  }
-
-  @keyframes float-sm {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-4px);
-    }
-  }
-
-  @keyframes float-lg {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-12px);
-    }
-  }
-
-  .float {
-    animation: float 2s ease-in-out infinite;
-  }
-
-  .float-sm {
-    animation: float-sm 2.5s ease-in-out infinite;
-  }
-
-  .float-lg {
-    animation: float-lg 4s ease-in-out infinite;
-  }
-
   .li-with-hand {
     position: relative;
     padding-left: 1.5rem;
