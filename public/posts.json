@@ -2,7 +2,7 @@
   {
     "slug": "CSS/input-checkbox-custom",
     "title": "input checkbox 커스텀",
-    "date": "2022-04-20T20:34:13.000Z",
+    "date": "2022-04-20 20:34",
     "category": "CSS",
     "tags": [
       "CSS"
@@ -12,7 +12,7 @@
   {
     "slug": "CSS/margin-collapsing",
     "title": "마진겹침 왜 생기는 걸까?",
-    "date": "2022-04-06T20:34:13.000Z",
+    "date": "2022-04-06 20:34",
     "category": "CSS",
     "tags": [
       "margin",
@@ -24,7 +24,7 @@
   {
     "slug": "CSS/sticky-vs-fixed",
     "title": "position: sticky; vs position:fixed;",
-    "date": "2022-04-13T20:55:13.000Z",
+    "date": "2022-04-13 20:55",
     "category": "CSS",
     "tags": [
       "positon",
@@ -37,7 +37,7 @@
   {
     "slug": "Nextjs/Next.js에서-React Query+Axios로-SSR-적용하며-삽질한-후기",
     "title": "Next.js에서 React Query + Axios로 SSR 적용하며 삽질한 후기",
-    "date": "2025-05-10T21:00:13.000Z",
+    "date": "2025-05-10 21:00",
     "category": "Nextjs",
     "tags": [
       "Next.js",
@@ -50,7 +50,7 @@
   {
     "slug": "Nextjs/Nextjs를-어떻게-쓰면-잘-쓰는걸까",
     "title": "Next.js에 대해 고민을 해보자..",
-    "date": "2025-04-20T17:30:44.000Z",
+    "date": "2025-04-20 17:30",
     "category": "Nextjs",
     "tags": [
       "Next.js",
@@ -64,7 +64,7 @@
   {
     "slug": "React&JS/Handling-ImageFiles-in-React",
     "title": "이미지 파일을 다루면서 생겼던 일: React에서 이미지 파일 미리보기 및 서버 전송하기",
-    "date": "2022-09-19T01:11:13.000Z",
+    "date": "2022-09-19 01:11",
     "category": "React&JS",
     "tags": [
       "React",
@@ -76,7 +76,7 @@
   {
     "slug": "React&JS/Send-data-with-useNavigate",
     "title": "useNavigate로 데이터 보내기",
-    "date": "2022-10-21T02:28:28.000Z",
+    "date": "2022-10-21 02:28",
     "category": "React&JS",
     "tags": [
       "React",
@@ -87,7 +87,7 @@
   {
     "slug": "React&JS/inputs-management",
     "title": "여러개의 input 상태 관리",
-    "date": "2022-09-19T01:10:13.000Z",
+    "date": "2022-09-19 01:10",
     "category": "React&JS",
     "tags": [
       "React",
@@ -99,7 +99,7 @@
   {
     "slug": "React&JS/market-refactoring1",
     "title": "개인 프로젝트 리펙토링 (1) - 타입스크립트로 마이그레이션",
-    "date": "2024-06-06T07:07:17.000Z",
+    "date": "2024-06-06 07:06",
     "category": "React&JS",
     "tags": [
       "마이그레이션",
@@ -110,7 +110,7 @@
   {
     "slug": "React&JS/object literal",
     "title": "자바스크립트 기초 다지기 : 객체 리터럴",
-    "date": "2023-09-02T11:09:16.000Z",
+    "date": "2023-09-02 11:09",
     "category": "React&JS",
     "tags": [
       "JavaScript",
@@ -122,7 +122,7 @@
   {
     "slug": "React&JS/react-router-redirect",
     "title": "React router redirect",
-    "date": "2023-04-12T16:56:13.000Z",
+    "date": "2023-04-12 16:56",
     "category": "React&JS",
     "tags": [
       "React",
@@ -134,7 +134,7 @@
   {
     "slug": "React&JS/send-to-image-server",
     "title": "이미지를 서버에 전송해보자. (feat. FormData, async/await)",
-    "date": "2022-09-02T20:23:13.000Z",
+    "date": "2022-09-02 20:23",
     "category": "React&JS",
     "tags": [
       "이미지",
@@ -147,7 +147,7 @@
   {
     "slug": "React&JS/styled-component",
     "title": "styled-component를 사용해보자.",
-    "date": "2022-09-10T21:50:13.000Z",
+    "date": "2022-09-10 21:50",
     "category": "React&JS",
     "tags": [
       "styled-component",
@@ -158,7 +158,7 @@
   {
     "slug": "React&JS/useEffect",
     "title": "useEffect",
-    "date": "2022-09-19T17:18:13.000Z",
+    "date": "2022-09-19 17:18",
     "category": "React&JS",
     "tags": [
       "React",
@@ -169,7 +169,7 @@
   {
     "slug": "React&JS/useForm-hook",
     "title": "useForm hook",
-    "date": "2022-11-11T20:04:13.000Z",
+    "date": "2022-11-11 20:04",
     "category": "React&JS",
     "tags": [
       "React",
@@ -181,7 +181,7 @@
   {
     "slug": "React&JS/useParams",
     "title": "useParams",
-    "date": "2022-08-03T16:13:13.000Z",
+    "date": "2022-08-03 16:13",
     "category": "React&JS",
     "tags": [
       "React",
@@ -192,7 +192,7 @@
   {
     "slug": "React&JS/프론트엔드에서-다국어-처리하기",
     "title": "프론트엔드에서 다국어 처리하기",
-    "date": "2024-11-20T22:43:13.000Z",
+    "date": "2024-11-20 22:43",
     "category": "React&JS",
     "tags": [
       "React",
@@ -204,7 +204,7 @@
   {
     "slug": "axios/Axios와Tanstack-Query-사용-시-모범-사례-정리",
     "title": "Axios + Tanstack Query 사용 시 모범 사례 정리",
-    "date": "2025-04-19T23:11:14.000Z",
+    "date": "2025-04-19 23:11",
     "category": "axios",
     "tags": [
       "axios",
@@ -215,7 +215,7 @@
   {
     "slug": "axios/axios-create",
     "title": "axios.create([config])",
-    "date": "2022-09-10T21:06:13.000Z",
+    "date": "2022-09-10 21:06",
     "category": "axios",
     "tags": [
       "axios"
@@ -225,7 +225,7 @@
   {
     "slug": "axios/axios-interceptor",
     "title": "axios 커스텀 hook interceptors",
-    "date": "2022-12-11T18:50:13.000Z",
+    "date": "2022-12-11 18:50",
     "category": "axios",
     "tags": [
       "axios"
@@ -235,7 +235,7 @@
   {
     "slug": "http/204-status",
     "title": "204 status",
-    "date": "2022-10-14T23:09:13.000Z",
+    "date": "2022-10-14 23:09",
     "category": "http",
     "tags": [
       "http",
@@ -247,7 +247,7 @@
   {
     "slug": "infrastructure/github-action으로-cicd-파이프라인-구축-1",
     "title": "GitHub Action으로 CI/CD 파이프라인 구축 (1)",
-    "date": "2024-06-22T17:06:49.000Z",
+    "date": "2024-06-22 17:06",
     "category": "infrastructure",
     "tags": [
       "배포",
@@ -260,7 +260,7 @@
   {
     "slug": "infrastructure/github-action으로-cicd-파이프라인-구축-2",
     "title": "GitHub Action으로 CICD 파이프라인 구축 (2)",
-    "date": "2024-06-23T11:06:52.000Z",
+    "date": "2024-06-23 11:06",
     "category": "infrastructure",
     "tags": [
       "배포",
@@ -273,7 +273,7 @@
   {
     "slug": "infrastructure/내가-마주친-AWS-CodePipeline관련-문제",
     "title": "AWS CodePipeline에서 겪은 문제들",
-    "date": "2024-06-20T07:07:17.000Z",
+    "date": "2024-06-20 07:06",
     "category": "infrastructure",
     "tags": [
       "AWS",
@@ -286,7 +286,7 @@
   {
     "slug": "infrastructure/백엔드서버배포기-1",
     "title": "프론트엔드 개발자의 백엔드 서버 배포기 (1) – Java Spring Boot 백엔드 배포 + Docker 도입기",
-    "date": "2025-04-04T15:00:45.000Z",
+    "date": "2025-04-04 15:00",
     "category": "infrastructure",
     "tags": [
       "AWS",
@@ -300,7 +300,7 @@
   {
     "slug": "infrastructure/백엔드서버배포기-2",
     "title": "백엔드 서버 배포기 (2) – HTTPS 설정 및 백엔드/프론트엔드 소스코드 수정",
-    "date": "2025-04-09T09:00:23.000Z",
+    "date": "2025-04-09 09:00",
     "category": "infrastructure",
     "tags": [
       "AWS",
@@ -314,7 +314,7 @@
   {
     "slug": "infrastructure/캠스터디-프로젝트-백엔드-배포",
     "title": "캠스터디 프로젝트 서버 배포 및 SSH 접속 불가 이슈 해결",
-    "date": "2025-04-20T16:24:33.000Z",
+    "date": "2025-04-20 16:24",
     "category": "infrastructure",
     "tags": [
       "AWS",
@@ -331,7 +331,7 @@
   {
     "slug": "study/모던-자바스크립트-딥다이브-스터디-회고",
     "title": "📘 모던 자바스크립트 딥다이브 스터디 회고",
-    "date": "2025-03-18T18:07:17.000Z",
+    "date": "2025-03-18 18:06",
     "category": "study",
     "tags": [
       "스터디",

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+/* scripts/generate-posts.js */
+
 const fs = require("fs");
 const path = require("path");
 const matter = require("gray-matter");
@@ -31,13 +33,22 @@ const posts = allMdFiles
       .relative(postsDir, filePath)
       .replace(/\.md$/, "")
       .replace(/\\/g, "/");
-    const content = fs.readFileSync(filePath, "utf-8");
-    const { data } = matter(content);
+
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const { data } = matter(raw);
+
+    const m = raw.match(/^date:\s*(.+)$/m);
+    let rawDate = m ? m[1].trim() : "";
+
+    // 초(:ss) 제거 → "2025-05-10 21:00:13" → "2025-05-10 21:00"
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(rawDate)) {
+      rawDate = rawDate.slice(0, 16);
+    }
 
     return {
       slug,
       title: data.title || slug,
-      date: data.date || "",
+      date: rawDate,
       category: data.category || "",
       tags: data.tags || [],
       isPrivate: data.isPrivate || false,
@@ -45,5 +56,5 @@ const posts = allMdFiles
   })
   .filter((post) => !post.isPrivate);
 
-fs.writeFileSync(outputPath, JSON.stringify(posts, null, 2));
+fs.writeFileSync(outputPath, JSON.stringify(posts, null, 2), "utf-8");
 console.log("✅ posts.json 생성 완료");

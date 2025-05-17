@@ -8,6 +8,8 @@ import React from "react";
 import Link from "next/link";
 import UtterancesComments from "@/components/UtterancesComments";
 import { components } from "@/components/markdown/MarkdownComponents";
+import blogConfig from "@/blog.config";
+import { formatDateTime } from "@/utils/formatDateTime";
 
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   const slugs = getAllSlugs();
@@ -40,16 +42,12 @@ export default async function PostPage({
   const { prev, next } = getPrevNextPosts(slugPath);
 
   return (
-    <main className="mx-auto max-w-3xl bg-[#F5F5F5] mb-20 pb-10 dark:bg-transparent">
+    <main className="w-full max-w-3xl bg-[#F5F5F5] mb-20 pb-10 dark:bg-transparent">
       <div className="w-full bg-point/50 pt-10 px-6">
         <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
         <div className="flex justify-between items-end pb-6">
-          <div className="text-sm text-gray-500 flex items-center gap-2 dark:text-gray-200">
-            <span>
-              {typeof post.date === "string"
-                ? post.date
-                : post.date.toLocaleDateString("ko-KR")}
-            </span>
+          <div className="text-sm text-gray-500 flex items-center gap-2 dark:text-gray-200 flex-wrap">
+            <span>{formatDateTime(post.date)}</span>
             <span>·</span>
             <span>{post.category}</span>
             {post.tags?.map((t) => (
@@ -66,8 +64,8 @@ export default async function PostPage({
               height={40}
               className="rounded-full border-3 border-point"
             />
-            <span className="text-sm text-gray-500 dark:text-gray-200">
-              정예지
+            <span className="text-sm text-gray-500 dark:text-gray-200 break-keep">
+              {blogConfig.author}
             </span>
           </div>
         </div>

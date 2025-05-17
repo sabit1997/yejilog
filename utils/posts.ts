@@ -19,7 +19,7 @@ function getAllMarkdownFiles(dirPath: string, files: string[] = []): string[] {
 
 export interface PostMeta {
   title: string;
-  date: string | Date;
+  date: string;
   category: string;
   tags?: string[];
   isPrivate: boolean;

@@ -3,6 +3,7 @@ import "./globals.css";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import localFont from "next/font/local";
 import Header from "@/components/header";
+import blogConfig from "@/blog.config";
 
 const concon = localFont({
   src: "../public/concon.ttf",
@@ -44,8 +45,8 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "YEJILOG",
-  description: "Yeji's blog home",
+  title: blogConfig.title,
+  description: blogConfig.description,
 };
 
 export default function RootLayout({
@@ -58,9 +59,9 @@ export default function RootLayout({
       <body
         className={`${partialSans.className} ${partialSans.variable} ${concon.variable} ${concon.className} ${eulyoo.variable} ${eulyoo.className} ${pretendard.className} ${pretendard.variable} antialiased dark:bg-gray-800 dark:text-white bg-background text-[var(--font)] transition-colors duration-300 flex flex-col items-center `}
       >
-        <section className="w-full max-w-3xl min-h-screen flex flex-col">
+        <section className="w-full max-w-3xl min-h-screen flex flex-col px-1">
           <Header />
-          <div className="flex-1 flex flex-col">{children}</div>
+          {children}
         </section>
         <DarkModeToggle />
         <footer className="text-center text-sm text-gray-500 py-6">

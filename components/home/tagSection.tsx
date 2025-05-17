@@ -1,3 +1,5 @@
+import blogConfig from "@/blog.config";
+
 interface TagSectionProps {
   selectedTag: string | null;
   allTags: string[];
@@ -13,7 +15,7 @@ export default function TagSection({
     <section>
       <div className="flex mb-2">
         <span className="px-2 bg-black text-white font-semibold relative">
-          👽 YEJILOG
+          {`${blogConfig.emoji.tag} ${blogConfig.title}`}
           <div className="w-0 h-0 border-12 border-l-black absolute top-0 -right-6 border-t-transparent border-r-transparent border-b-transparent z-20"></div>
         </span>
         <h2 className="font-semibold bg-point2 text-white w-fit pl-4 pr-2 relative">

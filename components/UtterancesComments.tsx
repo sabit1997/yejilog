@@ -1,5 +1,6 @@
 "use client";
 
+import blogConfig from "@/blog.config";
 import { useEffect, useRef } from "react";
 
 export default function UtterancesComments() {
@@ -17,7 +18,7 @@ export default function UtterancesComments() {
       const script = document.createElement("script");
       script.src = "https://utteranc.es/client.js";
       script.async = true;
-      script.setAttribute("repo", "sabit1997/yejilog");
+      script.setAttribute("repo", blogConfig.comment.utterances);
       script.setAttribute("issue-term", "pathname");
       script.setAttribute("label", "comment");
       script.setAttribute(

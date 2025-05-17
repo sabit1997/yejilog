@@ -72,7 +72,7 @@ export const components = {
 
     return (
       <code
-        className={`bg-gray-300 px-1 rounded ${className || ""}`}
+        className={`bg-gray-300 px-1 rounded ${className || ""} dark:text-font`}
         {...props}
       >
         {codeString}
