@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f4e1;
-  --point: #ddeb9d;
+  --background: #ede8dc;
+  --point: #e7cccc;
   --font: #1a120b;
-  --point2: #a0c878;
+  --point2: #a5b68d;
   --white: #fffdf6;
   --grey: #b4b4b8;
+  --dark-background: #040d12;
+  --dark-point: #5c8374;
+  --dark-point2: #183d3d;
+  --dark-point3: #93b1a6;
 }
 
 @theme {
   --font-concon: var(--font-concon);
-  --font-eulyoo: var(--font-eulyoo);
   --font-partial: var(--font-partial);
   --font-pretendard: var(--font-pretendard);
   --color-background: var(--background);
@@ -20,13 +23,17 @@
   --color-font: var(--font);
   --color-white: var(--white);
   --color-grey: var(--grey);
+  --color-dark-background: var(--dark-background);
+  --color-dark-point: var(--dark-point);
+  --color-dark-point2: var(--dark-point2);
+  --color-dark-point3: var(--dark-point3);
 }
 
 html {
   @apply bg-[var(--background)] text-[var(--font)] transition-colors duration-300;
 }
 html.dark {
-  @apply bg-gray-800 text-white;
+  @apply bg-dark-background text-white;
 }
 
 body {
@@ -78,15 +85,6 @@ body {
     animation: float-lg 4s ease-in-out infinite;
   }
 
-  .custom-badge {
-    font-size: 0.75rem;
-    background-color: var(--point2);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    color: #1f2937;
-    font-weight: 500;
-  }
-
   .li-with-hand {
     position: relative;
     padding-left: 1.5rem;
@@ -95,14 +93,14 @@ body {
   .li-with-hand::before {
     content: "";
     display: inline-block;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 0.8rem;
+    height: 0.8rem;
     margin-right: 0.5rem;
-    background-image: url("/pointing-hand.png");
+    background-image: url("/icon/heart.png");
     background-size: contain;
     background-repeat: no-repeat;
     position: absolute;
-    top: 0.05rem;
+    top: 0.3rem;
     left: 0;
   }
 }

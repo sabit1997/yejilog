@@ -6,8 +6,6 @@ tags: ["positon", "sticky", "fixed", "CSS"]
 isPrivate: false
 ---
 
-![image](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237149789-0884de7d-fbc3-4682-987b-cc8853117d42.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T140056Z&X-Amz-Expires=300&X-Amz-Signature=fb51083eff5b08b266b0e407b25f04b93d5993c3751f9a8631597e5a28b3ddd4&X-Amz-SignedHeaders=host)
-
 # Position 이란?
 
 > 웹 페이지에서 html 태그나 id, class 박스 등의 위치를 지정해주는 속성.  

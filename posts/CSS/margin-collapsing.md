@@ -6,8 +6,6 @@ tags: ["margin", "마진겹침", "CSS"]
 isPrivate: false
 ---
 
-![image](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237144170-aa14c712-81d8-489e-b719-fc1f74381450.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T130437Z&X-Amz-Expires=300&X-Amz-Signature=bab895cdd5c43d3d7c50a3b794762f4b6ee1d2fb8275791c0c19f5d6d1235f11&X-Amz-SignedHeaders=host)
-
 # 마진 겹침
 
 ## 1\. 마진 겹침이란?
@@ -22,8 +20,6 @@ isPrivate: false
 - **모두 block 이어야 함**
 
 ## 인접 형제 요소간의 마진 겹침
-
-![1](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237144969-cdb5fd94-77b9-44f9-84e8-815acc0a685c.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T130600Z&X-Amz-Expires=300&X-Amz-Signature=ffed60fd91189e53c5b94867fa0f019ede9206f240d4a9fc54dc99aa87c8e53c&X-Amz-SignedHeaders=host)
 
 ```html
 <!DOCTYPE html>
@@ -54,8 +50,6 @@ isPrivate: false
 
 ## 3\. 부모와 자식간의 마진 겹침 현상
 
-![2](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237145680-46288371-bc51-46c7-ba5a-1191a8971b3f.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T130649Z&X-Amz-Expires=300&X-Amz-Signature=77c6b894f55cb8dffab2b0413017e5688884f0631343c099a6518365f6debec9&X-Amz-SignedHeaders=host)
-
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -85,16 +79,12 @@ isPrivate: false
 
 border를 주석처리하자 margin이 사라지는 것을 볼 수 있음.
 
-![3](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237145683-066c5296-2490-4529-b172-073dd4adfcf3.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T130703Z&X-Amz-Expires=300&X-Amz-Signature=dff9d776be70111c43ce730bd6d1d42b2701c6968b8988a7e7e1bcf651ec9930&X-Amz-SignedHeaders=host)
-
 - child에 margin-top을 값을 늘려주면 100px까지는 child 콘텐츠의 위치가 바뀌지 않지만 100px이 넘어가면 움직이기 시작함
 - 또한 50px 이하로 줄여도 child 컨텐츠의 위치는 변하지 않는다.
 
 결론 : parent에 시각적인 요소가 없을 때 parent의 margin값과 child의 margin 값 중에 큰 쪽의 margin 값이 child의 margin값으로 사용됨
 
 ## 4\. 빈 요소의 상하 마진 겹침
-
-![4](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237145685-204d28cc-d142-47b9-be18-85207229d61a.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T130712Z&X-Amz-Expires=300&X-Amz-Signature=e93a63994626add66d2554ac0d9a057d13f32431b4e5e2a451220c3435f0aa13&X-Amz-SignedHeaders=host)
 
 ```html
 <!DOCTYPE html>
@@ -124,8 +114,6 @@ border를 주석처리하자 margin이 사라지는 것을 볼 수 있음.
 ```
 
 아까와 마찬가지로 border 값 (시각적 요소)를 없애자 margin 겹침 현상이 일어나는 것을 볼 수 있음.
-
-![5](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237145672-3b2810ae-7db8-4697-9239-c5cfb4cc827e.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T130721Z&X-Amz-Expires=300&X-Amz-Signature=3df55eeef210986db5f19ec88aec43ea32dd55cc6bdd8e394992121b7d410c57&X-Amz-SignedHeaders=host)
 
 위 아래 각각 margin 값을 증가시키자 위 아래 margin 중 더 큰 margin을 채택한다는 사실을 알 수 있음
 

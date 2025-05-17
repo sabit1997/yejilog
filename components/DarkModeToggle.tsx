@@ -1,5 +1,7 @@
 "use client";
 
+import { TbSunFilled } from "react-icons/tb";
+import { TbMoonFilled } from "react-icons/tb";
 import { useEffect, useState } from "react";
 
 export default function DarkModeToggle() {
@@ -35,9 +37,9 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed bottom-5 right-5 px-4 py-2 bg-gray-800 text-white rounded-full shadow-lg z-50"
+      className="fixed bottom-5 right-5 px-4 py-2 bg-gray-800 text-white rounded-full shadow-lg z-50 text-2xl"
     >
-      {theme === "dark" ? "🌞 Light" : "🌙 Dark"}
+      {theme === "dark" ? <TbSunFilled /> : <TbMoonFilled />}
     </button>
   );
 }

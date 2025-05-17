@@ -5,11 +5,12 @@ import rehypeHighlight from "rehype-highlight";
 import { getAllSlugs, getPostContent, getPrevNextPosts } from "@/utils/posts";
 import Image from "next/image";
 import React from "react";
-import Link from "next/link";
 import UtterancesComments from "@/components/UtterancesComments";
 import { components } from "@/components/markdown/MarkdownComponents";
 import blogConfig from "@/blog.config";
 import { formatDateTime } from "@/utils/formatDateTime";
+import Badge from "@/components/Badge";
+import MovementBtn from "@/components/posts/MovementBtn";
 
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   const slugs = getAllSlugs();
@@ -43,7 +44,7 @@ export default async function PostPage({
 
   return (
     <main className="w-full max-w-3xl bg-[#F5F5F5] mb-20 pb-10 dark:bg-transparent">
-      <div className="w-full bg-point/50 pt-10 px-6">
+      <div className="w-full bg-point/50 pt-10 px-6 dark:bg-dark-point/50">
         <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
         <div className="flex justify-between items-end pb-6">
           <div className="text-sm text-gray-500 flex items-center gap-2 dark:text-gray-200 flex-wrap">
@@ -51,9 +52,7 @@ export default async function PostPage({
             <span>·</span>
             <span>{post.category}</span>
             {post.tags?.map((t) => (
-              <span key={t} className="custom-badge">
-                #{t}
-              </span>
+              <Badge key={t}>#{t}</Badge>
             ))}
           </div>
           <div className="flex flex-col gap-2 items-center">
@@ -62,7 +61,7 @@ export default async function PostPage({
               alt="profile"
               width={40}
               height={40}
-              className="rounded-full border-3 border-point"
+              className="rounded-full border-3 border-point dark:border-dark-point"
             />
             <span className="text-sm text-gray-500 dark:text-gray-200 break-keep">
               {blogConfig.author}
@@ -86,22 +85,12 @@ export default async function PostPage({
 
       <nav className="flex justify-between items-center pt-6 px-6 mt-10 gap-6">
         {prev ? (
-          <Link
-            href={`/posts/${encodeURI(prev.slug)}`}
-            className="text-sm text-white dark:text-white bg-point2 px-3 py-2 font-bold rounded-md overflow-ellipsis overflow-hidden hover:bg-point hover:text-point2 whitespace-nowrap max-w-[260px] w-full"
-          >
-            ← 이전 글: {prev.title}
-          </Link>
+          <MovementBtn title={prev.title} slug={prev.slug} type="prev" />
         ) : (
           <div />
         )}
         {next ? (
-          <Link
-            href={`/posts/${encodeURI(next.slug)}`}
-            className="text-sm text-white dark:text-white bg-point2 px-3 py-2 font-bold rounded-md overflow-ellipsis overflow-hidden hover:bg-point hover:text-point2 whitespace-nowrap max-w-[260px] w-full"
-          >
-            다음 글: {next.title} →
-          </Link>
+          <MovementBtn title={next.title} slug={next.slug} type="next" />
         ) : (
           <div />
         )}

@@ -11,9 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        eulyoo: ["var(--font-eulyoo)", "sans-serif"],
         concon: ["var(--font-concon)", "sans-serif"],
-        partial: ["var(--font-partial)", "sans-serif"],
         pretendard: ["var(--font-pretendard)", "sans-serif"],
       },
     },

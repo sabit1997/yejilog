@@ -19,24 +19,6 @@ const partialSans = localFont({
   variable: "--font-partial",
 });
 
-const eulyoo = localFont({
-  src: [
-    {
-      path: "../public/Eulyoo1945-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/Eulyoo1945-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-  ],
-  display: "swap",
-  weight: "400 600",
-  variable: "--font-eulyoo",
-});
-
 const pretendard = localFont({
   src: "../public/PretendardVariable.woff2",
   display: "swap",
@@ -57,28 +39,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${partialSans.className} ${partialSans.variable} ${concon.variable} ${concon.className} ${eulyoo.variable} ${eulyoo.className} ${pretendard.className} ${pretendard.variable} antialiased dark:bg-gray-800 dark:text-white bg-background text-[var(--font)] transition-colors duration-300 flex flex-col items-center `}
+        className={`${partialSans.className} ${partialSans.variable} ${concon.variable} ${concon.className} ${pretendard.className} ${pretendard.variable} antialiased dark:bg-dark-background dark:text-white bg-background text-[var(--font)] transition-colors duration-300 flex flex-col items-center `}
       >
         <section className="w-full max-w-3xl min-h-screen flex flex-col px-1">
           <Header />
           {children}
         </section>
         <DarkModeToggle />
-        <footer className="text-center text-sm text-gray-500 py-6">
+        <footer className="text-center text-sm text-gray-500 py-6 dark:text-gray-200">
           © YEJI. <br />
           Pixel icons by
           <a
-            href="https://www.flaticon.com/authors/dooder"
+            href="https://www.flaticon.com/authors/meaicon"
             target="_blank"
             rel="noopener noreferrer"
+            className="px-2"
           >
-            Dooder
+            meaicon
           </a>
           &
           <a
             href="https://www.flaticon.com/authors/j8chi"
             target="_blank"
             rel="noopener noreferrer"
+            className="px-2"
           >
             j8chi
           </a>
@@ -87,6 +71,7 @@ export default function RootLayout({
             href="https://www.flaticon.com/"
             target="_blank"
             rel="noopener noreferrer"
+            className="px-2"
           >
             Flaticon
           </a>

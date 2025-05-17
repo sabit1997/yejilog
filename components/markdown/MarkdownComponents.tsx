@@ -1,8 +1,8 @@
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import customTheme from "../../utils/custom-theme";
 import { extractCodeString } from "@/utils/extractCodeString";
+import Image from "next/image";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @next/next/no-img-element */
 
 export const components = {
   h1: (props: any) => (
@@ -23,7 +23,7 @@ export const components = {
   ),
   a: (props: any) => (
     <a
-      className="text-[#3D5300] leading-7 underline hover:text-point2 dark:text-point dark:hover:text-point2"
+      className="text-[#3D5300] leading-7 underline hover:text-point2 dark:text-dark-point3 dark:hover:text-point2"
       {...props}
     />
   ),
@@ -36,7 +36,7 @@ export const components = {
   ),
   th: (props: any) => (
     <th
-      className="border border-gray-300 px-4 py-2 bg-point dark:text-[var(--font)]"
+      className="border border-gray-300 px-4 py-2 bg-point dark:bg-dark-point2"
       {...props}
     />
   ),
@@ -81,11 +81,11 @@ export const components = {
   },
   img({ src, alt, width, height, ...rest }: any) {
     return (
-      <img
+      <Image
         src={String(src)}
-        alt={alt ?? ""}
-        width={width ?? "auto"}
-        height={height ?? "auto"}
+        alt={alt ?? "image"}
+        width={width ?? 600}
+        height={height ?? 600}
         loading="lazy"
         className="my-6 rounded-lg max-w-full"
         {...rest}

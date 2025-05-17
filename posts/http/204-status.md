@@ -28,11 +28,7 @@ isPrivate: false
 
 그 페이지에서 다시 `GET`요청을 실행해 컨텐츠를 불러왔기 때문이다.
 
-하지만 이번에 `DELETE`요청을 보내는
-
-![image](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237414024-6f4ae3a9-970d-4e51-a021-eb8f2675269a.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T133013Z&X-Amz-Expires=300&X-Amz-Signature=6d844f0f75c5445338e5fedad206c92d38b3e232f66836f541d77dc1c06e6a5c&X-Amz-SignedHeaders=host)
-
-데이터를 불러오는 페이지에서 삭제 또한 하기 때문에 `204 status`에 생각해 볼 수 있게 되었다.
+하지만 이번에 `DELETE`요청을 보내는 데이터를 불러오는 페이지에서 삭제 또한 하기 때문에 `204 status`에 생각해 볼 수 있게 되었다.
 
 새로 고침을 하면 제대로 삭제된 상태가 반영이 되었으나 내가 원하는 건 그게 아니었으니까!
 

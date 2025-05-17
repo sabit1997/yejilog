@@ -44,8 +44,6 @@ function handleImgPreview(e) {
 }
 ```
 
-![img](https://github-production-user-asset-6210df.s3.amazonaws.com/100986977/237408850-ad55c0d5-e98e-451b-97d5-b38b767e207b.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250516%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250516T134104Z&X-Amz-Expires=300&X-Amz-Signature=f600c99d6b75ee8f919bf0560dcbdf3eafa300782b0c0420481a52e5ec1590ab&X-Amz-SignedHeaders=host)
-
 # **이미지 서버에 전송하기**
 
 ## file을 FormData로 전송해야하는 이유
