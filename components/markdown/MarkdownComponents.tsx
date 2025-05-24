@@ -87,7 +87,7 @@ export const components = {
         width={width ?? 600}
         height={height ?? 600}
         loading="lazy"
-        className="my-6 rounded-lg max-w-full"
+        className="my-6 rounded-lg max-w-full mx-auto"
         {...rest}
       />
     );
