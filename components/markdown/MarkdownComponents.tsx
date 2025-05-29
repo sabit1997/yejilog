@@ -15,6 +15,12 @@ export const components = {
   h4: (props: any) => <h4 className="text-xl font-semibold my-2" {...props} />,
   hr: (props: any) => <hr className="text-grey my-6" {...props} />,
   li: (props: any) => <li className="li-with-hand" {...props} />,
+  blockquote: (props: any) => (
+    <blockquote
+      className="border-l-4 border-l-point2 pl-4 py-2 my-4 bg-point/30 dark:bg-dark-point/30 dark:border-l-dark-point3"
+      {...props}
+    />
+  ),
   p: (props: any) => (
     <p
       className="text-[var(--font)] leading-8 dark:text-white font-medium"
