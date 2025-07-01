@@ -3,7 +3,7 @@ title: "면접 회고 feat. 나의 학습상태에 대해 알게되다"
 date: 2025-05-24 19:38:40
 category: "experience"
 tags: ["면접", "면접회고"]
-isPrivate: false
+isPrivate: true
 ---
 
 나에게 많은 감정과 깨달음을 준 면접에 대한 회고.
