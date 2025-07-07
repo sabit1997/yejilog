@@ -2,7 +2,7 @@
 title: "로컬 환경에서 HTTPS로 개발 서버 실행하는 방법"
 date: 2025-07-07 14:54:24
 category: "http"
-tags: ["https", "웹 보안", "caddy"]
+tags: ["HTTPS", "웹 보안", "caddy", "mkcert", "Next.js"]
 isPrivate: false
 ---
 
