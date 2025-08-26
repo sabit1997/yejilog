@@ -70,8 +70,7 @@
       "명령형 프로그래밍",
       "선언형 프로그래밍",
       "프레임워크",
-      "JavaScript",
-      "프레임워크"
+      "JavaScript"
     ],
     "isPrivate": false
   },
@@ -247,17 +246,6 @@
     "isPrivate": false
   },
   {
-    "slug": "experience/면접-회고-feat-나의-학습상태에-대해-알게되다",
-    "title": "면접 회고 feat. 나의 학습상태에 대해 알게되다",
-    "date": "2025-05-24 19:38",
-    "category": "experience",
-    "tags": [
-      "면접",
-      "면접회고"
-    ],
-    "isPrivate": false
-  },
-  {
     "slug": "http/204-status",
     "title": "204 status",
     "date": "2022-10-14 23:09",
@@ -266,6 +254,20 @@
       "http",
       "204",
       "status"
+    ],
+    "isPrivate": false
+  },
+  {
+    "slug": "http/로컬-환경에서-HTTPS로-개발-서버-실행하는-방법",
+    "title": "로컬 환경에서 HTTPS로 개발 서버 실행하는 방법",
+    "date": "2025-07-07 14:54",
+    "category": "http",
+    "tags": [
+      "HTTPS",
+      "웹 보안",
+      "caddy",
+      "mkcert",
+      "Next.js"
     ],
     "isPrivate": false
   },

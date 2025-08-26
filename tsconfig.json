@@ -30,6 +30,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "scripts/generatePosts.cjs"
-  ],
+, "server.js"  ],
   "exclude": ["node_modules"]
 }
