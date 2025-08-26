@@ -9,7 +9,7 @@ const RAW_BASE_URL =
     : "http://localhost:3000");
 
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, "");
-export const revalidate = 60 * 60 * 24;
+export const revalidate = 86400;
 
 const POSTS_DIR = path.join(process.cwd(), "posts");
 
