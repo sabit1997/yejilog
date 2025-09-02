@@ -1,42 +1,33 @@
-import type { MetadataRoute } from "next";
-import { glob } from "glob";
-import path from "node:path";
-import fs from "node:fs";
+import { MetadataRoute } from "next";
+import { getAllPostMeta } from "@/utils/posts";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://yejilog-mu.vercel.app";
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://yejilog-mu.vercel.app/";
 
-export const revalidate = 86400;
+  const posts = getAllPostMeta();
+  const postUrls = posts.map((post) => ({
+    url: `${baseUrl}/posts/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticPages: MetadataRoute.Sitemap = [
+  const categories = [...new Set(posts.map((post) => post.slug.split("/")[0]))];
+  const categoryUrls = categories.map((category) => ({
+    url: `${baseUrl}/posts/${category}`,
+    lastModified: new Date(),
+    changeFrequency: "daily" as const,
+    priority: 0.7,
+  }));
+
+  const staticUrls = [
     {
-      url: `${BASE_URL}/`,
+      url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 1,
-    },
-    {
-      url: `${BASE_URL}/posts`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
+      changeFrequency: "daily" as const,
+      priority: 1.0,
     },
   ];
 
-  const postFiles = await glob("posts/**/*.{md,mdx}");
-
-  const postPages = postFiles.map((file) => {
-    const pathWithoutExt = file.replace(/\.(md|mdx)$/, "");
-    const stat = fs.statSync(path.join(process.cwd(), file));
-
-    return {
-      url: `${BASE_URL}/${pathWithoutExt}`,
-      lastModified: stat.mtime,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    };
-  });
-
-  return [...staticPages, ...postPages];
+  return [...staticUrls, ...categoryUrls, ...postUrls];
 }
