@@ -1,5 +1,19 @@
 [
   {
+    "slug": "App/일렉트론으로-데스크탑-앱-만들기-1-프로젝트-설정",
+    "title": "일렉트론으로 데스크탑 앱 만들기 (1) 프로젝트 설정",
+    "date": "2025-10-05 15:39",
+    "category": "App",
+    "tags": [
+      "Electron",
+      "Vite",
+      "React",
+      "TypeScript",
+      "Project"
+    ],
+    "isPrivate": false
+  },
+  {
     "slug": "CSS/input-checkbox-custom",
     "title": "input checkbox 커스텀",
     "date": "2022-04-20 20:34",
