@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "post": "node scripts/create-post.js",
-    "prebuild": "node scripts/generatePosts.cjs",
+    "prebuild": "npm run validate:posts && node scripts/generatePosts.cjs",
+    "validate:posts": "node scripts/validatePosts.cjs",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",

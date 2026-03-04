@@ -62,6 +62,20 @@
     "isPrivate": false
   },
   {
+    "slug": "Nextjs/Nextjs-업그레이드-후-Hydration-에러-해결하기",
+    "title": "Next.js 업그레이드 후 Hydration 에러 해결하기 (localStorage, Zustand)",
+    "date": "2025-12-15 22:02",
+    "category": "Nextjs",
+    "tags": [
+      "Next.js",
+      "React",
+      "Hydration",
+      "Troubleshooting",
+      "Zustand"
+    ],
+    "isPrivate": false
+  },
+  {
     "slug": "Nextjs/Nextjs를-어떻게-쓰면-잘-쓰는걸까",
     "title": "Next.js에 대해 고민을 해보자..",
     "date": "2025-04-20 17:30",
@@ -85,6 +99,56 @@
       "선언형 프로그래밍",
       "프레임워크",
       "JavaScript"
+    ],
+    "isPrivate": false
+  },
+  {
+    "slug": "Project/SSE-알림이-누적되지-않던-문제-해결하기-트랜잭션-이벤트-응답-정규화-인증-타이밍-React-Spring",
+    "title": "SSE 알림이 “누적되지 않던” 문제 해결하기 (트랜잭션 이벤트 + 응답 정규화 + 인증 타이밍) – React + Spring",
+    "date": "2026-03-03 19:35",
+    "category": "React&JS",
+    "tags": [
+      "React",
+      "SSE",
+      "EventSource",
+      "Spring",
+      "SseEmitter",
+      "TransactionalEventListener",
+      "Spring Security"
+    ],
+    "isPrivate": false
+  },
+  {
+    "slug": "Project/떠글보글-프로젝트-초기-설정",
+    "title": "떠글보글 프로젝트 초기 설정",
+    "date": "2026-01-20 13:04",
+    "category": "Project",
+    "tags": [
+      "Git Hooks",
+      "Husky",
+      "ESLint",
+      "Prettier",
+      "React",
+      "TypeScript",
+      "Spring",
+      "Spotless"
+    ],
+    "isPrivate": false
+  },
+  {
+    "slug": "Project/쿠키HttpOnly-기반-인증으로-전환하며-프론트-토큰-의존-제거하기-React-Spring",
+    "title": "쿠키(HttpOnly) 기반 인증으로 전환하며 프론트 토큰 의존 제거하기 (React + Spring)",
+    "date": "2026-03-02 19:36",
+    "category": "React&JS",
+    "tags": [
+      "React",
+      "Axios",
+      "Auth",
+      "Cookie",
+      "HttpOnly",
+      "Spring Security",
+      "JWT",
+      "OAuth"
     ],
     "isPrivate": false
   },
@@ -143,6 +207,22 @@
       "JavaScript",
       "객체",
       "기초"
+    ],
+    "isPrivate": false
+  },
+  {
+    "slug": "React&JS/react-rnd로-멀티-윈도우-워크스페이스-만들기-드래그리사이즈포커스zIndex",
+    "title": "react-rnd로 멀티 윈도우 워크스페이스 만들기 (드래그/리사이즈/포커스/zIndex)",
+    "date": "2025-06-17 21:39",
+    "category": "Nextjs",
+    "tags": [
+      "React",
+      "Next.js",
+      "react-rnd",
+      "Zustand",
+      "zIndex",
+      "Drag",
+      "Resize"
     ],
     "isPrivate": false
   },
@@ -217,6 +297,21 @@
     "isPrivate": false
   },
   {
+    "slug": "React&JS/타이머-정확도-개선기-setInterval-대신-setTimeout-재귀를-쓴-이유",
+    "title": "React 타이머 드리프트 해결: setInterval → setTimeout 재귀로 변경",
+    "date": "2025-07-17 22:56",
+    "category": "React&JS",
+    "tags": [
+      "React",
+      "Timer",
+      "setInterval",
+      "setTimeout",
+      "Troubleshooting",
+      "Performance"
+    ],
+    "isPrivate": false
+  },
+  {
     "slug": "React&JS/프론트엔드에서-다국어-처리하기",
     "title": "프론트엔드에서 다국어 처리하기",
     "date": "2024-11-20 22:43",
@@ -226,6 +321,14 @@
       "다국어",
       "i18n"
     ],
+    "isPrivate": false
+  },
+  {
+    "slug": "Web API/setInterval과-requestAnimationFrame",
+    "title": "setInterval과 requestAnimationFrame",
+    "date": "2025-06-02 22:53",
+    "category": "Web API",
+    "tags": [],
     "isPrivate": false
   },
   {
