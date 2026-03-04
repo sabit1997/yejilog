@@ -5,8 +5,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://yejilog-mu.vercel.app";
 
   const posts = getAllPostMeta();
+  const encodeSlugPath = (slug: string) =>
+    slug
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
+
   const postUrls = posts.map((post) => ({
-    url: `${baseUrl}/posts/${post.slug}`,
+    url: `${baseUrl}/posts/${encodeSlugPath(post.slug)}`,
     lastModified: new Date(post.date),
     changeFrequency: "weekly" as const,
     priority: 0.8,
