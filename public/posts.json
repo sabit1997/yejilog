@@ -328,7 +328,16 @@
     "title": "setInterval과 requestAnimationFrame",
     "date": "2025-06-02 22:53",
     "category": "Web API",
-    "tags": [],
+    "tags": [
+      "JavaScript",
+      "Web API",
+      "setInterval",
+      "requestAnimationFrame",
+      "Timer",
+      "Performance",
+      "Rendering",
+      "Animation"
+    ],
     "isPrivate": false
   },
   {

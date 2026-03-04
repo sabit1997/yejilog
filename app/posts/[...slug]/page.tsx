@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -12,6 +13,20 @@ import { formatDateTime } from "@/utils/formatDateTime";
 import Badge from "@/components/Badge";
 import MovementBtn from "@/components/posts/MovementBtn";
 
+const SITE_URL = "https://yejilog-mu.vercel.app";
+
+function toDescription(markdown: string) {
+  return markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
+    .replace(/\[[^\]]+\]\([^)]+\)/g, " ")
+    .replace(/[#>*_\-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160);
+}
+
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   const slugs = getAllSlugs();
   return slugs.map((slugArr) => ({
@@ -23,10 +38,36 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string[] }>;
-}) {
+}): Promise<Metadata> {
   const { slug } = await params;
+  const slugPath = decodeURIComponent(slug.join("/"));
+  const post = await getPostContent(slugPath);
+
+  if (!post) {
+    return {
+      title: "글",
+      robots: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  const description = toDescription(post.markdown) || blogConfig.description;
+  const canonicalPath = `/posts/${post.slug}`;
+
   return {
-    title: decodeURIComponent(slug.at(-1) || "글"),
+    title: post.title,
+    description,
+    alternates: {
+      canonical: canonicalPath,
+    },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description,
+      url: `${SITE_URL}${canonicalPath}`,
+    },
   };
 }
 
