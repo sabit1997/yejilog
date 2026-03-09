@@ -1,4 +1,4 @@
-import { Post } from "@/app/page";
+import type { Post } from "@/types/post";
 import Link from "next/link";
 import Badge from "../Badge";
 
