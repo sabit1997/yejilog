@@ -11,7 +11,7 @@ export default function PostList({ displayedPosts }: PostListProps) {
       {displayedPosts.map((post) => (
         <li
           key={post.slug}
-          className="border-b border-grey py-4 last:border-0 group cursor-pointer hover:bg-point/50 dark:hover:bg-dark-point "
+          className="border-b border-grey py-4 last:border-0 group cursor-pointer hover:bg-point/50 dark:hover:bg-dark-point"
         >
           <Link href={`/posts/${encodeURI(post.slug)}`}>
             <h2 className="text-xl font-semibold mb-3 group-hover:underline">
