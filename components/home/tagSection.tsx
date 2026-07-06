@@ -1,53 +1,124 @@
-import blogConfig from "@/blog.config";
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 interface TagSectionProps {
-  selectedTag: string | null;
   allTags: string[];
-  setSelectedTag: (value: React.SetStateAction<string | null>) => void;
+  initialTags: string[];
 }
 
-export default function TagSection({
-  selectedTag,
-  allTags,
-  setSelectedTag,
-}: TagSectionProps) {
+export default function TagSection({ allTags, initialTags }: TagSectionProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentTags = initialTags;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [pendingTags, setPendingTags] = useState<string[]>([]);
+
+  const openPanel = () => {
+    setPendingTags([...currentTags]);
+    setIsOpen(true);
+  };
+
+  const closePanel = () => setIsOpen(false);
+
+  const togglePending = (tag: string) => {
+    setPendingTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const applyTags = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (pendingTags.length > 0) {
+      params.set("tags", pendingTags.join(","));
+    } else {
+      params.delete("tags");
+    }
+    params.delete("limit");
+    router.push(`/?${params.toString()}`, { scroll: false });
+    closePanel();
+  };
+
+  const removeTag = (tag: string) => {
+    const next = currentTags.filter((t) => t !== tag);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next.length > 0) {
+      params.set("tags", next.join(","));
+    } else {
+      params.delete("tags");
+    }
+    params.delete("limit");
+    router.push(`/?${params.toString()}`, { scroll: false });
+  };
+
   return (
-    <section>
-      <div className="flex mb-2">
-        <span className="px-2 bg-black text-white font-semibold relative">
-          {`${blogConfig.emoji.tag} ${blogConfig.title}`}
-          <div className="w-0 h-0 border-12 border-l-black absolute top-0 -right-6 border-t-transparent border-r-transparent border-b-transparent z-20"></div>
-        </span>
-        <h2 className="font-semibold bg-point2 text-white w-fit pl-4 pr-2 relative dark:bg-dark-point2">
-          TAG
-          <div className="w-0 h-0 border-12 border-l-point2 absolute top-0 -right-6 border-t-transparent border-r-transparent border-b-transparent z-10 dark:border-l-dark-point2"></div>
-        </h2>
-        <span
-          className={`px-2 bg-point pl-4 font-semibold relative dark:text-font dark:bg-dark-point3 ${
-            selectedTag ? "" : "hidden"
-          }`}
-        >
-          {selectedTag}
-          <div className="w-0 h-0 border-12 border-l-point absolute top-0 -right-6 border-t-transparent border-r-transparent border-b-transparent z-10 dark:border-l-dark-point3"></div>
-        </span>
-      </div>
-      <div className="flex gap-2 overflow-x-auto">
-        <div className="w-0 h-0 border-12 border-l-point2 border-t-transparent border-r-transparent border-b-transparent z-10 dark:border-l-dark-point"></div>
-        {allTags.map((tag) => (
-          <button
-            key={tag}
-            onClick={() => setSelectedTag(tag === selectedTag ? null : tag)}
-            className={`pl-3 pr-1 text-sm border-r-8 transition-all duration-200 font-semibold cursor-pointer whitespace-nowrap
-                ${
-                  selectedTag === tag
-                    ? "bg-point2 text-white border-point2 dark:border-dark-point dark:bg-dark-point"
-                    : "bg-transparent border-point2 dark:border-dark-point"
-                }`}
-          >
-            #{tag}
+    <>
+      {/* Overlay */}
+      <div
+        className={`tag-panel-overlay${isOpen ? " open" : ""}`}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) closePanel();
+        }}
+      >
+        <div className="tag-panel">
+          <div className="panel-head">
+            <span className="panel-title">태그로 필터</span>
+            <div className="panel-actions">
+              <button
+                className="panel-clear"
+                onClick={() => setPendingTags([])}
+              >
+                초기화
+              </button>
+              <button className="panel-close" onClick={closePanel}>
+                ✕
+              </button>
+            </div>
+          </div>
+          <div className="tag-cloud">
+            {allTags.map((tag) => (
+              <span
+                key={tag}
+                className={`tc md${pendingTags.includes(tag) ? " picked" : ""}`}
+                onClick={() => togglePending(tag)}
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+          <button className="panel-apply" onClick={applyTags}>
+            적용하기
           </button>
-        ))}
+        </div>
       </div>
-    </section>
+
+      {/* Tag row */}
+      <div className="tag-row">
+        <span className="tag-row-label">TAG</span>
+        <div className="selected-tags">
+          {currentTags.length === 0 ? (
+            <span className="tag-empty-hint">선택된 태그 없음</span>
+          ) : (
+            currentTags.map((tag) => (
+              <span key={tag} className="sel-tag">
+                #{tag}
+                <span className="sel-tag-rm" onClick={() => removeTag(tag)}>
+                  ✕
+                </span>
+              </span>
+            ))
+          )}
+        </div>
+        <button className="tag-filter-btn" onClick={openPanel}>
+          태그 선택
+          {currentTags.length > 0 && (
+            <span className="tag-count">{currentTags.length}</span>
+          )}
+          +
+        </button>
+      </div>
+    </>
   );
 }
