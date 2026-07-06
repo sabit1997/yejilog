@@ -1,45 +1,32 @@
 "use client";
 
-import { TbSunFilled } from "react-icons/tb";
-import { TbMoonFilled } from "react-icons/tb";
 import { useEffect, useState } from "react";
 
 export default function DarkModeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
-
-    if (
-      saved === "dark" ||
-      (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      document.documentElement.classList.add("dark");
-      setTheme(saved === "dark" ? "dark" : "system");
-    } else {
-      document.documentElement.classList.remove("dark");
-      setTheme(saved === "light" ? "light" : "system");
-    }
+    const current = document.documentElement.getAttribute("data-theme");
+    setTheme(current === "dark" ? "dark" : "light");
   }, []);
 
-  const toggleTheme = () => {
+  const toggle = () => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
     localStorage.setItem("theme", next);
-
-    if (next === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    document.documentElement.setAttribute("data-theme", next);
   };
 
   return (
-    <button
-      onClick={toggleTheme}
-      className="fixed bottom-5 right-5 px-4 py-2 bg-gray-800 text-white rounded-full shadow-lg z-50 text-2xl"
-    >
-      {theme === "dark" ? <TbSunFilled /> : <TbMoonFilled />}
-    </button>
+    <div className="switch-wrap">
+      <button
+        className="switch-plate"
+        onClick={toggle}
+        aria-label="테마 전환"
+      >
+        <div className="switch-thumb" />
+      </button>
+      <span className="switch-label">{theme === "dark" ? "DARK" : "LIGHT"}</span>
+    </div>
   );
 }
