@@ -1,38 +1,34 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import DarkModeToggle from "@/components/DarkModeToggle";
-import localFont from "next/font/local";
+import { Instrument_Serif, DM_Sans, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/header";
 import blogConfig from "@/blog.config";
 
-const concon = localFont({
-  src: "../public/concon.ttf",
+const instrumentSerif = Instrument_Serif({
+  weight: ["400"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument",
   display: "swap",
-  weight: "100 900",
-  variable: "--font-concon",
 });
 
-const partialSans = localFont({
-  src: "../public/PartialSansKR-Regular.otf",
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm",
   display: "swap",
-  weight: "400",
-  variable: "--font-partial",
 });
 
-const pretendard = localFont({
-  src: "../public/PretendardVariable.woff2",
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
   display: "swap",
-  weight: "100 900",
-  variable: "--font-pretendard",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://yejilog-mu.vercel.app"),
   title: blogConfig.title,
   description: blogConfig.description,
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
   robots: {
     index: true,
     follow: true,
@@ -48,48 +44,42 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  const themeScript = `
+    try {
+      const saved = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const isDark = saved === "dark" || (!saved && prefersDark);
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    } catch {}
+  `;
+
   return (
-    <html lang="en">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
-        className={`${partialSans.className} ${partialSans.variable} ${concon.variable} ${concon.className} ${pretendard.className} ${pretendard.variable} antialiased dark:bg-dark-background dark:text-white bg-background text-[var(--font)] transition-colors duration-300 flex flex-col items-center `}
+        className={`${instrumentSerif.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
       >
-        <section className="w-full max-w-3xl min-h-screen flex flex-col px-1">
-          <Header />
-          {children}
-        </section>
-        <DarkModeToggle />
-        <footer className="text-center text-sm text-gray-500 py-6 dark:text-gray-200">
-          © YEJI. <br />
-          Pixel icons by
-          <a
-            href="https://www.flaticon.com/authors/meaicon"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-2"
-          >
-            meaicon
-          </a>
-          &
-          <a
-            href="https://www.flaticon.com/authors/j8chi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-2"
-          >
-            j8chi
-          </a>
-          from
-          <a
-            href="https://www.flaticon.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-2"
-          >
-            Flaticon
-          </a>
+        <Header />
+        {children}
+        <footer className="site-footer">
+          <div className="wrap footer-inner">
+            <span>
+              © 2025 yeji.log — built with Next.js, kombucha, and ASMR.
+            </span>
+            <div className="footer-links">
+              <a
+                href={`https://github.com/${blogConfig.social.github}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </a>
+              <a href="/sitemap.xml">RSS</a>
+            </div>
+          </div>
         </footer>
       </body>
     </html>
