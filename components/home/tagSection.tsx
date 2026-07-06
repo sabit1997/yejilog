@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface TagSectionProps {
   allTags: string[];
@@ -22,6 +22,15 @@ export default function TagSection({ allTags, initialTags }: TagSectionProps) {
   };
 
   const closePanel = () => setIsOpen(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closePanel();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen]);
 
   const togglePending = (tag: string) => {
     setPendingTags((prev) =>
@@ -79,13 +88,14 @@ export default function TagSection({ allTags, initialTags }: TagSectionProps) {
           </div>
           <div className="tag-cloud">
             {allTags.map((tag) => (
-              <span
+              <button
                 key={tag}
                 className={`tc md${pendingTags.includes(tag) ? " picked" : ""}`}
                 onClick={() => togglePending(tag)}
+                aria-pressed={pendingTags.includes(tag)}
               >
                 #{tag}
-              </span>
+              </button>
             ))}
           </div>
           <button className="panel-apply" onClick={applyTags}>
@@ -104,9 +114,13 @@ export default function TagSection({ allTags, initialTags }: TagSectionProps) {
             currentTags.map((tag) => (
               <span key={tag} className="sel-tag">
                 #{tag}
-                <span className="sel-tag-rm" onClick={() => removeTag(tag)}>
+                <button
+                  className="sel-tag-rm"
+                  onClick={() => removeTag(tag)}
+                  aria-label={`${tag} 태그 제거`}
+                >
                   ✕
-                </span>
+                </button>
               </span>
             ))
           )}
