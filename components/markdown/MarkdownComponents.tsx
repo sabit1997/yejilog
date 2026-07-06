@@ -1,23 +1,29 @@
 import { extractCodeString } from "@/utils/extractCodeString";
 import Image from "next/image";
 import CodeBlock from "./CodeBlock";
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { ComponentPropsWithoutRef } from "react";
+
+type CodeProps = ComponentPropsWithoutRef<"code"> & { inline?: boolean };
 
 export const components = {
-  h1: (props: any) => <h1 {...props} />,
-  h2: (props: any) => <h2 {...props} />,
-  h3: (props: any) => <h3 {...props} />,
-  h4: (props: any) => <h4 {...props} />,
-  hr: (props: any) => <hr {...props} />,
-  li: (props: any) => <li className="li-with-hand" {...props} />,
-  blockquote: (props: any) => <blockquote {...props} />,
-  p: (props: any) => <p {...props} />,
-  a: (props: any) => <a {...props} />,
-  table: (props: any) => <table {...props} />,
-  th: (props: any) => <th {...props} />,
-  td: (props: any) => <td {...props} />,
+  h1: (props: ComponentPropsWithoutRef<"h1">) => <h1 {...props} />,
+  h2: (props: ComponentPropsWithoutRef<"h2">) => <h2 {...props} />,
+  h3: (props: ComponentPropsWithoutRef<"h3">) => <h3 {...props} />,
+  h4: (props: ComponentPropsWithoutRef<"h4">) => <h4 {...props} />,
+  hr: (props: ComponentPropsWithoutRef<"hr">) => <hr {...props} />,
+  li: (props: ComponentPropsWithoutRef<"li">) => (
+    <li className="li-with-hand" {...props} />
+  ),
+  blockquote: (props: ComponentPropsWithoutRef<"blockquote">) => (
+    <blockquote {...props} />
+  ),
+  p: (props: ComponentPropsWithoutRef<"p">) => <p {...props} />,
+  a: (props: ComponentPropsWithoutRef<"a">) => <a {...props} />,
+  table: (props: ComponentPropsWithoutRef<"table">) => <table {...props} />,
+  th: (props: ComponentPropsWithoutRef<"th">) => <th {...props} />,
+  td: (props: ComponentPropsWithoutRef<"td">) => <td {...props} />,
 
-  code({ inline, className, children, ...props }: any) {
+  code({ inline, className, children, ...props }: CodeProps) {
     const match = /language-(\w+)/.exec(className || "");
     const codeString = extractCodeString(children);
 
@@ -32,13 +38,19 @@ export const components = {
     );
   },
 
-  img({ src, alt, width, height, ...rest }: any) {
+  img({
+    src,
+    alt,
+    width,
+    height,
+    ...rest
+  }: ComponentPropsWithoutRef<"img">) {
     return (
       <Image
         src={String(src)}
         alt={alt ?? "image"}
-        width={width ?? 700}
-        height={height ?? 500}
+        width={Number(width) || 700}
+        height={Number(height) || 500}
         loading="lazy"
         className="my-6 rounded-lg max-w-full mx-auto"
         {...rest}
