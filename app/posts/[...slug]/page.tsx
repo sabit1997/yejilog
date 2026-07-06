@@ -2,16 +2,14 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import { getAllSlugs, getPostContent, getPrevNextPosts } from "@/utils/posts";
-import Image from "next/image";
 import React from "react";
 import UtterancesComments from "@/components/UtterancesComments";
 import { components } from "@/components/markdown/MarkdownComponents";
 import blogConfig from "@/blog.config";
 import { formatDateTime } from "@/utils/formatDateTime";
-import Badge from "@/components/Badge";
 import MovementBtn from "@/components/posts/MovementBtn";
+import Link from "next/link";
 
 const SITE_URL = "https://yejilog-mu.vercel.app";
 
@@ -28,10 +26,7 @@ function toDescription(markdown: string) {
 }
 
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
-  const slugs = getAllSlugs();
-  return slugs.map((slugArr) => ({
-    slug: slugArr,
-  }));
+  return getAllSlugs().map((slugArr) => ({ slug: slugArr }));
 }
 
 export async function generateMetadata({
@@ -40,18 +35,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string[] }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const slugPath = decodeURIComponent(slug.join("/"));
-  const post = await getPostContent(slugPath);
-
-  if (!post) {
-    return {
-      title: "글",
-      robots: {
-        index: false,
-        follow: true,
-      },
-    };
-  }
+  const post = await getPostContent(decodeURIComponent(slug.join("/")));
+  if (!post)
+    return { title: "글", robots: { index: false, follow: true } };
 
   const description = toDescription(post.markdown) || blogConfig.description;
   const canonicalPath = `/posts/${post.slug}`;
@@ -59,9 +45,7 @@ export async function generateMetadata({
   return {
     title: post.title,
     description,
-    alternates: {
-      canonical: canonicalPath,
-    },
+    alternates: { canonical: canonicalPath },
     openGraph: {
       type: "article",
       title: post.title,
@@ -82,61 +66,62 @@ export default async function PostPage({
   if (!post) return notFound();
 
   const { prev, next } = getPrevNextPosts(slugPath);
+  const description = toDescription(post.markdown);
 
   return (
-    <main className="w-full max-w-3xl bg-[#F5F5F5] mb-20 pb-10 dark:bg-transparent">
-      <div className="w-full bg-point/50 pt-10 px-6 dark:bg-dark-point/50">
-        <h1 className="text-4xl font-bold mb-2">{post.title}</h1>
-        <div className="flex justify-between items-end pb-6">
-          <div className="text-sm text-gray-500 flex items-center gap-2 dark:text-gray-200 flex-wrap">
-            <span>{formatDateTime(post.date)}</span>
-            <span>·</span>
-            <span>{post.category}</span>
-            {post.tags?.map((t) => (
-              <Badge key={t}>#{t}</Badge>
-            ))}
-          </div>
-          <div className="flex flex-col gap-2 items-center">
-            <Image
-              src="/profile.jpg"
-              alt="profile"
-              width={40}
-              height={40}
-              className="rounded-full border-3 border-point dark:border-dark-point"
-            />
-            <span className="text-sm text-gray-500 dark:text-gray-200 break-keep">
-              {blogConfig.author}
+    <main>
+      <div className="article-wrap">
+        <Link href="/" className="back-btn">
+          ← 목록으로
+        </Link>
+
+        <div className="pills" style={{ marginBottom: "14px" }}>
+          <span className="pill">{post.category}</span>
+          {post.tags?.map((t) => (
+            <span key={t} className="pill pill-n">
+              #{t}
             </span>
-          </div>
+          ))}
         </div>
+
+        <h1 className="art-h1">{post.title}</h1>
+
+        {description && <p className="art-sub">{description}</p>}
+
+        <div className="art-meta">
+          <div className="art-avatar" />
+          <span>
+            {blogConfig.author} · {formatDateTime(post.date)}
+          </span>
+        </div>
+
+        <article className="prose-blog">
+          <MDXRemote
+            source={post.markdown}
+            options={{
+              mdxOptions: {
+                remarkPlugins: [remarkGfm],
+              },
+            }}
+            components={components}
+          />
+        </article>
+
+        <nav className="post-nav">
+          {prev ? (
+            <MovementBtn title={prev.title} slug={prev.slug} type="prev" />
+          ) : (
+            <div />
+          )}
+          {next ? (
+            <MovementBtn title={next.title} slug={next.slug} type="next" />
+          ) : (
+            <div />
+          )}
+        </nav>
+
+        <UtterancesComments />
       </div>
-
-      <article className="prose prose-gray dark:prose-invert [&_pre]:whitespace-pre-wrap [&_pre]:break-words py-7 px-6">
-        <MDXRemote
-          source={post.markdown}
-          options={{
-            mdxOptions: {
-              remarkPlugins: [remarkGfm],
-              rehypePlugins: [rehypeHighlight],
-            },
-          }}
-          components={components}
-        />
-      </article>
-
-      <nav className="flex justify-between items-center pt-6 px-6 mt-10 gap-6">
-        {prev ? (
-          <MovementBtn title={prev.title} slug={prev.slug} type="prev" />
-        ) : (
-          <div />
-        )}
-        {next ? (
-          <MovementBtn title={next.title} slug={next.slug} type="next" />
-        ) : (
-          <div />
-        )}
-      </nav>
-      <UtterancesComments />
     </main>
   );
 }
