@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import blogConfig from "@/blog.config";
 
 interface GitHubRepo {
@@ -12,6 +9,28 @@ interface GitHubRepo {
   topics: string[];
   language: string | null;
   html_url: string;
+}
+
+async function fetchRepo(
+  owner: string,
+  name: string
+): Promise<GitHubRepo | null> {
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${name}`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!res.ok) return null;
+    return res.json() as Promise<GitHubRepo>;
+  } catch {
+    return null;
+  }
 }
 
 function timeAgo(dateStr: string): string {
@@ -53,32 +72,15 @@ function GitHubIcon() {
   );
 }
 
-function SkeletonCard() {
-  return (
-    <div className="proj-card" aria-hidden="true">
-      <div className="proj-status">
-        <span className="proj-dot" />
-        <span style={{ display: "inline-block", width: "48px", height: "10px", background: "var(--rule)", borderRadius: "4px" }} />
-      </div>
-      <div style={{ height: "22px", width: "55%", background: "var(--rule)", borderRadius: "4px", marginBottom: "8px" }} />
-      <div style={{ height: "13px", width: "90%", background: "var(--rule)", borderRadius: "4px", marginBottom: "6px" }} />
-      <div style={{ height: "13px", width: "70%", background: "var(--rule)", borderRadius: "4px", marginBottom: "14px" }} />
-      <div style={{ display: "flex", gap: "6px", marginBottom: "12px" }}>
-        {[48, 56, 40].map((w) => (
-          <span key={w} style={{ display: "inline-block", width: `${w}px`, height: "22px", background: "var(--rule)", borderRadius: "999px" }} />
-        ))}
-      </div>
-      <div className="proj-foot">
-        <div style={{ height: "10px", width: "80px", background: "var(--rule)", borderRadius: "4px" }} />
-      </div>
-    </div>
-  );
-}
-
 function RepoCard({ repo }: { repo: GitHubRepo }) {
   const techs = getTechs(repo);
   return (
-    <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="proj-card">
+    <a
+      href={repo.html_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="proj-card"
+    >
       <div className="proj-status">
         <span className="proj-dot" />
         {deriveStatus(repo.pushed_at)}
@@ -88,7 +90,9 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
       {techs.length > 0 && (
         <div className="pills" style={{ marginBottom: "12px" }}>
           {techs.map((t) => (
-            <span key={t} className="pill pill-n">{t}</span>
+            <span key={t} className="pill pill-n">
+              {t}
+            </span>
           ))}
         </div>
       )}
@@ -102,55 +106,24 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
   );
 }
 
-export default function ProjectsSection() {
-  const [repos, setRepos] = useState<(GitHubRepo | null)[]>(
-    blogConfig.projects.pinned.map(() => null)
+export default async function ProjectsSection() {
+  const owner = blogConfig.social.github;
+  const repos = await Promise.all(
+    blogConfig.projects.pinned.map((name) => fetchRepo(owner, name))
   );
-  const [rateLimited, setRateLimited] = useState(false);
+  const validRepos = repos.filter((r): r is GitHubRepo => r !== null);
 
-  useEffect(() => {
-    const { pinned } = blogConfig.projects;
-    const owner = blogConfig.social.github;
-
-    pinned.forEach((repoName, idx) => {
-      fetch(`https://api.github.com/repos/${owner}/${repoName}`, {
-        headers: {
-          Accept: "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
-      })
-        .then((r) => {
-          if (r.status === 403) { setRateLimited(true); throw new Error("rate-limit"); }
-          if (!r.ok) throw new Error(String(r.status));
-          return r.json() as Promise<GitHubRepo>;
-        })
-        .then((data) => {
-          setRepos((prev) => {
-            const next = [...prev];
-            next[idx] = data;
-            return next;
-          });
-        })
-        .catch(() => {});
-    });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  if (validRepos.length === 0) return null;
 
   return (
     <section className="section" id="projects">
       <div className="section-head">
         <span className="section-tag">{"// projects"}</span>
       </div>
-      {rateLimited && (
-        <p style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: "11px", color: "var(--dim)", marginBottom: "16px" }}>
-          GitHub API 호출 한도 초과 (60회/h). 잠시 후 다시 시도해 주세요.
-        </p>
-      )}
       <div className="proj-grid">
-        {repos.map((repo, idx) =>
-          repo === null
-            ? <SkeletonCard key={idx} />
-            : <RepoCard key={repo.id} repo={repo} />
-        )}
+        {validRepos.map((repo) => (
+          <RepoCard key={repo.id} repo={repo} />
+        ))}
       </div>
     </section>
   );
