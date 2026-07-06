@@ -2,7 +2,8 @@ import { MetadataRoute } from "next";
 import { getAllPostMeta } from "@/utils/posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://yejilog-mu.vercel.app";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://yejilog-mu.vercel.app";
 
   const posts = getAllPostMeta();
   const encodeSlugPath = (slug: string) =>

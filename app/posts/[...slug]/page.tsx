@@ -11,7 +11,8 @@ import { formatDateTime } from "@/utils/formatDateTime";
 import MovementBtn from "@/components/posts/MovementBtn";
 import Link from "next/link";
 
-const SITE_URL = "https://yejilog-mu.vercel.app";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://yejilog-mu.vercel.app";
 
 function toDescription(markdown: string) {
   return markdown
@@ -51,6 +52,7 @@ export async function generateMetadata({
       title: post.title,
       description,
       url: `${SITE_URL}${canonicalPath}`,
+      images: [{ url: `${SITE_URL}/og-default.png`, width: 1200, height: 630 }],
     },
   };
 }
@@ -68,8 +70,22 @@ export default async function PostPage({
   const { prev, next } = getPrevNextPosts(slugPath);
   const description = toDescription(post.markdown);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description,
+    datePublished: post.date,
+    author: { "@type": "Person", name: blogConfig.author },
+    url: `${SITE_URL}/posts/${post.slug}`,
+  };
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="article-wrap">
         <Link href="/" className="back-btn">
           ← 목록으로
