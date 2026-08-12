@@ -22,16 +22,19 @@ export default function CategorySection({
   return (
     <div className="cat-row">
       <span className="cat-label">CATEGORY</span>
-      {categories.map((cat) => (
-        <Link
-          key={cat}
-          href={buildHref(cat)}
-          scroll={false}
-          className={`cat-chip${selectedCategory === cat ? " active" : ""}`}
-        >
-          {cat}
-        </Link>
-      ))}
+      <div className="cat-list" aria-label="카테고리 목록">
+        {categories.map((cat) => (
+          <Link
+            key={cat}
+            href={buildHref(cat)}
+            scroll={false}
+            aria-current={selectedCategory === cat ? "page" : undefined}
+            className={`cat-chip${selectedCategory === cat ? " active" : ""}`}
+          >
+            {cat}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

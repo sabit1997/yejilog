@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -17,7 +17,7 @@ export default function CopyButton({ code }: { code: string }) {
     <button
       onClick={copy}
       style={{
-        fontFamily: "var(--font-jetbrains), monospace",
+        fontFamily: "var(--font-mono), monospace",
         fontSize: "11px",
         color: copied ? "#9FD336" : "#6e6e6e",
         background: "none",

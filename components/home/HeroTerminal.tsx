@@ -13,6 +13,11 @@ export default function HeroTerminal() {
   const typedRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      if (typedRef.current) typedRef.current.textContent = lines[0];
+      return;
+    }
     let li = 0;
     let ci = 0;
     let deleting = false;

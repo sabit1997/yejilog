@@ -1,0 +1,19 @@
+.backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: start center; padding: min(14vh, 7rem) 1rem 1rem; background: color-mix(in srgb, var(--bg-term) 58%, transparent); }
+.dialog { width: min(42rem, 100%); max-height: min(70vh, 38rem); overflow: hidden; border: 1px solid var(--rule); border-radius: var(--r); background: var(--bg-card); color: var(--ink); box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 30%); }
+.searchRow { display: flex; align-items: center; gap: .75rem; padding: 1rem; border-bottom: 1px solid var(--rule); }
+.input { min-width: 0; flex: 1; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; font-size: 1rem; }
+.key { border: 1px solid var(--rule); border-radius: .3rem; padding: .15rem .35rem; background: transparent; color: var(--dim); cursor: pointer; font-family: var(--font-mono), monospace; font-size: .7rem; }
+.results { max-height: calc(min(70vh, 38rem) - 3.7rem); overflow-y: auto; padding: .5rem; }
+.status, .empty { padding: 1.5rem 1rem; color: var(--dim); text-align: center; }
+.groupTitle { padding: .65rem .65rem .35rem; color: var(--dim); font-family: var(--font-mono), monospace; font-size: .7rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.result { display: block; width: 100%; border: 0; border-radius: .45rem; padding: .7rem; background: transparent; color: inherit; cursor: pointer; text-align: left; }
+.result:hover, .selected { background: var(--lime-bg); }
+.result:focus-visible, .trigger:focus-visible, .key:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.resultTitle { display: block; font-weight: 700; }
+.resultMeta, .excerpt { display: block; margin-top: .2rem; color: var(--dim); font-size: .82rem; }
+.excerpt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mark { border-radius: .15rem; background: var(--yolk-bg); color: var(--yolk-txt); }
+.trigger { border: 1px solid var(--rule); border-radius: .4rem; padding: .45rem .65rem; background: var(--bg-card); color: var(--ink); cursor: pointer; font: inherit; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: no-preference) { .dialog { animation: appear 140ms ease-out; } }
+@keyframes appear { from { opacity: 0; transform: translateY(-.5rem) scale(.99); } }

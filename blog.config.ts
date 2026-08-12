@@ -11,6 +11,16 @@ const blogConfig = {
   social: {
     github: `sabit1997`,
   },
+  profile: {
+    image: "/profile.jpg",
+    email: "yeji@dev",
+    stack: ["React", "Next.js", "TypeScript", "Zustand", "TanStack Query", "Spring"],
+    timeline: [
+      { year: "2026", text: "떠글보글 — SSE 알림, 쿠키 인증 전환" },
+      { year: "2025", text: "cam-study — 캠스터디 웹/데스크탑 앱" },
+      { year: "2024", text: "CI/CD 파이프라인 구축, 백엔드 배포기" },
+    ],
+  },
   comment: {
     utterances: "sabit1997/yejilog",
   },

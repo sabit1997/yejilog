@@ -1,6 +1,10 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import {
+  extractTableOfContents,
+  type TableOfContentsItem,
+} from "@/utils/headings";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
@@ -25,32 +29,48 @@ export interface PostMeta {
   isPrivate: boolean;
 }
 
+export interface PostContent extends PostMeta {
+  slug: string;
+  markdown: string;
+  tableOfContents: TableOfContentsItem[];
+}
+
 export async function getPostContent(
   slug: string
-): Promise<({ slug: string; markdown: string } & PostMeta) | null> {
+): Promise<PostContent | null> {
   const safeSlug = slug.replace(/\.md$/, "");
-  const fullPath = path.join(postsDirectory, ...safeSlug.split("/")) + ".md";
+  const fullPath = path.resolve(postsDirectory, ...safeSlug.split("/")) + ".md";
+  const postsRoot = `${path.resolve(postsDirectory)}${path.sep}`;
 
-  if (!fs.existsSync(fullPath)) return null;
+  if (!fullPath.startsWith(postsRoot) || !fs.existsSync(fullPath)) return null;
 
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const { data, content } = matter(fileContents);
 
+  const meta = data as PostMeta;
+  if (meta.isPrivate === true) return null;
+
   return {
     slug,
     markdown: content,
-    ...(data as PostMeta),
+    tableOfContents: extractTableOfContents(content),
+    ...meta,
   };
 }
 
 export function getAllSlugs(): string[][] {
   const allFiles = getAllMarkdownFiles(postsDirectory);
-  return allFiles.map((fullPath) => {
-    const relativePath = path
-      .relative(postsDirectory, fullPath)
-      .replace(/\.md$/, "");
-    return relativePath.split(path.sep);
-  });
+  return allFiles
+    .filter((fullPath) => {
+      const { data } = matter(fs.readFileSync(fullPath, "utf8"));
+      return data.isPrivate !== true;
+    })
+    .map((fullPath) => {
+      const relativePath = path
+        .relative(postsDirectory, fullPath)
+        .replace(/\.md$/, "");
+      return relativePath.split(path.sep);
+    });
 }
 
 export function getAllPostMeta(): {

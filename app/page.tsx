@@ -6,8 +6,10 @@ import PostList from "@/components/home/postList";
 import ProfileSection from "@/components/home/profileSection";
 import TagSection from "@/components/home/tagSection";
 import ProjectsSection from "@/components/home/ProjectsSection";
+import AboutSection from "@/components/home/AboutSection";
 import type { Post } from "@/types/post";
 import Link from "next/link";
+import { matchesPostFilters } from "@/utils/postFilters";
 
 const typedPosts = postsData as Post[];
 const sortedPosts = [...typedPosts].sort(
@@ -45,14 +47,9 @@ export default async function Home({ searchParams }: HomeProps) {
       ? requestedLimit
       : blogConfig.configs.countOfInitialPost;
 
-  const filteredPosts = sortedPosts.filter((post) => {
-    const categoryMatch =
-      selectedCategory === "All" || post.category === selectedCategory;
-    const tagMatch =
-      selectedTags.length === 0 ||
-      selectedTags.some((t) => post.tags.includes(t));
-    return categoryMatch && tagMatch;
-  });
+  const filteredPosts = sortedPosts.filter((post) =>
+    matchesPostFilters(post, selectedCategory, selectedTags)
+  );
 
   const displayedPosts = filteredPosts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredPosts.length;
@@ -66,17 +63,22 @@ export default async function Home({ searchParams }: HomeProps) {
   );
 
   return (
-    <main>
+    <main id="main-content">
       <div className="wrap">
         <ProfileSection />
-        <div id="posts" className="filter-wrap">
+        <div id="filter" className="filter-wrap">
           <CategorySection
             selectedCategory={selectedCategory}
             selectedTags={selectedTags}
             categories={categories}
           />
           <Suspense>
-            <TagSection allTags={allTags} initialTags={selectedTags} />
+            <TagSection
+              posts={typedPosts.map(({ category, tags }) => ({ category, tags }))}
+              selectedCategory={selectedCategory}
+              allTags={allTags}
+              initialTags={selectedTags}
+            />
           </Suspense>
         </div>
         <PostList
@@ -84,17 +86,18 @@ export default async function Home({ searchParams }: HomeProps) {
           totalCount={filteredPosts.length}
         />
         {hasMore && (
-          <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }}>
+          <div className="load-more-wrap">
             <Link
               href={`/?${loadMoreParams.toString()}`}
               scroll={false}
               className="cat-chip"
             >
-              더 보기
+              더 보기 <span aria-hidden="true">↓</span>
             </Link>
           </div>
         )}
         <ProjectsSection />
+        <AboutSection />
       </div>
     </main>
   );

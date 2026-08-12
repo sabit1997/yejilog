@@ -1,4 +1,4 @@
-import { codeToHtml } from "shiki";
+﻿import { codeToHtml } from "shiki";
 import CopyButton from "./CopyButton";
 
 // 줄바꿈 시 continuation이 해당 줄의 첫 비공백 문자와 같은 열에서 시작하도록 함
@@ -63,7 +63,7 @@ export default async function CodeBlock({ language, code }: CodeBlockProps) {
       >
         <span
           style={{
-            fontFamily: "var(--font-jetbrains), monospace",
+            fontFamily: "var(--font-mono), monospace",
             fontSize: "11px",
             color: "#858585",
             letterSpacing: "0.04em",

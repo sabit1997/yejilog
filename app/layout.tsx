@@ -1,26 +1,21 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Instrument_Serif, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans_KR } from "next/font/google";
 import Header from "@/components/header";
 import blogConfig from "@/blog.config";
+import { SearchProvider } from "@/components/search";
 
-const instrumentSerif = Instrument_Serif({
-  weight: ["400"],
-  style: ["normal", "italic"],
+const sans = IBM_Plex_Sans_KR({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-instrument",
+  variable: "--font-sans",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const mono = IBM_Plex_Mono({
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
-  variable: "--font-dm",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -47,10 +42,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const themeScript = `
     try {
-      const saved = localStorage.getItem("theme");
+      const stored = localStorage.getItem("theme");
+      const saved = stored === "light" || stored === "dark" ? stored : "auto";
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const isDark = saved === "dark" || (!saved && prefersDark);
+      const isDark = saved === "dark" || (saved === "auto" && prefersDark);
       document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme-mode", saved);
     } catch {}
   `;
 
@@ -60,14 +57,16 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${instrumentSerif.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
+        className={`${sans.variable} ${mono.variable}`}
       >
-        <Header />
-        {children}
-        <footer className="site-footer">
+        <SearchProvider>
+          <a className="skip-link" href="#main-content">본문으로 건너뛰기</a>
+          <Header />
+          {children}
+          <footer className="site-footer">
           <div className="wrap footer-inner">
             <span>
-              © 2025 yeji.log — built with Next.js, kombucha, and ASMR.
+              © {new Date().getFullYear()} yeji.log — built with Next.js, kombucha, and ASMR.
             </span>
             <div className="footer-links">
               <a
@@ -77,7 +76,8 @@ export default function RootLayout({
               >
                 GitHub
               </a>
-              <a href="/sitemap.xml">RSS</a>
+              <a href="/sitemap.xml">Sitemap</a>
+              <a href="/rss.xml">RSS</a>
             </div>
           </div>
           <div className="wrap footer-credits">
@@ -90,7 +90,8 @@ export default function RootLayout({
               Pixel icons created by j8chi - Flaticon
             </a>
           </div>
-        </footer>
+          </footer>
+        </SearchProvider>
       </body>
     </html>
   );

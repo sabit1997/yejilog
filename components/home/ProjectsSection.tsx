@@ -106,24 +106,31 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
   );
 }
 
+function FallbackCard({ owner, name }: { owner: string; name: string }) {
+  return (
+    <a className="proj-card" href={`https://github.com/${owner}/${name}`} target="_blank" rel="noreferrer">
+      <div className="proj-status"><span className="proj-dot" />GitHub에서 보기</div>
+      <div className="proj-name">{name}</div>
+      <div className="proj-desc">저장소 정보를 불러오지 못했습니다.</div>
+    </a>
+  );
+}
+
 export default async function ProjectsSection() {
   const owner = blogConfig.social.github;
   const repos = await Promise.all(
     blogConfig.projects.pinned.map((name) => fetchRepo(owner, name))
   );
-  const validRepos = repos.filter((r): r is GitHubRepo => r !== null);
-
-  if (validRepos.length === 0) return null;
-
   return (
     <section className="section" id="projects">
       <div className="section-head">
-        <span className="section-tag">{"// projects"}</span>
+        <span className="section-index">03 / PROJECTS</span>
+        <span className="section-line" />
+        <span className="section-count">GitHub API</span>
       </div>
       <div className="proj-grid">
-        {validRepos.map((repo) => (
-          <RepoCard key={repo.id} repo={repo} />
-        ))}
+        {repos.map((repo, index) => repo ? <RepoCard key={repo.id} repo={repo} /> :
+          <FallbackCard key={blogConfig.projects.pinned[index]} owner={owner} name={blogConfig.projects.pinned[index]} />)}
       </div>
     </section>
   );

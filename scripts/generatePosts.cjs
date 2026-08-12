@@ -8,6 +8,37 @@ const matter = require("gray-matter");
 const postsDir = path.join(process.cwd(), "posts");
 const outputPath = path.join(process.cwd(), "public", "posts.json");
 
+function markdownToPlainText(markdown) {
+  return markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/~~~[\s\S]*?~~~/g, " ")
+    .replace(/^ {4}.*$/gm, " ")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/<https?:\/\/[^>]+>/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^\s{0,3}(?:#{1,6}|>|[-+*]|\d+[.)])\s+/gm, "")
+    .replace(/[*_~]+/g, "")
+    .replace(/\\([\\`*{}\[\]()#+.!_>-])/g, "$1")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function createExcerpt(text, maxLength = 180) {
+  if (text.length <= maxLength) return text;
+
+  const excerpt = text.slice(0, maxLength + 1);
+  const lastSpace = excerpt.lastIndexOf(" ");
+  return `${excerpt.slice(0, lastSpace > maxLength * 0.6 ? lastSpace : maxLength).trim()}…`;
+}
+
 function getAllMarkdownFiles(dirPath) {
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
   let files = [];
@@ -35,7 +66,8 @@ const posts = allMdFiles
       .replace(/\\/g, "/");
 
     const raw = fs.readFileSync(filePath, "utf-8");
-    const { data } = matter(raw);
+    const { data, content } = matter(raw);
+    const searchText = markdownToPlainText(content);
 
     const m = raw.match(/^date:\s*(.+)$/m);
     let rawDate = m ? m[1].trim() : "";
@@ -52,9 +84,12 @@ const posts = allMdFiles
       category: data.category || "",
       tags: data.tags || [],
       isPrivate: data.isPrivate || false,
+      excerpt: createExcerpt(searchText),
+      searchText,
     };
   })
   .filter((post) => !post.isPrivate);
 
 fs.writeFileSync(outputPath, JSON.stringify(posts, null, 2), "utf-8");
+module.exports = { createExcerpt, markdownToPlainText };
 console.log("✅ posts.json 생성 완료");

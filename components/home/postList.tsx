@@ -8,13 +8,19 @@ interface PostListProps {
 
 export default function PostList({ displayedPosts, totalCount }: PostListProps) {
   return (
-    <section className="section" style={{ paddingTop: 0 }}>
+    <section className="section" id="posts" style={{ paddingTop: 0 }}>
       <div className="section-head">
-        <span className="section-tag">{"// posts"}</span>
+        <span className="section-index">02 / POSTS</span>
+        <span className="section-line" />
         <span className="section-count">총 {totalCount}개</span>
       </div>
       <div className="post-list">
-        {displayedPosts.map((post) => (
+        {displayedPosts.length === 0 ? (
+          <div className="post-empty" role="status">
+            <span>$ find ./posts</span>
+            <p>선택한 조건에 맞는 글이 없습니다.</p>
+          </div>
+        ) : displayedPosts.map((post) => (
           <Link
             key={post.slug}
             href={`/posts/${encodeURI(post.slug)}`}
@@ -36,6 +42,7 @@ export default function PostList({ displayedPosts, totalCount }: PostListProps) 
                 <span className="post-min">· {post.category}</span>
               </div>
             </div>
+            <span className="post-arrow" aria-hidden="true">↗</span>
           </Link>
         ))}
       </div>

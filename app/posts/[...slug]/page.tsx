@@ -5,11 +5,14 @@ import remarkGfm from "remark-gfm";
 import { getAllSlugs, getPostContent, getPrevNextPosts } from "@/utils/posts";
 import React from "react";
 import UtterancesComments from "@/components/UtterancesComments";
-import { components } from "@/components/markdown/MarkdownComponents";
+import { createMarkdownComponents } from "@/components/markdown/MarkdownComponents";
 import blogConfig from "@/blog.config";
 import { formatDateTime } from "@/utils/formatDateTime";
 import MovementBtn from "@/components/posts/MovementBtn";
 import Link from "next/link";
+import PostTableOfContents from "@/components/posts/PostTableOfContents";
+import ReadingProgress from "@/components/posts/ReadingProgress";
+import Image from "next/image";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://yejilog-mu.vercel.app";
@@ -69,6 +72,7 @@ export default async function PostPage({
 
   const { prev, next } = getPrevNextPosts(slugPath);
   const description = toDescription(post.markdown);
+  const markdownComponents = createMarkdownComponents();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -81,62 +85,77 @@ export default async function PostPage({
   };
 
   return (
-    <main>
+    <main id="main-content">
+      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="article-wrap">
-        <Link href="/" className="back-btn">
-          ← 목록으로
-        </Link>
+      <div className="post-layout">
+        <div className="article-wrap">
+          <Link href="/" className="back-btn">
+            ← 목록으로
+          </Link>
 
-        <div className="pills" style={{ marginBottom: "14px" }}>
-          <span className="pill">{post.category}</span>
-          {post.tags?.map((t) => (
-            <span key={t} className="pill pill-n">
-              #{t}
+          <div className="pills" style={{ marginBottom: "14px" }}>
+            <span className="pill">{post.category}</span>
+            {post.tags?.map((t) => (
+              <span key={t} className="pill pill-n">
+                #{t}
+              </span>
+            ))}
+          </div>
+
+          <h1 className="art-h1">{post.title}</h1>
+
+          {description && <p className="art-sub">{description}</p>}
+
+          <div className="art-meta">
+            <Image
+              className="art-avatar"
+              src={blogConfig.profile.image}
+              alt=""
+              width={28}
+              height={28}
+            />
+            <span>
+              {blogConfig.author} · {formatDateTime(post.date)}
             </span>
-          ))}
-        </div>
+          </div>
 
-        <h1 className="art-h1">{post.title}</h1>
-
-        {description && <p className="art-sub">{description}</p>}
-
-        <div className="art-meta">
-          <div className="art-avatar" />
-          <span>
-            {blogConfig.author} · {formatDateTime(post.date)}
-          </span>
-        </div>
-
-        <article className="prose-blog">
-          <MDXRemote
-            source={post.markdown}
-            options={{
-              mdxOptions: {
-                remarkPlugins: [remarkGfm],
-              },
-            }}
-            components={components}
+          <PostTableOfContents
+            items={post.tableOfContents}
+            variant="mobile"
           />
-        </article>
 
-        <nav className="post-nav">
-          {prev ? (
-            <MovementBtn title={prev.title} slug={prev.slug} type="prev" />
-          ) : (
-            <div />
-          )}
-          {next ? (
-            <MovementBtn title={next.title} slug={next.slug} type="next" />
-          ) : (
-            <div />
-          )}
-        </nav>
+          <article className="prose-blog">
+            <MDXRemote
+              source={post.markdown}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm],
+                },
+              }}
+              components={markdownComponents}
+            />
+          </article>
 
-        <UtterancesComments />
+          <nav className="post-nav">
+            {prev ? (
+              <MovementBtn title={prev.title} slug={prev.slug} type="prev" />
+            ) : (
+              <div />
+            )}
+            {next ? (
+              <MovementBtn title={next.title} slug={next.slug} type="next" />
+            ) : (
+              <div />
+            )}
+          </nav>
+
+          <UtterancesComments />
+        </div>
+        <PostTableOfContents items={post.tableOfContents} variant="desktop" />
       </div>
     </main>
   );
