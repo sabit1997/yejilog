@@ -57,7 +57,7 @@ COMMAND_EXECUTION_ERROR Message: Error while executing command: aws s3 cp --recu
   ],
   "Resource": [
     "arn:aws:s3:::deok-map",
-    "arn:aws:cloudfront::471112748103:distribution/E3G6FHXYLBIIG8"
+    "arn:aws:cloudfront::************:distribution/E3G6FHXYLBIIG8"
   ]
 }
 ```
@@ -152,7 +152,7 @@ phases:
 오류는 아래와 같습니다.
 
 ```
-[Container] 2024/06/20 13:33:42.555331 Phase context status code: Secrets Manager Error Message: AccessDeniedException: User: arn:aws:sts::471112748103:assumed-role/codebuild-duck-map-build-service-role/AWSCodeBuild-e82e201d-c4cb-4d57-b2a4-1f9715d97d1b is not authorized to perform: secretsmanager:GetSecretValue on resource: deok-map-env because no identity-based policy allows the secretsmanager:GetSecretValue action
+[Container] 2024/06/20 13:33:42.555331 Phase context status code: Secrets Manager Error Message: AccessDeniedException: User: arn:aws:sts::************:assumed-role/codebuild-duck-map-build-service-role/AWSCodeBuild-e82e201d-c4cb-4d57-b2a4-1f9715d97d1b is not authorized to perform: secretsmanager:GetSecretValue on resource: deok-map-env because no identity-based policy allows the secretsmanager:GetSecretValue action
 status code: 400, request id: 365dce27-74fb-444b-87ba-a88b8f438cee
 ```
 
