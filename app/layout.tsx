@@ -80,6 +80,16 @@ export default function RootLayout({
               <a href="/sitemap.xml">RSS</a>
             </div>
           </div>
+          <div className="wrap footer-credits">
+            <a
+              href="https://www.flaticon.com/free-icons/pixel"
+              title="pixel icons"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Pixel icons created by j8chi - Flaticon
+            </a>
+          </div>
         </footer>
       </body>
     </html>
