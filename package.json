@@ -10,8 +10,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "generate": "ts-node scripts/generatePosts.ts"
+    "lint": "eslint .",
+    "generate": "node scripts/generatePosts.cjs"
   },
   "dependencies": {
     "dayjs": "^1.11.13",
