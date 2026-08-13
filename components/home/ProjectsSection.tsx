@@ -57,21 +57,6 @@ function getTechs(repo: GitHubRepo): string[] {
   return [];
 }
 
-function GitHubIcon() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      width="11"
-      height="11"
-      fill="var(--dim)"
-      style={{ flexShrink: 0 }}
-      aria-hidden="true"
-    >
-      <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38l-.01-1.49c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.17-.89-1.17-.72-.5.06-.49.06-.49.8.06 1.22.82 1.22.82.71 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 014 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z" />
-    </svg>
-  );
-}
-
 function RepoCard({ repo }: { repo: GitHubRepo }) {
   const techs = getTechs(repo);
   return (
@@ -98,7 +83,6 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
       )}
       <div className="proj-foot">
         <div className="proj-commit">
-          <GitHubIcon />
           {timeAgo(repo.pushed_at)} · {repo.default_branch}
         </div>
       </div>
@@ -106,12 +90,22 @@ function RepoCard({ repo }: { repo: GitHubRepo }) {
   );
 }
 
+const fallbackProjects: Record<string, { description: string; language: string }> = {
+  "cam-study": { description: "웹/앱으로 캠스터디 템플릿 만들기", language: "TypeScript" },
+  yejilog: { description: "개인 기술 블로그", language: "TypeScript" },
+  "ddeugeul-bogeul": { description: "실시간 알림이 있는 커뮤니티", language: "TypeScript" },
+  "algorithm-note": { description: "풀이 기록 저장소", language: "Python" },
+};
+
 function FallbackCard({ owner, name }: { owner: string; name: string }) {
+  const project = fallbackProjects[name] ?? { description: "저장소", language: "" };
   return (
     <a className="proj-card" href={`https://github.com/${owner}/${name}`} target="_blank" rel="noreferrer">
-      <div className="proj-status"><span className="proj-dot" />GitHub에서 보기</div>
+      <div className="proj-status proj-status--unavailable"><span className="proj-dot" />GitHub 정보 확인 불가</div>
       <div className="proj-name">{name}</div>
-      <div className="proj-desc">저장소 정보를 불러오지 못했습니다.</div>
+      <div className="proj-desc">{project.description}</div>
+      {project.language && <div className="pills" style={{ marginBottom: "12px" }}><span className="pill pill-n">{project.language}</span></div>}
+      <div className="proj-foot"><div className="proj-commit">로컬 프로젝트 정보</div></div>
     </a>
   );
 }
@@ -122,15 +116,21 @@ export default async function ProjectsSection() {
     blogConfig.projects.pinned.map((name) => fetchRepo(owner, name))
   );
   return (
-    <section className="section" id="projects">
-      <div className="section-head">
-        <span className="section-index">03 / PROJECTS</span>
-        <span className="section-line" />
-        <span className="section-count">GitHub API</span>
-      </div>
+    <section className="standalone-page" aria-labelledby="projects-title">
+      <h1 id="projects-title">Projects</h1>
+      <p className="page-lead">GitHub에서 가져온 저장소 목록입니다.</p>
       <div className="proj-grid">
-        {repos.map((repo, index) => repo ? <RepoCard key={repo.id} repo={repo} /> :
-          <FallbackCard key={blogConfig.projects.pinned[index]} owner={owner} name={blogConfig.projects.pinned[index]} />)}
+        {repos.map((repo, index) =>
+          repo ? (
+            <RepoCard key={repo.id} repo={repo} />
+          ) : (
+            <FallbackCard
+              key={blogConfig.projects.pinned[index]}
+              owner={owner}
+              name={blogConfig.projects.pinned[index]}
+            />
+          )
+        )}
       </div>
     </section>
   );

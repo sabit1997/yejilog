@@ -2,29 +2,29 @@
 
 import { useEffect, useState } from "react";
 
-type ThemeMode = "auto" | "light" | "dark";
+type ThemeMode = "light" | "dark";
 
 export default function DarkModeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>("auto");
+  const [theme, setTheme] = useState<ThemeMode>("dark");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    setTheme(saved === "light" || saved === "dark" ? saved : "auto");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(
+      saved === "light" || saved === "dark"
+        ? saved
+        : prefersDark
+          ? "dark"
+          : "light"
+    );
     setHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const paint = () => {
-      const resolved = theme === "auto" ? (media.matches ? "dark" : "light") : theme;
-      document.documentElement.setAttribute("data-theme", resolved);
-      document.documentElement.setAttribute("data-theme-mode", theme);
-    };
-    paint();
-    media.addEventListener("change", paint);
-    return () => media.removeEventListener("change", paint);
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.colorScheme = theme;
   }, [hydrated, theme]);
 
   const choose = (next: ThemeMode) => {
@@ -33,13 +33,17 @@ export default function DarkModeToggle() {
   };
 
   return (
-    <div className="theme-control" role="group" aria-label="테마 선택">
-      {(["auto", "light", "dark"] as const).map((mode) => (
-        <button type="button" key={mode} className={theme === mode ? "active" : ""}
-          aria-pressed={theme === mode} onClick={() => choose(mode)}>
-          {mode}
-        </button>
-      ))}
-    </div>
+    <button
+      type="button"
+      className={`theme-toggle theme-toggle--${theme}`}
+      aria-label={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
+      title={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
+      onClick={() => choose(theme === "dark" ? "light" : "dark")}
+    >
+      <span className="theme-toggle__word">{theme.toUpperCase()}</span>
+      <span className="theme-toggle__knob" aria-hidden="true">
+        <span className="theme-toggle__glyph" />
+      </span>
+    </button>
   );
 }

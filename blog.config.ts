@@ -14,21 +14,22 @@ const blogConfig = {
   profile: {
     image: "/profile.jpg",
     email: "yeji@dev",
-    stack: ["React", "Next.js", "TypeScript", "Zustand", "TanStack Query", "Spring"],
-    timeline: [
-      { year: "2026", text: "떠글보글 — SSE 알림, 쿠키 인증 전환" },
-      { year: "2025", text: "cam-study — 캠스터디 웹/데스크탑 앱" },
-      { year: "2024", text: "CI/CD 파이프라인 구축, 백엔드 배포기" },
+    stackGroups: [
+      { title: "View", items: ["React", "TypeScript", "Next.js"] },
+      { title: "State Management", items: ["Redux Toolkit", "Zustand", "TanStack Query"] },
+      { title: "Code Quality Tool", items: ["ESLint", "Prettier", "Husky"] },
+      { title: "Infrastructure", items: ["AWS S3", "CloudFront", "AWS EC2"] },
+      { title: "Other Tools", items: ["Git", "GitHub", "Figma"] },
     ],
   },
   comment: {
     utterances: "sabit1997/yejilog",
   },
   configs: {
-    countOfInitialPost: 10,
+    countOfInitialPost: 5,
   },
   projects: {
-    pinned: ["cam-study", "yejilog"],
+    pinned: ["cam-study", "yejilog", "ddeugeul-bogeul", "algorithm-note"],
   },
 } as const;
 

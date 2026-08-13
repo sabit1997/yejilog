@@ -1,21 +1,27 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { IBM_Plex_Mono, IBM_Plex_Sans_KR } from "next/font/google";
+import localFont from "next/font/local";
 import Header from "@/components/header";
 import blogConfig from "@/blog.config";
 import { SearchProvider } from "@/components/search";
 
-const sans = IBM_Plex_Sans_KR({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-sans",
+const sans = localFont({
+  src: [
+    { path: "./fonts/IBMPlexSansKR-Regular.woff2", weight: "400" },
+    { path: "./fonts/IBMPlexSansKR-Medium.woff2", weight: "500" },
+    { path: "./fonts/IBMPlexSansKR-SemiBold.woff2", weight: "600" },
+  ],
+  variable: "--font-ibm-sans",
   display: "swap",
 });
 
-const mono = IBM_Plex_Mono({
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-  variable: "--font-mono",
+const mono = localFont({
+  src: [
+    { path: "./fonts/IBMPlexMono-Regular.woff2", weight: "400" },
+    { path: "./fonts/IBMPlexMono-Medium.woff2", weight: "500" },
+    { path: "./fonts/IBMPlexMono-SemiBold.woff2", weight: "600" },
+  ],
+  variable: "--font-ibm-mono",
   display: "swap",
 });
 
@@ -43,22 +49,24 @@ export default function RootLayout({
   const themeScript = `
     try {
       const stored = localStorage.getItem("theme");
-      const saved = stored === "light" || stored === "dark" ? stored : "auto";
+      const saved = stored === "light" || stored === "dark" ? stored : null;
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const isDark = saved === "dark" || (saved === "auto" && prefersDark);
+      const isDark = saved ? saved === "dark" : prefersDark;
       document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-      document.documentElement.setAttribute("data-theme-mode", saved);
+      document.documentElement.style.colorScheme = isDark ? "dark" : "light";
     } catch {}
   `;
 
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html
+      lang="ko"
+      className={`${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body
-        className={`${sans.variable} ${mono.variable}`}
-      >
+      <body>
         <SearchProvider>
           <a className="skip-link" href="#main-content">본문으로 건너뛰기</a>
           <Header />
@@ -76,19 +84,8 @@ export default function RootLayout({
               >
                 GitHub
               </a>
-              <a href="/sitemap.xml">Sitemap</a>
               <a href="/rss.xml">RSS</a>
             </div>
-          </div>
-          <div className="wrap footer-credits">
-            <a
-              href="https://www.flaticon.com/free-icons/pixel"
-              title="pixel icons"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Pixel icons created by j8chi - Flaticon
-            </a>
           </div>
           </footer>
         </SearchProvider>

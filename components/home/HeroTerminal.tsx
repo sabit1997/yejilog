@@ -33,7 +33,7 @@ export default function HeroTerminal() {
         el.textContent = cur.slice(0, ci);
         if (ci === cur.length) {
           deleting = true;
-          timer = setTimeout(tick, 1500);
+          timer = setTimeout(tick, 1700);
           return;
         }
       } else {
@@ -45,7 +45,7 @@ export default function HeroTerminal() {
         }
       }
 
-      timer = setTimeout(tick, deleting ? 22 : 52);
+      timer = setTimeout(tick, deleting ? 20 : 52);
     }
 
     tick();
@@ -64,7 +64,8 @@ export default function HeroTerminal() {
         <span className="term-prompt">yeji@dev</span>
         <span className="term-cwd"> ~/blog</span>
         <span> $ </span>
-        <span ref={typedRef} className="typed-cursor" />
+        <span ref={typedRef} />
+        <span className="typed-cursor" aria-hidden="true" />
       </div>
     </div>
   );
