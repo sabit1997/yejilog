@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { normalizeSearchText, searchPosts } from "../utils/search.ts";
+import { getRecentPosts, normalizeSearchText, searchPosts } from "../utils/search.ts";
 import type { Post } from "../types/post.ts";
 
 const posts: Post[] = [
@@ -16,4 +16,14 @@ test("title matches rank above body-only matches and tags are grouped", () => {
   const result = searchPosts(posts, "hydration");
   assert.deepEqual(result.posts.map((post) => post.slug), ["title", "body"]);
   assert.deepEqual(result.tags, [{ name: "Hydration", count: 1 }]);
+});
+
+test("recent posts are sorted by date instead of source file order", () => {
+  const unsorted = [
+    { ...posts[0], slug: "old", date: "2022-01-01" },
+    { ...posts[0], slug: "latest", date: "2026-03-03" },
+    { ...posts[0], slug: "middle", date: "2025-08-13" },
+  ];
+
+  assert.deepEqual(getRecentPosts(unsorted, 2).map((post) => post.slug), ["latest", "middle"]);
 });

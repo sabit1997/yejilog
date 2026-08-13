@@ -3,14 +3,21 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Post } from "@/types/post";
-import { normalizeSearchText, searchPosts } from "@/utils/search";
+import { getRecentPosts, normalizeSearchText, searchPosts } from "@/utils/search";
+import { getSearchShortcut } from "@/utils/platform";
 import styles from "./SearchProvider.module.css";
 
-interface SearchContextValue { openSearch: () => void; closeSearch: () => void; }
+type ActiveDialog = "search" | "tags" | null;
 
-type SearchItem =
-  | { type: "post"; href: string; post: Post }
-  | { type: "tag"; href: string; name: string; count: number };
+interface SearchContextValue {
+  activeDialog: ActiveDialog;
+  openSearch: () => void;
+  closeSearch: () => void;
+  openTagDialog: () => void;
+  closeTagDialog: () => void;
+}
+
+type SearchItem = { type: "post"; href: string; post: Post };
 
 const SearchContext = createContext<SearchContextValue | null>(null);
 
@@ -40,7 +47,7 @@ function getPreview(post: Post, query: string): string {
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
+  const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null);
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [query, setQuery] = useState("");
@@ -48,16 +55,24 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
+  const isOpen = activeDialog === "search";
 
   const openSearch = useCallback(() => {
-    restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    setIsOpen(true);
+    setActiveDialog((current) => {
+      if (current !== null) return current;
+      restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      return "search";
+    });
   }, []);
-  const closeSearch = useCallback(() => setIsOpen(false), []);
+  const closeSearch = useCallback(() => setActiveDialog((current) => current === "search" ? null : current), []);
+  const openTagDialog = useCallback(() => setActiveDialog((current) => current ?? "tags"), []);
+  const closeTagDialog = useCallback(() => setActiveDialog((current) => current === "tags" ? null : current), []);
 
   useEffect(() => {
+    const shortcut = getSearchShortcut(navigator.userAgent);
     const onShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      const hasPlatformModifier = shortcut.modifier === "meta" ? event.metaKey : event.ctrlKey;
+      if (hasPlatformModifier && event.key.toLowerCase() === "k") {
         event.preventDefault();
         openSearch();
       }
@@ -67,12 +82,18 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   }, [openSearch]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!activeDialog) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    requestAnimationFrame(() => inputRef.current?.focus());
     return () => {
       document.body.style.overflow = previousOverflow;
+    };
+  }, [activeDialog]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    requestAnimationFrame(() => inputRef.current?.focus());
+    return () => {
       restoreFocusRef.current?.focus();
     };
   }, [isOpen]);
@@ -94,10 +115,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   }, [isOpen, posts]);
 
   const results = useMemo(() => searchPosts(posts ?? [], query), [posts, query]);
+  const recentPosts = useMemo(() => getRecentPosts(posts ?? []), [posts]);
+  const visiblePosts = query.trim() ? results.posts : recentPosts;
   const items = useMemo<SearchItem[]>(() => [
-    ...results.posts.map((post) => ({ type: "post" as const, href: `/posts/${encodeURI(post.slug)}`, post })),
-    ...results.tags.map((tag) => ({ type: "tag" as const, href: `/?tags=${encodeURIComponent(tag.name)}#posts`, ...tag })),
-  ], [results]);
+    ...visiblePosts.map((post) => ({ type: "post" as const, href: `/posts/${encodeURI(post.slug)}`, post })),
+  ], [visiblePosts]);
 
   useEffect(() => setActiveIndex(0), [query]);
   useEffect(() => {
@@ -138,35 +160,35 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <SearchContext.Provider value={{ openSearch, closeSearch }}>
+    <SearchContext.Provider value={{ activeDialog, openSearch, closeSearch, openTagDialog, closeTagDialog }}>
       {children}
       {isOpen && (
         <div className={styles.backdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) closeSearch(); }}>
           <div ref={dialogRef} className={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="global-search-title" onKeyDown={onKeyDown}>
             <h2 id="global-search-title" className={styles.visuallyHidden}>글과 태그 검색</h2>
             <div className={styles.searchRow}>
-              <span aria-hidden="true">⌕</span>
+              <svg className={styles.searchIcon} viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="8.5" cy="8.5" r="5.5" />
+                <path d="m12.5 12.5 4 4" />
+              </svg>
               <input ref={inputRef} className={styles.input} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="글 제목, 태그, 본문 검색…" aria-label="글과 태그 검색" aria-controls="global-search-results" aria-activedescendant={items[activeIndex] ? `global-search-result-${activeIndex}` : undefined} />
               <button className={styles.key} type="button" onClick={closeSearch} aria-label="검색 닫기">ESC</button>
             </div>
             <div id="global-search-results" className={styles.results} role="listbox" aria-label="Search results">
               {posts === null && !loadError && <p className={styles.status} role="status">검색 인덱스를 불러오는 중…</p>}
               {loadError && <p className={styles.empty} role="alert">검색 인덱스를 불러오지 못했습니다.</p>}
-              {posts && !query.trim() && <p className={styles.empty}>제목, 카테고리, 태그와 본문을 검색할 수 있습니다.</p>}
-              {posts && query.trim() && items.length === 0 && <p className={styles.empty} role="status">검색 결과가 없습니다.</p>}
-              {results.posts.length > 0 && <div className={styles.groupTitle}>Posts</div>}
-              {results.posts.map((post, index) => (
+              {posts && query.trim() && items.length === 0 && <p className={styles.empty} role="status">일치하는 글이 없습니다.</p>}
+              {visiblePosts.length > 0 && <div className={styles.groupTitle}>{query.trim() ? `검색 결과 · ${visiblePosts.length}` : `최근 글 · ${visiblePosts.length}`}</div>}
+              {visiblePosts.map((post, index) => (
                 <button key={post.slug} id={`global-search-result-${index}`} className={`${styles.result} ${activeIndex === index ? styles.selected : ""}`} type="button" role="option" aria-selected={activeIndex === index} onMouseEnter={() => setActiveIndex(index)} onClick={() => navigate(`/posts/${encodeURI(post.slug)}`)}>
                   <span className={styles.resultTitle}><Highlight text={post.title} query={query} /></span>
-                  <span className={styles.resultMeta}><Highlight text={post.category} query={query} /> · {post.tags.map((tag, tagIndex) => <span key={tag}>{tagIndex > 0 && ", "}<Highlight text={tag} query={query} /></span>)}</span>
-                  {post.excerpt && <span className={styles.excerpt}><Highlight text={getPreview(post, query)} query={query} /></span>}
+                  <span className={styles.resultMeta}><Highlight text={post.category} query={query} /> · {query.trim() ? post.tags.map((tag, tagIndex) => <span key={tag}>{tagIndex > 0 && ", "}<Highlight text={tag} query={query} /></span>) : post.date.replaceAll("-", ".")}</span>
+                  {query.trim() && post.excerpt && <span className={styles.excerpt}><Highlight text={getPreview(post, query)} query={query} /></span>}
                 </button>
               ))}
-              {results.tags.length > 0 && <div className={styles.groupTitle}>Tags</div>}
-              {results.tags.map((tag, tagIndex) => {
-                const index = results.posts.length + tagIndex;
-                return <button key={tag.name} id={`global-search-result-${index}`} className={`${styles.result} ${activeIndex === index ? styles.selected : ""}`} type="button" role="option" aria-selected={activeIndex === index} onMouseEnter={() => setActiveIndex(index)} onClick={() => navigate(`/?tags=${encodeURIComponent(tag.name)}#posts`)}><span className={styles.resultTitle}>#<Highlight text={tag.name} query={query} /></span><span className={styles.resultMeta}>{tag.count} post{tag.count === 1 ? "" : "s"}</span></button>;
-              })}
+            </div>
+            <div className={styles.footer} aria-hidden="true">
+              <span><kbd>↑ ↓</kbd> 이동</span><span><kbd>Enter</kbd> 열기</span><span><kbd>Esc</kbd> 닫기</span>
             </div>
           </div>
         </div>
@@ -177,5 +199,26 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 
 export function SearchButton({ className = "" }: { className?: string }) {
   const { openSearch } = useSearch();
-  return <button type="button" className={`${styles.trigger} ${className}`} onClick={openSearch} aria-label="검색 열기">검색 <span aria-hidden="true">⌘K</span></button>;
+  const [shortcut, setShortcut] = useState(() => getSearchShortcut(""));
+
+  useEffect(() => {
+    setShortcut(getSearchShortcut(navigator.userAgent));
+  }, []);
+
+  return (
+    <button
+      type="button"
+      className={`${styles.trigger} ${className}`}
+      onClick={openSearch}
+      aria-label={`검색 열기 (${shortcut.label})`}
+      aria-keyshortcuts={shortcut.ariaKeyShortcuts}
+    >
+      <svg className={styles.triggerIcon} viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="8.5" cy="8.5" r="5.5" />
+        <path d="m12.5 12.5 4 4" />
+      </svg>
+      <span className={styles.triggerLabel}>검색</span>
+      <kbd className={styles.shortcutBadge} aria-hidden="true">{shortcut.label}</kbd>
+    </button>
+  );
 }

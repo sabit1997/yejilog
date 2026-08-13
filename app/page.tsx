@@ -5,10 +5,8 @@ import CategorySection from "@/components/home/categorySection";
 import PostList from "@/components/home/postList";
 import ProfileSection from "@/components/home/profileSection";
 import TagSection from "@/components/home/tagSection";
-import ProjectsSection from "@/components/home/ProjectsSection";
-import AboutSection from "@/components/home/AboutSection";
+import InfinitePostLoader from "@/components/home/InfinitePostLoader";
 import type { Post } from "@/types/post";
-import Link from "next/link";
 import { matchesPostFilters } from "@/utils/postFilters";
 
 const typedPosts = postsData as Post[];
@@ -64,7 +62,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <main id="main-content">
-      <div className="wrap">
+      <div className="wrap home-wrap">
         <ProfileSection />
         <div id="filter" className="filter-wrap">
           <CategorySection
@@ -86,18 +84,12 @@ export default async function Home({ searchParams }: HomeProps) {
           totalCount={filteredPosts.length}
         />
         {hasMore && (
-          <div className="load-more-wrap">
-            <Link
-              href={`/?${loadMoreParams.toString()}`}
-              scroll={false}
-              className="cat-chip"
-            >
-              더 보기 <span aria-hidden="true">↓</span>
-            </Link>
-          </div>
+          <InfinitePostLoader
+            nextHref={`/?${loadMoreParams.toString()}`}
+            visibleCount={displayedPosts.length}
+            totalCount={filteredPosts.length}
+          />
         )}
-        <ProjectsSection />
-        <AboutSection />
       </div>
     </main>
   );

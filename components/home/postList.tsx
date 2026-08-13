@@ -8,10 +8,9 @@ interface PostListProps {
 
 export default function PostList({ displayedPosts, totalCount }: PostListProps) {
   return (
-    <section className="section" id="posts" style={{ paddingTop: 0 }}>
+    <section className="section" id="posts">
       <div className="section-head">
-        <span className="section-index">02 / POSTS</span>
-        <span className="section-line" />
+        <span className="section-index"><b>{"//"}</b> posts</span>
         <span className="section-count">총 {totalCount}개</span>
       </div>
       <div className="post-list">
@@ -42,7 +41,6 @@ export default function PostList({ displayedPosts, totalCount }: PostListProps) 
                 <span className="post-min">· {post.category}</span>
               </div>
             </div>
-            <span className="post-arrow" aria-hidden="true">↗</span>
           </Link>
         ))}
       </div>

@@ -7,6 +7,12 @@ export function normalizeSearchText(value: string): string {
   return value.normalize("NFKC").toLocaleLowerCase().replace(/\s+/g, " ").trim();
 }
 
+export function getRecentPosts(posts: Post[], limit = 5): Post[] {
+  return [...posts]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, limit);
+}
+
 function scorePost(post: Post, query: string): number {
   const title = normalizeSearchText(post.title);
   const category = normalizeSearchText(post.category);

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { countPostsForTag, matchesPostFilters } from "@/utils/postFilters";
+import { useSearch } from "@/components/search";
 
 interface TagSectionProps {
   posts: Array<{ category: string; tags: string[] }>;
@@ -14,11 +15,13 @@ interface TagSectionProps {
 export default function TagSection({ posts, selectedCategory, allTags, initialTags }: TagSectionProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
+  const { activeDialog, openTagDialog, closeTagDialog } = useSearch();
+  const isOpen = activeDialog === "tags";
   const [pendingTags, setPendingTags] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const triggerRef = useRef<HTMLButtonElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const categoryPosts = useMemo(() => posts.filter((post) =>
     matchesPostFilters(post, selectedCategory, [])
@@ -36,16 +39,20 @@ export default function TagSection({ posts, selectedCategory, allTags, initialTa
   const popular = [...allTags].sort((a, b) =>
     categoryPosts.filter((post) => post.tags.includes(b)).length - categoryPosts.filter((post) => post.tags.includes(a)).length
   ).slice(0, 6);
+  const remainingTags = query
+    ? visibleTags
+    : visibleTags.filter((tag) => !popular.includes(tag));
+  const resultCount = categoryPosts.filter((post) => matchesPostFilters(post, "All", pendingTags)).length;
 
-  const closePanel = () => {
-    setIsOpen(false);
+  const closePanel = useCallback(() => {
+    closeTagDialog();
     requestAnimationFrame(() => triggerRef.current?.focus());
-  };
+  }, [closeTagDialog]);
 
   const openPanel = () => {
     setPendingTags([...initialTags]);
     setQuery("");
-    setIsOpen(true);
+    openTagDialog();
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
@@ -54,8 +61,7 @@ export default function TagSection({ posts, selectedCategory, allTags, initialTa
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closePanel();
       if (event.key === "Tab") {
-        const panel = document.querySelector<HTMLElement>(".tag-panel");
-        const focusable = panel?.querySelectorAll<HTMLElement>("button:not(:disabled), input");
+        const focusable = panelRef.current?.querySelectorAll<HTMLElement>("button:not(:disabled), input");
         if (!focusable?.length) return;
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
@@ -65,7 +71,7 @@ export default function TagSection({ posts, selectedCategory, allTags, initialTa
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [isOpen]);
+  }, [closePanel, isOpen]);
 
   const togglePending = (tag: string) => setPendingTags((previous) =>
     previous.includes(tag) ? previous.filter((item) => item !== tag) : [...previous, tag]
@@ -83,26 +89,31 @@ export default function TagSection({ posts, selectedCategory, allTags, initialTa
     <>
       {isOpen && <div className="tag-panel-overlay open"
         onMouseDown={(event) => { if (event.target === event.currentTarget) closePanel(); }}>
-        <div className="tag-panel" role="dialog" aria-modal="true" aria-labelledby="tag-panel-title">
+        <div ref={panelRef} className="tag-panel" role="dialog" aria-modal="true" aria-labelledby="tag-panel-title">
           <div className="panel-head">
-            <span className="panel-title" id="tag-panel-title">태그로 필터</span>
+            <span className="panel-title" id="tag-panel-title"><b>#</b> 태그 선택 {pendingTags.length > 0 && <small>{pendingTags.length}</small>}</span>
             <div className="panel-actions">
-              <button className="panel-clear" onClick={() => setPendingTags([])}>초기화</button>
-              <button className="panel-close" onClick={closePanel} aria-label="태그 패널 닫기">✕</button>
+              <button type="button" className="panel-clear" onClick={() => setPendingTags([])} disabled={pendingTags.length === 0}>초기화</button>
+              <button type="button" className="panel-close" onClick={closePanel} aria-label="태그 패널 닫기">ESC</button>
             </div>
           </div>
-          <label className="tag-search"><span>⌕</span><input ref={inputRef} value={query}
-            onChange={(event) => setQuery(event.target.value)} placeholder="태그 검색" /></label>
-          {!query && <><span className="tag-group-label">자주 쓰는 태그</span><div className="tag-cloud popular-tags">
-            {popular.map((tag) => <TagButton key={tag} tag={tag} count={counts[tag]} picked={pendingTags.includes(tag)} onToggle={togglePending} />)}
-          </div></>}
-          <span className="tag-group-label">전체 태그 · {visibleTags.length}</span>
-          <div className="tag-cloud tag-scroll">
-            {visibleTags.map((tag) => <TagButton key={tag} tag={tag} count={counts[tag]} picked={pendingTags.includes(tag)} onToggle={togglePending} />)}
+          <div className="tag-search-section"><label className="tag-search"><span>/</span><input ref={inputRef} value={query}
+            aria-label="태그 검색"
+            onChange={(event) => setQuery(event.target.value)} placeholder="태그 검색 — react, 배포, css…" />
+            <small>{allTags.length}개</small></label></div>
+          <div className="tag-panel-body">
+            {!query && <><span className="tag-group-label">자주 쓰는 태그</span><div className="tag-cloud popular-tags">
+              {popular.map((tag) => <TagButton key={tag} tag={tag} count={counts[tag]} picked={pendingTags.includes(tag)} onToggle={togglePending} />)}
+            </div></>}
+            <span className="tag-group-label">{query ? `검색 결과 ${visibleTags.length}개` : "전체 태그"}<i>스크롤 ↓</i></span>
+            <div className="tag-cloud tag-scroll">
+              {remainingTags.map((tag) => <TagButton key={tag} tag={tag} count={counts[tag]} picked={pendingTags.includes(tag)} onToggle={togglePending} />)}
+              {remainingTags.length === 0 && <p className="tag-no-results">일치하는 태그가 없습니다.</p>}
+            </div>
           </div>
           <div className="panel-footer">
-            <span>{pendingTags.length}개 선택됨 · 결과 {categoryPosts.filter((post) => matchesPostFilters(post, "All", pendingTags)).length}개</span>
-            <button className="panel-apply" onClick={() => { navigateWith(pendingTags); closePanel(); }}>적용하기 →</button>
+            <span>{pendingTags.length ? `${pendingTags.length}개 태그 선택됨` : "태그를 선택해 글을 좁혀보세요"}</span>
+            <button type="button" className="panel-apply" onClick={() => { navigateWith(pendingTags); closePanel(); }}>{resultCount}개 글 보기 <b>↵</b></button>
           </div>
         </div>
       </div>}
