@@ -4,6 +4,7 @@ import CodeBlock from "./CodeBlock";
 import { Children, createElement, isValidElement } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { createHeadingSlugger } from "@/utils/headings";
+import { getCodeBlockLanguage } from "@/utils/codeBlock";
 
 type CodeProps = ComponentPropsWithoutRef<"code"> & { inline?: boolean };
 
@@ -43,17 +44,18 @@ export function createMarkdownComponents() {
       <blockquote {...props} />
     ),
     p: (props: ComponentPropsWithoutRef<"p">) => <p {...props} />,
+    pre: ({ children }: ComponentPropsWithoutRef<"pre">) => <>{children}</>,
     a: (props: ComponentPropsWithoutRef<"a">) => <a {...props} />,
     table: (props: ComponentPropsWithoutRef<"table">) => <table {...props} />,
     th: (props: ComponentPropsWithoutRef<"th">) => <th {...props} />,
     td: (props: ComponentPropsWithoutRef<"td">) => <td {...props} />,
 
     code({ inline, className, children, ...props }: CodeProps) {
-      const match = /language-(\w+)/.exec(className || "");
       const codeString = extractCodeString(children);
+      const language = inline ? null : getCodeBlockLanguage(className, codeString);
 
-      if (!inline && match) {
-        return <CodeBlock language={match[1]} code={codeString.trim()} />;
+      if (language) {
+        return <CodeBlock language={language} code={codeString.trimEnd()} />;
       }
 
       return (

@@ -12,7 +12,8 @@ export default function MovementBtn({ slug, title, type }: MovementBtnProps) {
       href={`/posts/${encodeURI(slug)}`}
       className={`post-nav-btn${type === "next" ? " right" : ""}`}
     >
-      {type === "prev" ? `← ${title}` : `${title} →`}
+      <span className="post-nav-direction">{type === "prev" ? "← PREV" : "NEXT →"}</span>
+      <span>{title}</span>
     </Link>
   );
 }

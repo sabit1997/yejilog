@@ -15,18 +15,10 @@ export default function CopyButton({ code }: { code: string }) {
 
   return (
     <button
+      className="code-copy-button"
       onClick={copy}
-      style={{
-        fontFamily: "var(--font-mono), monospace",
-        fontSize: "11px",
-        color: copied ? "#9FD336" : "#6e6e6e",
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-        padding: 0,
-        transition: "color 0.2s",
-        letterSpacing: "0.02em",
-      }}
+      data-copied={copied || undefined}
+      type="button"
     >
       {copied ? "✓ copied" : "copy"}
     </button>

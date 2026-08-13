@@ -5,14 +5,16 @@ import remarkGfm from "remark-gfm";
 import { getAllSlugs, getPostContent, getPrevNextPosts } from "@/utils/posts";
 import React from "react";
 import UtterancesComments from "@/components/UtterancesComments";
+import { getUtterancesIssueTerm } from "@/utils/comments";
 import { createMarkdownComponents } from "@/components/markdown/MarkdownComponents";
 import blogConfig from "@/blog.config";
 import { formatDateTime } from "@/utils/formatDateTime";
 import MovementBtn from "@/components/posts/MovementBtn";
 import Link from "next/link";
-import PostTableOfContents from "@/components/posts/PostTableOfContents";
+import PostTableOfContents, { PostTableOfContentsProvider } from "@/components/posts/PostTableOfContents";
 import ReadingProgress from "@/components/posts/ReadingProgress";
 import Image from "next/image";
+import { getReadingTime } from "@/utils/readingTime";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://yejilog-mu.vercel.app";
@@ -72,6 +74,7 @@ export default async function PostPage({
 
   const { prev, next } = getPrevNextPosts(slugPath);
   const description = toDescription(post.markdown);
+  const readingTime = getReadingTime(post.markdown);
   const markdownComponents = createMarkdownComponents();
 
   const jsonLd = {
@@ -91,6 +94,7 @@ export default async function PostPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <PostTableOfContentsProvider items={post.tableOfContents}>
       <div className="post-layout">
         <div className="article-wrap">
           <Link href="/" className="back-btn">
@@ -108,8 +112,6 @@ export default async function PostPage({
 
           <h1 className="art-h1">{post.title}</h1>
 
-          {description && <p className="art-sub">{description}</p>}
-
           <div className="art-meta">
             <Image
               className="art-avatar"
@@ -119,7 +121,7 @@ export default async function PostPage({
               height={28}
             />
             <span>
-              {blogConfig.author} · {formatDateTime(post.date)}
+              {blogConfig.author} · {formatDateTime(post.date)} · {readingTime}분
             </span>
           </div>
 
@@ -153,10 +155,13 @@ export default async function PostPage({
             )}
           </nav>
 
-          <UtterancesComments />
+          <UtterancesComments
+            issueTerm={getUtterancesIssueTerm(`/posts/${encodeURI(post.slug)}`)}
+          />
         </div>
         <PostTableOfContents items={post.tableOfContents} variant="desktop" />
       </div>
+      </PostTableOfContentsProvider>
     </main>
   );
 }
