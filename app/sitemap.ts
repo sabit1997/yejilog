@@ -12,9 +12,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       .map((segment) => encodeURIComponent(segment))
       .join("/");
 
+  // 작성일을 lastModified로 쓰면 리뉴얼로 화면이 전부 바뀌어도 크롤러에게는
+  // "변경 없음"으로 보여 재색인이 밀린다. 갱신 시각을 기준으로 잡는다.
+  const buildTime = new Date();
+
   const postUrls = posts.map((post) => ({
     url: `${baseUrl}/posts/${encodeSlugPath(post.slug)}`,
-    lastModified: new Date(post.date),
+    lastModified: post.updatedAt ?? buildTime,
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
@@ -22,19 +26,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticUrls = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: buildTime,
       changeFrequency: "daily" as const,
       priority: 1.0,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: new Date(),
+      lastModified: buildTime,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     },
     {
       url: `${baseUrl}/projects`,
-      lastModified: new Date(),
+      lastModified: buildTime,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     },

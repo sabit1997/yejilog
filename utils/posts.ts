@@ -27,6 +27,33 @@ export interface PostMeta {
   category: string;
   tags?: string[];
   isPrivate: boolean;
+  /** 본문을 고친 시각. 있으면 sitemap lastModified 기준이 된다. */
+  updated?: string;
+}
+
+/** 유효한 Date만 통과시킨다. frontmatter에는 `18:06:77` 같은 값도 섞여 있다. */
+export function toValidDate(value: unknown): Date | null {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (typeof value !== "string" && typeof value !== "number") return null;
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/**
+ * 글이 마지막으로 갱신된 시각.
+ * frontmatter `updated` → 파일 mtime 순으로 찾고, 둘 다 못 믿으면 null을 준다.
+ * Vercel은 git clone으로 빌드하므로 mtime은 사실상 빌드 시각이 된다.
+ */
+function getUpdatedAt(fullPath: string, data: Record<string, unknown>): Date | null {
+  const fromFrontmatter = toValidDate(data.updated);
+  if (fromFrontmatter) return fromFrontmatter;
+
+  try {
+    return toValidDate(fs.statSync(fullPath).mtime);
+  } catch {
+    return null;
+  }
 }
 
 export interface PostContent extends PostMeta {
@@ -78,6 +105,7 @@ export function getAllPostMeta(): {
   date: string;
   title: string;
   isPrivate?: boolean;
+  updatedAt: Date | null;
 }[] {
   const files = getAllMarkdownFiles(postsDirectory);
 
@@ -92,10 +120,14 @@ export function getAllPostMeta(): {
         title: data.title,
         date: data.date,
         isPrivate: data.isPrivate ?? false,
+        updatedAt: getUpdatedAt(fullPath, data),
       };
     })
     .filter((post) => post.isPrivate !== true)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort(
+      (a, b) =>
+        (toValidDate(b.date)?.getTime() ?? 0) - (toValidDate(a.date)?.getTime() ?? 0)
+    );
 }
 
 export function getPrevNextPosts(currentSlug: string) {

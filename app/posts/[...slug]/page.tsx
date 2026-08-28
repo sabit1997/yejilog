@@ -43,7 +43,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getPostContent(decodeURIComponent(slug.join("/")));
   if (!post)
-    return { title: "글", robots: { index: false, follow: true } };
+    return {
+      title: "페이지를 찾을 수 없어요",
+      robots: { index: false, follow: true },
+    };
 
   const description = toDescription(post.markdown) || blogConfig.description;
   const canonicalPath = `/posts/${post.slug}`;
