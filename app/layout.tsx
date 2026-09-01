@@ -30,12 +30,10 @@ export const metadata: Metadata = {
   title: blogConfig.title,
   description: blogConfig.description,
   alternates: { canonical: "/" },
+  // index/follow를 여기서 명시하면 404·에러 화면의 noindex 뒤에 그대로 따라붙어
+  // 서로 충돌하는 robots 메타가 나간다. 지정하지 않는 것이 곧 index, follow다.
   robots: {
-    index: true,
-    follow: true,
     googleBot: {
-      index: true,
-      follow: true,
       "max-image-preview": "large",
       "max-snippet": -1,
       "max-video-preview": -1,

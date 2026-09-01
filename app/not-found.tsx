@@ -3,7 +3,9 @@ import { SearchButton } from "@/components/search";
 
 export default function NotFound() {
   return (
-    <main className="not-found-page">
+    <main className="not-found-page" id="main-content">
+      {/* noindex는 Next.js가 404 응답에 직접 넣어준다. 여기서 title이나 robots를
+          또 렌더하면 레이아웃 메타와 중복된 태그가 나가므로 두지 않는다. */}
       <div className="not-found-terminal">
         <div className="term-bar">
           <span className="term-dot" style={{ background: "#ff5f57" }} />

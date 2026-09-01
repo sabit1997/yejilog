@@ -1,6 +1,6 @@
 ---
 title: 개인 프로젝트 리펙토링 (1) - 타입스크립트로 마이그레이션
-date: 2024-06-06 07:06:77
+date: 2024-06-06 07:06:00
 category: React&JS
 tags: ["마이그레이션", "TypeScript"]
 isPrivate: false

@@ -1,6 +1,6 @@
 ---
 title: AWS CodePipeline에서 겪은 문제들
-date: 2024-06-20 07:06:77
+date: 2024-06-20 07:06:00
 category: infrastructure
 tags: ["AWS", "배포", "infra", "CodePipeline"]
 isPrivate: false
