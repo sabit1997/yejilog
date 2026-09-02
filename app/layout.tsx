@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Link from "next/link";
 import localFont from "next/font/local";
 import Header from "@/components/header";
 import blogConfig from "@/blog.config";
@@ -75,6 +76,9 @@ export default function RootLayout({
               © {new Date().getFullYear()} yeji.log — built with Next.js, kombucha, and ASMR.
             </span>
             <div className="footer-links">
+              {/* 모든 화면에서 전체 목록으로 갈 수 있게 둔다.
+                  크롤러가 어느 글에서 시작해도 나머지 글에 닿는다. */}
+              <Link href="/archive">Archive</Link>
               <a
                 href={`https://github.com/${blogConfig.social.github}`}
                 target="_blank"

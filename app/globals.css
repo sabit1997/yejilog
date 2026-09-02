@@ -1136,6 +1136,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .proj-card { border-radius: 9px; }
 .infinite-loader { display: flex; min-height: 92px; align-items: center; justify-content: center; gap: 8px; color: var(--dim); font: 500 11px var(--font-mono), monospace; text-align: center; }
 .infinite-loader__prompt { color: var(--lime-txt); }
+.infinite-loader__more { border-bottom: 1px solid var(--line); color: var(--dim); }
+.infinite-loader__more:hover { border-color: var(--lime); color: var(--lime-txt); }
 
 .tag-panel-overlay { align-items: center; padding: 24px; background: rgba(0,0,0,.62); }
 .tag-panel { border-radius: 10px; max-width: 640px; max-height: min(720px, 90vh); transform: translateY(10px); padding: 22px; }
@@ -1307,6 +1309,15 @@ body {
 .cat-label, .tag-row-label { font-size: 11.5px; letter-spacing: .16em; }
 .cat-chip { border-radius: 5px; background: transparent; padding: 6px 12px; font-size: 12.5px; }
 .cat-chip.active { border-color: var(--lime); background: var(--lime); color: var(--on-accent); }
+.cat-chip-count { margin-left: 3px; color: var(--dim); font-size: 11px; }
+.archive-link { display: inline-block; margin: 26px 0 0; }
+/* 카테고리 이름은 React&JS, Next.js처럼 대소문자가 의미를 갖는다.
+   뒤에 오는 `.section-index { text-transform: lowercase }`를 이겨야 하므로
+   클래스를 겹쳐 특정도를 올린다. */
+.section-index.section-index--verbatim { text-transform: none; }
+.article-wrap .pills a.pill:hover { border-color: var(--lime); color: var(--lime-txt); }
+[data-theme="dark"] .article-wrap .pills a.pill:hover { color: var(--lime); }
+.cat-chip.active .cat-chip-count { color: inherit; opacity: .7; }
 .tag-row { gap: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft); padding: 10px 12px; }
 .sel-tag { border-radius: 5px; background: var(--lime); color: var(--on-accent); padding: 4px 9px; font-size: 12px; }
 .sel-tag-rm { border: 0; background: none; color: inherit; }.tag-filter-btn { margin-left: auto; border-radius: 5px; background: transparent; padding: 5px 11px; }

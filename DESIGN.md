@@ -22,8 +22,9 @@
 - Key contexts of use: 데스크톱 집중 읽기, 모바일 검색과 빠른 참조
 
 ## Information architecture
-- Primary navigation: Posts, Projects, About, Search. 카테고리와 태그 필터는 Posts 안에 둔다.
-- Core routes/screens: `/`, `/posts/[...slug]`, `/projects`, `/about`, 404, `/rss.xml`
+- Primary navigation: Posts, Projects, About, Search. 카테고리와 태그 필터는 Posts 안에 둔다. 전체 글 목록(Archive)은 푸터와 홈 목록 하단에서 잇는다.
+- Core routes/screens: `/`, `/posts/[...slug]`, `/archive`, `/categories/[category]`, `/projects`, `/about`, 404, 에러 화면, `/rss.xml`
+- Archive와 카테고리 화면은 홈의 쿼리 필터와 역할이 다르다. 필터(`?category=`, `?limit=`)는 사람이 탐색하는 도구로 두고, 색인 대상 목록은 `/archive`와 `/categories/*`가 맡는다. 근거는 `SEO.md`에 있다.
 - Content hierarchy: 홈은 소개 → 필터 → 글 목록, 글 상세는 태그 → 제목 → 메타 → 본문 → 목차/이전·다음 글 순서로 구성한다. 제목 아래 미리보기 문장은 반복 노출하지 않는다. About은 프로필 사진과 소개, 터미널 패널 안의 기술 스택 그룹에 집중하며 별도 타임라인은 두지 않는다. Projects와 About은 독립 화면으로 구성한다.
 
 ## Design principles

@@ -15,6 +15,7 @@ import PostTableOfContents, { PostTableOfContentsProvider } from "@/components/p
 import ReadingProgress from "@/components/posts/ReadingProgress";
 import Image from "next/image";
 import { getReadingTime } from "@/utils/readingTime";
+import { categoryHref } from "@/utils/postCatalog";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://yejilog-mu.vercel.app";
@@ -104,12 +105,24 @@ export default async function PostPage({
             ← 목록으로
           </Link>
 
+          {/* 글 하나에서 나가는 링크가 이전·다음 글뿐이라 목록으로 되돌아갈
+              길이 없었다. 카테고리와 태그를 실제 링크로 내보낸다. */}
           <div className="pills" style={{ marginBottom: "14px" }}>
-            <span className="pill">{post.category}</span>
+            <Link href={categoryHref(post.category)} className="pill">
+              {post.category}
+            </Link>
+            {/* 태그 필터는 canonical이 `/`로 묶여 색인되지 않는다. 태그 94개
+                중 71개가 글 1개짜리여서, 크롤을 유도하면 예산만 쓰고
+                얻는 게 없다. 사람에게는 그대로 열어 두고 크롤만 막는다. */}
             {post.tags?.map((t) => (
-              <span key={t} className="pill pill-n">
+              <Link
+                key={t}
+                href={`/?tags=${encodeURIComponent(t)}`}
+                className="pill pill-n"
+                rel="nofollow"
+              >
                 #{t}
-              </span>
+              </Link>
             ))}
           </div>
 
