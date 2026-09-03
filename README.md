@@ -15,6 +15,15 @@
 
 ---
 
+## 📖 문서
+
+| 문서 | 담고 있는 것 |
+| ---- | ------------ |
+| [docs/DESIGN.md](./docs/DESIGN.md) | 브랜드 톤, 정보 구조, 디자인 토큰, 접근성·반응형 기준 |
+| [docs/SEO.md](./docs/SEO.md) | 검색 노출 사고의 진단과 대응 근거, 반복하지 말 것, 배포 후 절차 |
+
+---
+
 ## 📁 디렉토리 구조
 
 ```text
@@ -26,7 +35,8 @@
 │     └─ [...slug]
 │        └─ page.tsx    # 포스트 페이지
 ├─ components           # UI 재사용 컴포넌트
-├─ scripts              # 포스트 생성 · 메타데이터 스크립트
+├─ docs                 # 설계 · SEO 판단 기준 문서
+├─ scripts              # 포스트 생성 · 메타데이터 · 렌더 검사 스크립트
 ├─ public               # 이미지 · 폰트 · 정적 자원
 ├─ utils                # 유틸 함수 (포맷터, 슬러그 등)
 ├─ blog.config.ts       # 블로그 설정 (작성자, 소셜 링크 등)
@@ -68,9 +78,12 @@ npm run dev
 | `npm run build`    | 프로덕션 빌드                           |
 | `npm start`        | 빌드된 앱 실행                          |
 | `npm run lint`     | ESLint 검사                             |
+| `npm test`         | 유틸 단위 테스트 (`node --test`)        |
 | `npm run post`     | 새 포스트 생성 (`create-post.js`)       |
-| `npm run prebuild` | 메타데이터 갱신 (`generatePosts.cjs`)   |
-| `npm run generate` | `ts-node scripts/generatePosts.ts` 실행 |
+| `npm run prebuild` | 글 검증 + 메타데이터 갱신               |
+| `npm run generate` | 메타데이터만 갱신 (`generatePosts.cjs`) |
+| `npm run validate:posts` | frontmatter · MDX 문법 검증       |
+| `npm run check:pages` | 실제 브라우저로 전 페이지 렌더 검사 (서버 실행 중에) |
 
 ---
 
