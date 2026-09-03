@@ -4,13 +4,26 @@ import Link from "next/link";
 interface PostListProps {
   displayedPosts: Post[];
   totalCount: number;
+  /** 아카이브·카테고리 화면에서 섹션 이름을 바꿔 끼운다. */
+  label?: string;
+  /** 카테고리 이름처럼 대소문자를 그대로 보여야 할 때 쓴다. */
+  labelVerbatim?: boolean;
 }
 
-export default function PostList({ displayedPosts, totalCount }: PostListProps) {
+export default function PostList({
+  displayedPosts,
+  totalCount,
+  label = "posts",
+  labelVerbatim = false,
+}: PostListProps) {
   return (
     <section className="section" id="posts">
       <div className="section-head">
-        <span className="section-index"><b>{"//"}</b> posts</span>
+        <span
+          className={`section-index${labelVerbatim ? " section-index--verbatim" : ""}`}
+        >
+          <b>{"//"}</b> {label}
+        </span>
         <span className="section-count">총 {totalCount}개</span>
       </div>
       <div className="post-list">

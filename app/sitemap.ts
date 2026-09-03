@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { getAllPostMeta } from "@/utils/posts";
+import { categoriesWithCount, categoryHref } from "@/utils/postCatalog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl =
@@ -42,7 +43,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly" as const,
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/archive`,
+      lastModified: buildTime,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    },
   ];
 
-  return [...staticUrls, ...postUrls];
+  // 카테고리 허브는 글 목록으로 가는 통로다. 색인 대상으로 함께 알린다.
+  const categoryUrls = categoriesWithCount.map(({ name }) => ({
+    url: `${baseUrl}${categoryHref(name)}`,
+    lastModified: buildTime,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticUrls, ...categoryUrls, ...postUrls];
 }

@@ -1,23 +1,20 @@
 import { Suspense } from "react";
-import postsData from "../public/posts.json";
+import Link from "next/link";
 import blogConfig from "@/blog.config";
 import CategorySection from "@/components/home/categorySection";
 import PostList from "@/components/home/postList";
 import ProfileSection from "@/components/home/profileSection";
 import TagSection from "@/components/home/tagSection";
 import InfinitePostLoader from "@/components/home/InfinitePostLoader";
-import type { Post } from "@/types/post";
 import { matchesPostFilters } from "@/utils/postFilters";
+import {
+  allPosts as sortedPosts,
+  allTags,
+  categoryNames,
+} from "@/utils/postCatalog";
 
-const typedPosts = postsData as Post[];
-const sortedPosts = [...typedPosts].sort(
-  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-);
-const categories = [
-  "All",
-  ...Array.from(new Set(sortedPosts.map((p) => p.category))),
-];
-const allTags = Array.from(new Set(typedPosts.flatMap((p) => p.tags)));
+const typedPosts = sortedPosts;
+const categories = ["All", ...categoryNames];
 
 interface HomeProps {
   searchParams?: Promise<{
@@ -90,6 +87,12 @@ export default async function Home({ searchParams }: HomeProps) {
             totalCount={filteredPosts.length}
           />
         )}
+
+        {/* 무한 스크롤은 크롤러가 따라올 수 없다. 전체 목록으로 가는
+            링크를 항상 두어 모든 글이 홈에서 두 단계 안에 들어오게 한다. */}
+        <Link href="/archive" className="back-btn archive-link">
+          전체 글 {sortedPosts.length}개 보기 →
+        </Link>
       </div>
     </main>
   );
