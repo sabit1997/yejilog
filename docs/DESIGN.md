@@ -2,7 +2,7 @@
 
 ## Source of truth
 - Status: Active
-- Last refreshed: 2026-08-13
+- Last refreshed: 2026-09-03
 - Primary product surfaces: 홈, 글 상세, 카테고리/태그 필터, 전체 검색, Projects, About, 404
 - Evidence reviewed: `C:\Users\user\Downloads\yejilog 리뉴얼 데모.html`, `.omx/artifacts/visual-ralph/renewal-demo-1/reference-*.png`, 최신 로컬 화면 캡처 `review-current-*.png`, `app/globals.css`, `app/**`, `components/**`
 
