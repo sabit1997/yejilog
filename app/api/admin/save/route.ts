@@ -11,8 +11,11 @@ interface SaveBody {
   tags: string[];
   isPrivate: boolean;
   body: string;
+  /** edit 모드에서만 사용. "카테고리/파일명" 형태 */
   slug?: string;
   sha?: string;
+  /** edit 모드에서 원본 생성일 유지용 */
+  date?: string;
   mode: "new" | "edit";
 }
 
@@ -31,25 +34,33 @@ export async function POST(req: NextRequest) {
     return new NextResponse("category required", { status: 400 });
   }
 
-  const slug = data.mode === "edit" && data.slug ? data.slug : toSafeSlug(data.title);
-  const category = data.category.trim();
-  const path = `posts/${category}/${slug.split("/").pop()}.md`;
+  const now = dayjs().format("YYYY-MM-DD HH:mm:ss");
+  const isEdit = data.mode === "edit" && data.slug;
+
+  // edit는 원본 경로/카테고리 유지 (이동/개명은 별도 액션)
+  const category = isEdit
+    ? data.slug!.split("/").slice(0, -1).join("/")
+    : data.category.trim();
+  const filenameNoExt = isEdit
+    ? data.slug!.split("/").pop()!
+    : toSafeSlug(data.title);
+  const path = `posts/${category}/${filenameNoExt}.md`;
 
   const markdown = buildMarkdown(
     {
       title: data.title.trim(),
-      date: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      date: isEdit && data.date ? data.date : now,
       category,
       tags: data.tags,
       isPrivate: data.isPrivate,
+      ...(isEdit ? { updated: now } : {}),
     },
     data.body ?? ""
   );
 
-  const message =
-    data.mode === "edit"
-      ? `post(update): ${data.title.trim()}`
-      : `post: ${data.title.trim()}`;
+  const message = isEdit
+    ? `post(update): ${data.title.trim()}`
+    : `post: ${data.title.trim()}`;
 
   try {
     await writePost({ path, content: markdown, message, sha: data.sha });
@@ -59,5 +70,5 @@ export async function POST(req: NextRequest) {
     return new NextResponse(msg, { status });
   }
 
-  return NextResponse.json({ slug: `${category}/${slug.split("/").pop()}` });
+  return NextResponse.json({ slug: `${category}/${filenameNoExt}` });
 }

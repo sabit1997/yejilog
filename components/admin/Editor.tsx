@@ -15,6 +15,8 @@ export interface EditorInitialValue {
   body: string;
   slug?: string;
   sha?: string;
+  /** edit 모드일 때 원본 생성일 유지 */
+  date?: string;
 }
 
 export function Editor({
@@ -61,6 +63,7 @@ export function Editor({
           body,
           slug: initial.slug,
           sha: initial.sha,
+          date: initial.date,
           mode,
         }),
       });
@@ -69,8 +72,7 @@ export function Editor({
         setError(msg || `저장 실패 (${res.status})`);
         return;
       }
-      const data = (await res.json()) as { slug: string };
-      router.push(mode === "new" ? "/admin" : `/admin/edit/${data.slug}`);
+      router.push("/admin");
       router.refresh();
     });
   };
@@ -114,7 +116,11 @@ export function Editor({
       <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-neutral-200 bg-white/40 px-4 py-2 text-sm">
         <div className="flex items-center gap-2">
           <span className="text-xs text-neutral-500">카테고리</span>
-          {newCategoryMode ? (
+          {mode === "edit" ? (
+            <span className="rounded border border-neutral-200 bg-neutral-50 px-2 py-1 font-mono text-xs text-neutral-600">
+              {category}
+            </span>
+          ) : newCategoryMode ? (
             <input
               type="text"
               value={category}
@@ -143,6 +149,11 @@ export function Editor({
               ))}
               <option value="__new__">+ 새 카테고리...</option>
             </select>
+          )}
+          {mode === "edit" && initial.slug && (
+            <span className="font-mono text-[11px] text-neutral-400">
+              /{initial.slug}.md
+            </span>
           )}
         </div>
         <div className="flex items-center gap-2">
