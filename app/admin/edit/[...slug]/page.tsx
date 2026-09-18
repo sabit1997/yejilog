@@ -32,6 +32,7 @@ export default async function EditPostPage({
         slug,
         sha: remote.sha,
         date: front.date,
+        publishAt: front.publishAt,
       }}
     />
   );

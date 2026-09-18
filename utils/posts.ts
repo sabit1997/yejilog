@@ -29,6 +29,15 @@ export interface PostMeta {
   isPrivate: boolean;
   /** 본문을 고친 시각. 있으면 sitemap lastModified 기준이 된다. */
   updated?: string;
+  /** 이 시각까지 공개하지 않는다. 없으면 즉시 공개. */
+  publishAt?: string;
+}
+
+/** publishAt이 있고 지금보다 미래면 아직 공개되면 안 된다. */
+export function isScheduledForFuture(publishAt: unknown): boolean {
+  const d = toValidDate(publishAt);
+  if (!d) return false;
+  return d.getTime() > Date.now();
 }
 
 /** 유효한 Date만 통과시킨다. frontmatter에는 `18:06:77` 같은 값도 섞여 있다. */
@@ -76,6 +85,7 @@ export async function getPostContent(
 
   const meta = data as PostMeta;
   if (meta.isPrivate === true) return null;
+  if (isScheduledForFuture(meta.publishAt)) return null;
 
   return {
     slug,
@@ -90,7 +100,9 @@ export function getAllSlugs(): string[][] {
   return allFiles
     .filter((fullPath) => {
       const { data } = matter(fs.readFileSync(fullPath, "utf8"));
-      return data.isPrivate !== true;
+      if (data.isPrivate === true) return false;
+      if (isScheduledForFuture(data.publishAt)) return false;
+      return true;
     })
     .map((fullPath) => {
       const relativePath = path
@@ -105,6 +117,7 @@ export function getAllPostMeta(): {
   date: string;
   title: string;
   isPrivate?: boolean;
+  publishAt?: string;
   updatedAt: Date | null;
 }[] {
   const files = getAllMarkdownFiles(postsDirectory);
@@ -120,10 +133,12 @@ export function getAllPostMeta(): {
         title: data.title,
         date: data.date,
         isPrivate: data.isPrivate ?? false,
+        publishAt: data.publishAt,
         updatedAt: getUpdatedAt(fullPath, data),
       };
     })
     .filter((post) => post.isPrivate !== true)
+    .filter((post) => !isScheduledForFuture(post.publishAt))
     .sort(
       (a, b) =>
         (toValidDate(b.date)?.getTime() ?? 0) - (toValidDate(a.date)?.getTime() ?? 0)

@@ -7,6 +7,8 @@ export interface PostFrontmatter {
   tags: string[];
   isPrivate: boolean;
   updated?: string;
+  /** ISO or 'YYYY-MM-DD HH:mm:ss'. 이 시각까지 공개하지 않는다. */
+  publishAt?: string;
 }
 
 function escapeYaml(value: string): string {
@@ -24,6 +26,7 @@ export function buildMarkdown(front: PostFrontmatter, body: string): string {
     `isPrivate: ${front.isPrivate}`,
   ];
   if (front.updated) lines.push(`updated: ${front.updated}`);
+  if (front.publishAt) lines.push(`publishAt: ${front.publishAt}`);
   lines.push("---", "");
   return `${lines.join("\n")}\n${body.trimStart()}`;
 }
@@ -50,6 +53,7 @@ export function parseMarkdown(raw: string): {
       tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
       isPrivate: data.isPrivate === true,
       updated: data.updated ? toStringSafe(data.updated) : undefined,
+      publishAt: data.publishAt ? toStringSafe(data.publishAt) : undefined,
     },
     body: content,
   };

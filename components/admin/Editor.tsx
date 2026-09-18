@@ -18,6 +18,14 @@ export interface EditorInitialValue {
   sha?: string;
   /** edit 모드일 때 원본 생성일 유지 */
   date?: string;
+  /** ISO or 'YYYY-MM-DD HH:mm:ss' */
+  publishAt?: string;
+}
+
+function toDatetimeLocalValue(v: string | undefined): string {
+  if (!v) return "";
+  const s = v.replace(" ", "T");
+  return s.slice(0, 16);
 }
 
 export function Editor({
@@ -35,6 +43,7 @@ export function Editor({
   const [newCategoryMode, setNewCategoryMode] = useState(false);
   const [tagsRaw, setTagsRaw] = useState(initial.tags.join(", "));
   const [isPrivate, setIsPrivate] = useState(initial.isPrivate);
+  const [publishAt, setPublishAt] = useState(toDatetimeLocalValue(initial.publishAt));
   const [body, setBody] = useState(initial.body);
   const [saving, startSaving] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +76,7 @@ export function Editor({
           slug: initial.slug,
           sha: initial.sha,
           date: initial.date,
+          publishAt: isPrivate ? "" : publishAt,
           mode,
         }),
       });
@@ -253,6 +263,26 @@ export function Editor({
             className="w-64 rounded border border-neutral-300 px-2 py-1 text-sm outline-none focus:border-neutral-500"
           />
         </div>
+        {!isPrivate && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-neutral-500">예약 발행</span>
+            <input
+              type="datetime-local"
+              value={publishAt}
+              onChange={(e) => setPublishAt(e.target.value)}
+              className="rounded border border-neutral-300 px-2 py-1 font-mono text-xs outline-none focus:border-neutral-500"
+            />
+            {publishAt && (
+              <button
+                type="button"
+                onClick={() => setPublishAt("")}
+                className="text-xs text-neutral-400 hover:text-neutral-700"
+              >
+                지우기
+              </button>
+            )}
+          </div>
+        )}
         {error && <p className="text-xs text-red-600">{error}</p>}
       </div>
 

@@ -14,6 +14,8 @@ export interface AdminPostSummary {
   category: string;
   tags: string[];
   isPrivate: boolean;
+  /** ISO or 'YYYY-MM-DD HH:mm:ss'. 미래 값이면 공개 페이지에는 아직 안 뜬다. */
+  publishAt?: string;
   /** true면 로컬 FS/배포본에는 아직 없고 GitHub에만 있는 파일 */
   pendingDeploy?: boolean;
 }
@@ -42,6 +44,7 @@ function parseFrontmatter(
   pendingDeploy = false
 ): AdminPostSummary {
   const { data } = matter(raw);
+  const publishAt = data.publishAt ? toDateString(data.publishAt) : undefined;
   return {
     slug: relativePath.replace(/\.md$/, "").split(path.sep).join("/"),
     title: typeof data.title === "string" ? data.title : relativePath,
@@ -49,6 +52,7 @@ function parseFrontmatter(
     category: typeof data.category === "string" ? data.category : "",
     tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
     isPrivate: data.isPrivate === true,
+    ...(publishAt ? { publishAt } : {}),
     ...(pendingDeploy ? { pendingDeploy } : {}),
   };
 }

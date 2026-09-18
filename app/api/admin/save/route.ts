@@ -16,7 +16,17 @@ interface SaveBody {
   sha?: string;
   /** edit 모드에서 원본 생성일 유지용 */
   date?: string;
+  /** ISO or 'YYYY-MM-DD HH:mm:ss'. 빈 문자열이면 즉시 공개. */
+  publishAt?: string;
   mode: "new" | "edit";
+}
+
+function normalizePublishAt(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  // <input type="datetime-local">은 'YYYY-MM-DDTHH:mm' 형태로 온다.
+  return trimmed.replace("T", " ").padEnd(19, ":00").slice(0, 19);
 }
 
 export async function POST(req: NextRequest) {
@@ -46,6 +56,8 @@ export async function POST(req: NextRequest) {
     : toSafeSlug(data.title);
   const path = `posts/${category}/${filenameNoExt}.md`;
 
+  const publishAt = normalizePublishAt(data.publishAt);
+
   const markdown = buildMarkdown(
     {
       title: data.title.trim(),
@@ -54,6 +66,7 @@ export async function POST(req: NextRequest) {
       tags: data.tags,
       isPrivate: data.isPrivate,
       ...(isEdit ? { updated: now } : {}),
+      ...(publishAt ? { publishAt } : {}),
     },
     data.body ?? ""
   );

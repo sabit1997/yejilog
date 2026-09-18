@@ -84,11 +84,19 @@ const posts = allMdFiles
       category: data.category || "",
       tags: data.tags || [],
       isPrivate: data.isPrivate || false,
+      publishAt: data.publishAt || null,
       excerpt: createExcerpt(searchText),
       searchText,
     };
   })
-  .filter((post) => !post.isPrivate);
+  .filter((post) => !post.isPrivate)
+  .filter((post) => {
+    if (!post.publishAt) return true;
+    const t = new Date(post.publishAt).getTime();
+    if (Number.isNaN(t)) return true;
+    return t <= Date.now();
+  })
+  .map(({ publishAt, ...rest }) => rest);
 
 fs.writeFileSync(outputPath, JSON.stringify(posts, null, 2), "utf-8");
 module.exports = { createExcerpt, markdownToPlainText };

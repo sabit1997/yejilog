@@ -7,8 +7,17 @@ export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   const session = await auth();
   const posts = await listAllPostsForAdminFresh();
+  const now = Date.now();
+  const isFuture = (v?: string) => {
+    if (!v) return false;
+    const t = new Date(v).getTime();
+    return !Number.isNaN(t) && t > now;
+  };
   const drafts = posts.filter((p) => p.isPrivate);
-  const published = posts.filter((p) => !p.isPrivate);
+  const scheduled = posts.filter((p) => !p.isPrivate && isFuture(p.publishAt));
+  const published = posts.filter(
+    (p) => !p.isPrivate && !isFuture(p.publishAt)
+  );
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
@@ -18,7 +27,8 @@ export default async function AdminPage() {
             YEJILOG Admin
           </h1>
           <p className="mt-1 text-sm text-neutral-500">
-            @{session?.user?.login} · {published.length}편 발행 · {drafts.length}편 드래프트
+            @{session?.user?.login} · {published.length}편 발행
+            {scheduled.length > 0 ? ` · ${scheduled.length}편 예약` : ""} · {drafts.length}편 드래프트
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -50,7 +60,16 @@ export default async function AdminPage() {
           title="드래프트"
           posts={drafts}
           emptyLabel="드래프트 없음"
-          isDraft
+          badge="draft"
+        />
+      )}
+
+      {scheduled.length > 0 && (
+        <PostSection
+          title="예약 발행"
+          posts={scheduled}
+          emptyLabel="예약된 글 없음"
+          badge="scheduled"
         />
       )}
 
@@ -67,7 +86,7 @@ function PostSection({
   title,
   posts,
   emptyLabel,
-  isDraft = false,
+  badge,
 }: {
   title: string;
   posts: {
@@ -76,11 +95,14 @@ function PostSection({
     date: string;
     category: string;
     tags: string[];
+    publishAt?: string;
     pendingDeploy?: boolean;
   }[];
   emptyLabel: string;
-  isDraft?: boolean;
+  badge?: "draft" | "scheduled";
 }) {
+  const isDraft = badge === "draft";
+  const isScheduled = badge === "scheduled";
   return (
     <section className="mt-12">
       <h2 className="font-mono text-xs uppercase tracking-wider text-neutral-500">
@@ -103,6 +125,11 @@ function PostSection({
                       draft
                     </span>
                   )}
+                  {isScheduled && (
+                    <span className="shrink-0 rounded-sm bg-emerald-100 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-emerald-800">
+                      scheduled
+                    </span>
+                  )}
                   {post.pendingDeploy && (
                     <span className="shrink-0 rounded-sm bg-blue-100 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-blue-800">
                       배포 대기
@@ -112,10 +139,15 @@ function PostSection({
                 <p className="mt-0.5 truncate font-mono text-xs text-neutral-500">
                   {post.category && <span>{post.category} · </span>}
                   {post.date}
+                  {isScheduled && post.publishAt && (
+                    <span className="ml-2 text-emerald-700">
+                      → {post.publishAt}
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2 text-xs">
-                {!isDraft && (
+                {!isDraft && !isScheduled && (
                   <Link
                     href={`/posts/${post.slug}`}
                     target="_blank"
