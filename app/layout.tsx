@@ -30,7 +30,18 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://yejilog-mu.vercel.app"),
   title: blogConfig.title,
   description: blogConfig.description,
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": [{ url: "/rss.xml", title: blogConfig.title }],
+    },
+  },
+  openGraph: {
+    type: "website",
+    siteName: blogConfig.title,
+    locale: "ko_KR",
+    images: [{ url: "/og-default.png", width: 1200, height: 630 }],
+  },
   // index/follow를 여기서 명시하면 404·에러 화면의 noindex 뒤에 그대로 따라붙어
   // 서로 충돌하는 robots 메타가 나간다. 지정하지 않는 것이 곧 index, follow다.
   robots: {
