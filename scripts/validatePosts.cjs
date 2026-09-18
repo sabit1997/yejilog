@@ -107,7 +107,7 @@ async function main() {
       continue;
     }
 
-    for (const field of ["date", "updated"]) {
+    for (const field of ["date", "updated", "publishAt"]) {
       const reason = validateDateField(raw, field);
       if (reason) {
         errors.push({ file: relativePath, pos: "", stage: "date", reason });

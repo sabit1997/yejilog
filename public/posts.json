@@ -16,43 +16,6 @@
     "searchText": "어떤 데스크탑 앱을 만들기로 했고, 왜인가? 우선 나는 요즘 캠스터디에 아주 푹 빠져있는데, 이전에 프로젝트도 내가 하는 모든 화면을 공유하고 싶어서 웹 기반 화면 공유 템플릿 사이트 (캠스터디 사이트)를 만들어서 배포했고 지금도 친구들과 잘 사용하는 중이다. 나는 맥에서 캠을 공유할 때 휴대폰 카메라를 통해 공유하는데, 아이폰의 타임랩스 기능으로 내가 공부하는 모습을 찍어보고 싶은 욕구가 생겼다. 하지만 그렇게 되면 캠스터디를 할 때 캠 외의 다른 화면만 공유해야하는 문제도 있고, 무엇보다 거치대를 어느 위치에 달아야할지 모르겠어서 고민을 하다가 결론을 내렸다. 아예 캠스터디 웹을 통째로 타임랩스로 찍어 주는 데스크탑 앱을 만들자. Electron에 대해 간단히 알아보고 넘어가자 Electron은 JavaScript, HTML, CSS를 사용하여 데스크톱 애플리케이션을 구축하기 위한 프레임워크이다. JavaScript 코드베이스를 유지하면서 Windows, macOS, Linux에서 작동하는 크로스 플랫폼 앱을 만들 수 있게 합니다. 네이티브 개발 경험이 필요하지 않다고 한다. 즉, 웹 기술로 데스크탑 앱을 만들 수 있다는 것인데 (물론! Electron 만의 지켜야할 규칙이 있겠지만) Electron 공식 문서를 보면 웹 기술을 선택해야하는 내용이 있다. 웹 기술이 사용자 인터페이스를 구축하는데 최적의 선택으로 부상하였다는 내용과 'HTML과 CSS는 개발자와 디자이너의 역량을 충분히 발휘할 수 있또록 해준다.' '웹 기술은 가장 많이 사용되는 UI 기반이기 때문에 현대의 컴퓨터는 CPU에서 운영체제에 이르기까지 웹 기술 실행에 최적화 되어있다' '상호운용성' '보급성 (많은 개발자가 웹 기술을 사용하기 때문에 이와 관련된 문제를 검색하고 해결하는데 까지 온라인에서 충분히 찾을 수 있음)' 등을 이야기 한다. 궁금하시면 한번 글을 읽어보시길 바란다. 그리고 왜 Electron을 사용하는지에 대한 내용도 있는데 '신뢰성, 보안, 안정성, 성숙도'를 가지고 있다고 합니다. 이 내용도 딱히 짚고 넘어가지는 않겠습니다. Electron 기본 Electron은 크게 '메인 프로세스'와 '렌더러 프로세스'로 구성된다. 메인 프로세스 애플리케이션의 생명주기를 관리하고, 네이티브 기능 OS기능 (메뉴, 파일 시스템 등)에 접근 BrowserWinodw 인스턴스를 생성하여 렌더러 프로세스를 만듦 Node.js API를 직접 사용할 수 있음 렌더러 프로세스 BrowserWindow 내에서 실행되는 웹페이지 사용자 인터페이스를 담당 보안상의 이유로 직접적인 Node.js API 접근 제한 프로세스 간 통신(IPC) 메인 프로세스와 렌더러 프로세스는 서로 격리되어 있어 직접적인 함수 호출이 불가능하기 때문에 이 둘 간의 통신을 위해서는 IPC 매커니즘 사용 ipcMain과 ipcRenderer : Electron에서 제공하는 모듈로, 채널 기반으로 비동기적인 메세지를 주고받음 Preload 스크립트 렌더러 프로세스가 로드되기 전에 실행되는 스크립트. 렌더러의 전역 객체에 특정 함수나 데이터를 안전하게 노출시키는 역할 Electron의 메인 프로세스는 운영 체제에 대한 완전한 접근 권한을 가진 Node.js 환경 Electron 모듈 외에도 Node.js 내장 기능과 npm을 통해 설치된 모든 패키지에 접근할 수 있음 Electron의 서로 다른 프로세스 유형을 연결하기 위해서는 프리로드(preload)라는 특수 스크립트를 사용해야 함 짧게 타임랩스 데모 버전 만들어보면서 익히기 우선 튜토리얼과 문서들을 보면서 간단하게 프로그램을 만들고 빌드하는 것 과정까지 해보았다. 타임랩스 데모 앱 좀 못생기긴 했지만... 일단 어떻게 해야할지 간단한 코드 위에서 연습을 해보았다. 드롭다운에 스크린/윈도우 목록을 띄워 사용자가 대상을 선택한다. \"녹화 시작\"을 누르면 해당 대상을 캡처한다. 시간이 지날수록 캡처 주기를 늘려(최대 5초) 타임랩스 효과를 만든다. \"녹화 중지\" 시 수집된 이미지를 약 1분 내외의 동영상으로 합친다. 앱이 최소화되어도 캡처가 지속되도록 백그라운드 스로틀링 비활성화 옵션을 적용했다. 녹화가 중지되면 캡쳐한 파일들을 모아서 1분 내외의 동영상으로 만들어준다. 나는 어떻게 실제 프로젝트를 설정할 것인가 Vite + React + TypeScript + Electron 사실 어떻게 보면 타임랩스 실전 프로젝트도 연습이라고 볼 수 있다. 내가 구축한 캠스터디 프로젝트를 일렉트론으로 데스크탑 앱으로도 배포하고 싶기 때문에 좀 더 작은 작업을 하면서 익숙함을 키우고자 했다. 어쨌든 그래서 확장성 및 나중을 대비하여 Vite + React + TypeScript + Electron 으로 프로젝트를 진행하기로 하였다. 우선 이를 실행하기 위해 유튜브 강의 영상과 블로그 글을 참고하였는데, 유튜브 캡쳐 우선 강의 시작 전에 Electron 작동 원리에 대한 전반을 그림으로 알려줘서 이해하기가 더욱 쉬웠다. 하지만 조금 부족하다고 느낀 부분이 있었는데, 개발과 프리뷰 그리고 배포 환경을 분리해 각각의 실행 경로를 명확히하는 것이 부족하다고 생각했다. 특히 개발 환경에서 변경 사항을 적용하려면 바로 적용된 화면을 볼 수 없다는게 불편하게 느껴졌다. 그래서 개발-프리뷰-프로덕션 파이프라인 분리가 중요하다고 생각하게 되었다. Build an Electron app using Vite, TypeScript and React 위의 글을 보고 차근차근히 프로젝트 초기 설정을 마치게 되었다. 최종적으로 내가 해둔 설정으로는, React 빌드 결과, Electron 빌드 결과 나누기 개발 환경, 프리뷰 환경, 프로덕트 환경별 나누기 정도가 핵심인 것 같아서 해당 부분 코드만 첨부해두겠습니다. src/electron/tsconfig.json vite.config.ts DEV=처럼 빈 값으로 환경변수를 정의해도 process.env.DEV !== undefined면 참으로 판단된다. preview는 정적 파일(file://) 로 렌더러를 로드하는 모드다. build`는 Forge로 배포 아티팩트를 만든다(Forge 설정은 프로젝트에 맞게 별도 추가 필요). src/electron/main.ts 이 구조가 왜 유용한가? 개발 속도: Vite Dev Server로 UI를 즉시 핫리로드하고, tsc-watch 성공 시 자동으로 Electron을 재실행한다. 환경 분리: dev/preview/build 별 실행 경로가 명확해 디버깅이 쉽다. 보안 기본값 준수: contextIsolation: true, nodeIntegration: false, sandbox: true를 유지하고, 필요한 API만 preload로 노출한다. 다음 게시글 예고 IPC 통신 및 desktopCapturer API 사용하여 화면 공유 선택 구현하기 참고 🎥 Electron Course - Code Desktop Applications (inc. React and Typescript) 📝Build an Electron app using Vite, TypeScript and React 📝Building your First App"
   },
   {
-    "slug": "axios/axios-create",
-    "title": "axios.create([config])",
-    "date": "2022-09-10 21:06",
-    "category": "axios",
-    "tags": [
-      "axios"
-    ],
-    "isPrivate": false,
-    "excerpt": "이전에 youth-gallery 팀 프로젝트를 진행할 때 baseURL과 headers를 매번 적어주었는데 오타로 인한 오류가 발생할 수 있기 때문에 개인 프로젝트에서는 axios.create()를 사용하기로 결정하였다. 1. axios.create axios.create()는 Axios 라이브러리에서 제공하는 함수로,…",
-    "searchText": "이전에 youth-gallery 팀 프로젝트를 진행할 때 baseURL과 headers를 매번 적어주었는데 오타로 인한 오류가 발생할 수 있기 때문에 개인 프로젝트에서는 axios.create()를 사용하기로 결정하였다. 1. axios.create axios.create()는 Axios 라이브러리에서 제공하는 함수로, 미리 정의된 기본 설정을 갖는 새로운 Axios 인스턴스를 생성하는 데 사용된다. 이 인스턴스를 사용하여 HTTP 요청을 보낼 수 있습니다. baseURL, headers, timeout 등을 설정할 수 있습니다. 2. 활용 예시 우선 나는 토큰을 필요로하는 경우와 토큰을 필요로하지 않는 경우로 나눠서 작성하였다. (혹시 다른 좋은 방법이 있다면 제안해주시면 감사하겠습니다! 😊) client.js (토큰이 필요없는 경우) instance.js (토큰이 필요할 경우) 이렇게 만들어주고 axios를 사용하는 파일에 가서 👇 이런 식으로 사용해주면 된다. 이렇게 설정을 해두니 오타나 실수로 인한 오류를 방지할 수 있어서 좋았다. 참고 https://yamoo9.github.io/axios/guide/api.html"
-  },
-  {
-    "slug": "axios/axios-interceptor",
-    "title": "axios 커스텀 hook interceptors",
-    "date": "2022-12-11 18:50",
-    "category": "axios",
-    "tags": [
-      "axios"
-    ],
-    "isPrivate": false,
-    "excerpt": "1. 문제 상황 로그아웃 후에 다른 계정으로 로그인하면 처음에는 이전 계정의 장바구니 목록이 렌더링되고, 페이지를 새로 고침한 후에야 현재 계정의 장바구니 정보를 가져옴 이 문제를 해결하기 위해 useEffect나 useState를 사용하고 여러 가지 시도를 해봤지만 모두 실패했다. 이 과정에서 개발에 많은 시간을…",
-    "searchText": "1. 문제 상황 로그아웃 후에 다른 계정으로 로그인하면 처음에는 이전 계정의 장바구니 목록이 렌더링되고, 페이지를 새로 고침한 후에야 현재 계정의 장바구니 정보를 가져옴 이 문제를 해결하기 위해 useEffect나 useState를 사용하고 여러 가지 시도를 해봤지만 모두 실패했다. 이 과정에서 개발에 많은 시간을 소비했다... 혹시나 싶어서 내가 만든 axios 커스텀 hook 인 instance를 살펴봤다. instance.js: 서버와 통신할 때 baseURL과 headers에 로그인 토큰을 설정해주는 커스텀 훅. 로그인 토큰을 로컬 스토리지에 저장했었는데, 처음에 렌더링될 때 토큰이 개발자 도구에 표시되지 않아서 문제가 axios 커스텀 훅에서 발생한 것 같았다. 조금씩 윤곽이 잡히는 기분으로 찾아보다가 interceptors라는 것을 알게 되었다! interceptors는 then 또는 catch로 처리되기 전에 요청과 응답을 가로챌수 있다고 한다. 요청을 보내기 전에 먼저 로컬스토리지의 token을 header를 설정해주니 말끔히 해결 됐다. 2. 해결 방법 해결 전 코드 해결 후 코드 참고 https://axios-http.com/kr/docs/interceptors https://yamoo9.github.io/axios/guide/config-defaults.html#%EA%B8%80%EB%A1%9C%EB%B2%8C-axios-%EA%B8%B0%EB%B3%B8-defaults-%EC%84%A4%EC%A0%95"
-  },
-  {
-    "slug": "axios/Axios와Tanstack-Query-사용-시-모범-사례-정리",
-    "title": "Axios + Tanstack Query 사용 시 모범 사례 정리",
-    "date": "2025-04-19 23:11",
-    "category": "axios",
-    "tags": [
-      "axios",
-      "모범사례"
-    ],
-    "isPrivate": false,
-    "excerpt": "물론! 아래는 마크다운 문법만으로 구성된 전체 블로그 글이야. 복붙해서 바로 블로그에 사용할 수 있어. --- Axios + Tanstack Query 사용 시 모범 사례 정리 ✨ 회사 프로젝트에서는 늘 바쁘게 시작하게 되어, 이전에 써왔던 방식만 재사용하곤 했습니다. 이번에는 개인 프로젝트를 하며 여유롭게 자료를…",
-    "searchText": "물론! 아래는 마크다운 문법만으로 구성된 전체 블로그 글이야. 복붙해서 바로 블로그에 사용할 수 있어. --- Axios + Tanstack Query 사용 시 모범 사례 정리 ✨ 회사 프로젝트에서는 늘 바쁘게 시작하게 되어, 이전에 써왔던 방식만 재사용하곤 했습니다. 이번에는 개인 프로젝트를 하며 여유롭게 자료를 찾아보았고, 그 과정에서 좋은 아키텍처를 정리하게 되어 이렇게 공유합니다. 이 글은 React + Tanstack Query + Axios 조합으로 클라이언트 데이터를 관리하는 패턴을 정리한 내용입니다. 참고한 글: Axios + React Query 모범 패턴 - Part 1 Axios + React Query 모범 패턴 - Part 2 Next.js에서 React Query 사용하기 --- 1. Axios 인스턴스 구성 Axios는 인스턴스를 싱글톤으로 관리하면 설정 재사용과 유지보수에 유리합니다. --- 2. Axios 인터셉터 설정 ✅ 요청 인터셉터 매 요청마다 쿠키에서 AccessToken을 읽어 자동으로 Authorization 헤더에 추가합니다. 응답 인터셉터 401 응답 시 쿠키 삭제 후 로그인 페이지로 이동, 403은 에러 데이터를 그대로 반환합니다. --- 3. API 추상화: endpoint와 서비스 분리 Endpoint 선언 서비스 클래스 request.ts는 client를 wrapping한 함수로, 응답 전처리 등을 한곳에서 관리할 수 있도록 도와줍니다. --- 4. Tanstack Query 설정 QueryClientProvider --- 5. useQuery / useMutation 구조화 useQuery 예시 useMutation 예시 --- 왜 이 구조가 좋은가? 일관성: 모든 요청 흐름이 비슷한 패턴으로 유지되어 가독성과 유지보수에 유리합니다. 분리된 관심사: 컴포넌트는 UI만, 서비스는 데이터만 담당하게 분리됩니다. 테스트 용이성: 서비스 레이어 단독 테스트 가능. 오류 추적 용이: meta.ERRORSOURCE로 문제 발생 위치 추적이 쉬워집니다. React Query의 이점: 자동 캐싱, 오류 처리, re-fetching, Devtools 활용 가능. 마무리 사실 클래스를 많이 사용해본 적이 없는데 모범 사례 관련해서 검색할 때 클래스를 활용한 해결방법이 많이 나오던데 클래스에 대한 공부를 더욱 해야할 것 같다. 사실 이 모범 사례를 100% 활용한 것 같지는 않다. 계속 프로젝트를 유지보수하면서 수정해나가고 활용해볼텐데 또 느낀 점이 생긴다면 또 글을 작성하도록 하겠습니다. 읽어주셔서 감사합니다!"
-  },
-  {
     "slug": "CSS/input-checkbox-custom",
     "title": "input checkbox 커스텀",
     "date": "2022-04-20 20:34",
@@ -92,132 +55,6 @@
     "isPrivate": false,
     "excerpt": "Position 이란? 웹 페이지에서 html 태그나 id, class 박스 등의 위치를 지정해주는 속성. position을 이용해 페이지의 레이아웃을 결정할 수 있음. 기본값인 static을 제외한 값들은 top, right, bottom, left 값에 따라 위치 지정 --- 1. position: sticky;…",
     "searchText": "Position 이란? 웹 페이지에서 html 태그나 id, class 박스 등의 위치를 지정해주는 속성. position을 이용해 페이지의 레이아웃을 결정할 수 있음. 기본값인 static을 제외한 값들은 top, right, bottom, left 값에 따라 위치 지정 --- 1. position: sticky; 요소를 일반적인 문서 흐름에 따라 배치 (공간 차지) 가장 가까운 스크롤되는 조상과 컨테이닝 블록(가장 가까운 블록 레벨 조상)을 기준으로 삼음 오프셋은 다른 요소의 위치에 영향을 주지 않음 항상 새로운 쌓임 맥락을 생성 스크롤 동작이 존재하는 가장 가까운 조상에 달라 붙음 1-1. 예제 See the Pen Untitled by sabit1997 ( @sabit1997 ) on CodePen . --- 2. position: fixed;? 요소를 일반적인 문서의 흐름에서 제거 (공간 차지하지 않음) 뷰포트의 초기 컨테이닝 블록을 기준으로 삼아 배치 (단, 요소의 조상 중 하나가 transform, perspective, filter 속성 중 어느 하나라도 none이 아니라면 뷰포트 대신 그 조상을 컨테이닝 블록으로 삼음) 스크롤을 올리거나 내릴 때 특정 박스가 고정되어 움직이지 않았으면 한다면 fixed를 사용! 스크롤 되어도 중요한 정보를 화면에 계속 노출해주기 위해 사용 ex. 네비게이션 2-1. 예제 See the Pen fixed by sabit1997 ( @sabit1997 ) on CodePen . 3. 둘의 차이점 fixed는 고정되어 있지만 sticky는 스크롤을 내리면 가장 가까운 부모에게 찰싹 붙는다. 4. 마치며 예제 코드를 혼자 작성하는데, 이해했다고 생각한 sticky에 대해서 다소 모른다는 점을 알았다. 이렇게 공부한 내용을 직접 예제 코드를 적용해보는 것도 좋은 방법인 것 같다! 📚참고 mdn문서 멋쟁이사자처럼 프론트엔드 스쿨 2기 교안"
-  },
-  {
-    "slug": "http/204-status",
-    "title": "204 status",
-    "date": "2022-10-14 23:09",
-    "category": "http",
-    "tags": [
-      "http",
-      "204",
-      "status"
-    ],
-    "isPrivate": false,
-    "excerpt": "1. 문제 상황 axios.delete로 서버와 통신이 성공했는데 화면에서 바로 적용이 되지 않는 현상을 발견했다. 이 때 status를 살펴보니 204 status였다. 204 status는 어떤 상태를 말하는걸까? 204 No Content 서버가 요청을 성공적으로 수행하였으며 응답 콘텐츠에 보낼 추가 콘텐츠가 없음을…",
-    "searchText": "1. 문제 상황 axios.delete로 서버와 통신이 성공했는데 화면에서 바로 적용이 되지 않는 현상을 발견했다. 이 때 status를 살펴보니 204 status였다. 204 status는 어떤 상태를 말하는걸까? 204 No Content 서버가 요청을 성공적으로 수행하였으며 응답 콘텐츠에 보낼 추가 콘텐츠가 없음을 나타낸다. PUT, PATCH에 응답할 때 서버가 대체/업데이트된 리소스를 반환하거나, DELETE에 응답할 때 일반적으로 삭제 후 반환할 것이 없기 때문에 사용된다고 하였다. 아, 삭제 후에 반환할 것이 없어서 204 status가 떴구나 이해할 수 있었다. 사실 PUT과 PATCH를 사용했을 때 204 때문에 문제를 겪은 적이 없어 그냥 지나간 것이 아닌가 싶다. 내가 주로 사용했던 상황은 수정 페이지(상품 수정 등)에서 수정을 하고 난 뒤 페이지를 이동했기 때문에 그 페이지에서 다시 GET요청을 실행해 컨텐츠를 불러왔기 때문이다. 하지만 이번에 DELETE요청을 보내는 데이터를 불러오는 페이지에서 삭제 또한 하기 때문에 204 status에 생각해 볼 수 있게 되었다. 새로 고침을 하면 제대로 삭제된 상태가 반영이 되었으나 내가 원하는 건 그게 아니었으니까! 2. 해결 방법 그래서 204 status일 때 상품 데이터를 저장하는 useState에 삭제한 상품을 제외한 상품들을 저장해줘 해결했다. (+ 그냥 추가적으로 궁금해서 정리해 놓은 것) 204 status에 관해서 알아볼 때 Cacheable 이라는 키워드가 있었는데 캐시할 수 있는 HTTP 응답으로 나중에 검색하고 사용하기 위해 저장하여 새 요청을 서버에 저장한다고 한다. 모든 HTTP 응답을 캐시할 수 있는 것은 아니고 캐시할 HTTP 응답에 대한 제약 조건이 있다고 한다. GET, HEAD 메서드는 요청에 사용된 메서드 그 자체로 캐시 가능 POST 또는 PATCH 요청에 대해서는 거의 구현되지 않음. PUT 또는 DELETE 다른 메서드는 캐시 가능하지 않고 그 결과 역시 캐시할 수 없음. 애플리케이션 캐싱에 의해 알려진 응답 상태 코드는 캐시 가능한 것으로 간주 200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501 상태 코드는 캐싱 가능 응답에는 Cache-Control과 같은 캐싱을 방지하는 특정 헤더가 있다. 번역된 글이라서 이해하기 다소 어려운 감이 있다... 캐싱은 주어진 리소스의 복사본을 저장하고 있다가 요청 시에 그것을 제공하는 기술이다. 나중에 사용할 일이 있으면 더 알아봐야겠다. 지금은 사용할 일이 없어서 아예 와닿지가 않는다. 참고 https://en.wikipedia.org/wiki/ListofHTTPstatuscodes#3xxredirection https://developer.mozilla.org/ko/docs/Web/HTTP/Caching https://developer.mozilla.org/ko/docs/Glossary/cacheable"
-  },
-  {
-    "slug": "http/로컬-환경에서-HTTPS로-개발-서버-실행하는-방법",
-    "title": "로컬 환경에서 HTTPS로 개발 서버 실행하는 방법",
-    "date": "2025-07-07 14:54",
-    "category": "http",
-    "tags": [
-      "HTTPS",
-      "웹 보안",
-      "caddy",
-      "mkcert",
-      "Next.js"
-    ],
-    "isPrivate": false,
-    "excerpt": "서론 \"캠스터디\" 프로젝트의 백엔드에서 로그인할 때 헤더에 쿠키를 설정하도록 수정했다. 그런데 문제는 쿠키는 HTTPS 환경에서만 적용된다는 것이었다. 실제 로컬 환경에서는 이 부분을 테스트할 수 없어서 로컬 개발 환경에서도 HTTPS를 설정하는 방법을 찾아보았습니다. 대략 세가지 정도로 정리할 수 있겠습니다. 우선,…",
-    "searchText": "서론 \"캠스터디\" 프로젝트의 백엔드에서 로그인할 때 헤더에 쿠키를 설정하도록 수정했다. 그런데 문제는 쿠키는 HTTPS 환경에서만 적용된다는 것이었다. 실제 로컬 환경에서는 이 부분을 테스트할 수 없어서 로컬 개발 환경에서도 HTTPS를 설정하는 방법을 찾아보았습니다. 대략 세가지 정도로 정리할 수 있겠습니다. 우선, HTTPS가 보안에 유리하고 권장된다는 정도는 알지만 자세히 몰라서 살짝 정리를 해보고 넘어가겠습니다. HTTPS ? 정의 HTTP에 보안 계층 (TLS / SSL)을 추가한 프로토콜. 목적 서버 인증 : 진짜 서버인지 확인 데이터 암호화 : 도청/변조 방지 동작 방식 인증서 교환 서버가 인증기고나에서 발급받은 디지털 인증서를 클라이언트에 제시 클라이언트가 인증기관 서명을 검증 세션 키 생 대칭키 암호화를 위한 임시 '세션 키'를 안전하게 교환 (ECDHE 등) (이게 뭔디?) 암호화 통신 이후 HTTP 요청/응답 전체 (URL, 헤더, 본문, 쿠기 등)를 셋녀 키로 암호화 주요 이점 기밀성 : 중간에서 패킷을 가로채도 내용 해독 불가 무결성 : 전송 중 데이터 변조 시 알아챌 수 있음 인증 : 서버 (및 옵션으로 클라이언트) 신원을 보장 보안 강화 : 중간자 공격 (MITM)/SSL 스트리핑 방어 도입 시 유의 사항 인증서 발급 : 무료 Let's Ecrypt 활용 권장 포트 설정 : HTTPS 기본 443번 강제 HTTPS : HTTP 요청 -> HTTPS 리다이렉트, HSTS 헤더 적용 쿠키 보안: Secure 속성 설정 -> HTTPS에서만 전송 부가기능 및 최신 동향 HTTP/2 , HTTP/3 지원 -> 성능 개선 완전 순방향 비밀성 (PFS) OCSP/CRL 활용한 인증서 폐기 확인 SNI (Server Name Indication) -> 동일 IP에서 여러 도메인 HTTPS 지원 로컬 환경에서 HTTS로 개발서버 실행하는 방법 방법 1. Caddy 사용 Caddy? Go로 작성 사이트, 서비스, 앱을 제공할 수 있는 강력하고 확장 가능한 플랫폼 대부분의 사람이 Caddy를 웹 서버나 프록시로 사용하지만 핵심은 \"서버의 서버\" -> 필요한 모듈만 있으면 어떤 장기 실행 프로세스의 역할도 수행 가능 구성 파일이 필요하지 않지만 대부분의 사람들이 가장 선호하는 방식은 Caddyfile을 사용하는 것 Caddy의 기본 구성 언어는 JSON 모든 주요 플랫폼에서 컴파일되며 런타임 종속성이 없음 내가 설정한 방식 Caddy 설치 저는 Mac OS라서 명령어로 설치를 했습니다. https://caddyserver.com/docs/install 다른 환경에서 설치하는 법은 위의 내용을 참고하시면 될 것 같습니다. Caddyfile 작성 프로젝트 root 경로에 \"Caddyfile\" 을 생성해줍니다. 가장 먼저 입력해야하는 것은 사이트 주소라는데 저는 현재 로컬 환경에서 사용하는 것이기 때문에 localhost를 적어줍니다. reverseproxy localhost:3001 또한 작성하는데, localhost 주소로 들어오는 모든 요청을 백엔드 서버(localhost:3001)로 전달하라는 의미입니다. npm run dev / caddy run 우선 package.json에서 스크립트를 변경해줍니다. 포트를 3001로 지정해줍니다. 이 상태에서 npm run dev를 실행하고 caddy run 을 실행해줍니다. https://localhost.com 로 접속하기 이렇게 설정된 상태로 위의 주소로 접속하면 개발할 때도 HTTPS 환경으로 설정할 수 있습니다. 방법 2. mkcert mkcert는 로컬에서 신뢰할 수 있는 개발 인증서를 만들기 위한 간단한 도구입니다. 구성이 필요하지 않습니다. 라고 github README에 설명이 되어있네요. 그럼 README를 보고 설정을 시작하겠습니다. 설치를 해줍니다. localhost 라는 이름의 인증서를 발급받습니다. localhost.pem / localhost-key.pem이 생성됩니다. root 경로에 server.js 파일을 만들어 줍니다. custom server 파일인데, 이렇게 작성해준 뒤, package.json에서 type: \"module\", script 에서 dev script 를 수정해줍니다. 이렇게 하면 npm run dev 명령어 실행 시 HTTPS 환경의 서버가 띄워집니다. 방법 3. next.js 일 때 사용할 수 있는 방법 (비추) 구글링을 하다가 https://vercel.com/guides/access-nextjs-localhost-https-certificate-self-signed 이 페이지를 발견해서 들어가 봤는데, 비교적 아주 간단한 방법으로 HTTPS 환경으로 설정할 수 있는 것 같아서 바로 시도해봤다. 를 명령어로 입력하면 된다고 하기에 package.json 의 script를 수정했다. 하지만 이렇게 했을 때 HTTPS 환경이 되긴 했지만 문제는 느려도 너무 느렸다. 이런 환경에서 개발을 할 수 없다고 느껴서 이건 비추하겠습니다. --turbo 명령어를 추가해 Turbopack 으로 개발서버를 띄워도 체감상 변화가 없어서 이 방법은 추천하지 않습니다. 마무리 방법 3은 비추를 하기 때문에 방법 1과 2 그러니까 caddy와 mkcert를 둘 다 사용해봤는데, 속도는 체감상 비슷한 느낌이었는데, 사실 이것도 궁금해서 나중에 둘의 속도를 측정해보고자 한다. (사실 금방 할 수 있을 줄 알았는데 생각보다 복잡해보여서 나중으로 미룹니다...) 우선 정말 간단하게 설정했던건 caddy 였고 mkcert는 server.js 파일을 추가로 만들어줘야한다는 점에서 아주 약간 더 복잡했던 것 같다. caddy 또한 caddyfile을 만들지만 안에 작성하는 내용의 양이 확연히 차이나고 사실 문서화도 개인적으로 caddy가 더 잘되어있던 것 같다. 용어 정리 🧹 하이퍼 텍스트 전송 프로토콜 (HTTP) 웹 브라우저와 서버가 \"이 페이지 보여줘\" 같은 요청과 응답을 주고 받는 규칙 암호화 프로토콜 데이터를 읽을 수 없게 뒤섞어(암호화) 전송하고, 받는 쪽에서 다시 풀어주는 (복호화) 약속 SSL/TLS HTTP 같은 통신 위에 \"안전 자물쇠\"를 씌워주는 대표적인 암호화 프로토콜 비대칭 공개키 인프라 (PKI) '공개키'와 '개인키' 두 개의 열쇠를 사용해 암호화/인증을 관리하는 체계 개인키 나만 가지며, 공개키로 암호화된 메세지를 풀어주는 비밀 열쇠 공개키 누구에게나 공개해도 되는 열쇠. 이 키로 암호화된 내용은 오직 대응하는 개인키로만 풀 수 있음 스누핑 네트워크 상을 오가는 데이터를 몰래 훔쳐보는 행위 트래픽 네트워크 상을 오가는 데이터를 몰래 훔쳐보는 행위 SSL 스트리핑 HTTPS 연결을 HTTP로 몰래 바꿔치기해 사용자를 속이는 공격 기법 HSTS 브라우저에게 \"꼭 HTTPS로만 접속해!\"라고 약속하게 하는 보안 헤더 TCP/IP 인터넷 통신의 기본 규칙 모음. 데이터 패킷을 나누고 주소에 맞게 전달하는 방법을 정의 HTTP 트랙잭션 클라이언트가 서버에 요청 -> 서버가 응답하는 한 사이클 암호화 계층 원본 데이터를 보기 어려운 형태로 바꾸는 '보안 포장지' 멀웨어 (Malware) 악성 소프트웨어의 총칭. 바이러스/랜섬웨어/트로이목마 등이 포함 악의적인 토르 노드 (Malicious Tor Node) Tor 네트워크를 통해 트래픽을 중계하면서 데이터를 훔치거나 변조하려는 노드 토르 프로젝트 사용자 프라이버시 보호를 위해 인터넷 트래픽을 다중 중계(라우팅)하여 익명성을 제공하는 오픈소스 프로젝트 HTTPS 에브리웨어 가능하면 모든 사이트를 HTTPS로 접속하도록 자동 변환해 주는 브라우저 확장 기능 (이제 대부분 브라우저에 내장) 순방향 비밀성 과거에 주고받은 암호화 통신이 나중에 키가 유출돼도 해독되지 않도록 하는 특성 참고 📚 https://www.cloudflare.com/ko-kr/learning/ssl/what-is-https/ https://en.wikipedia.org/wiki/HTTPS https://caddyserver.com/ https://github.com/FiloSottile/mkcert https://nextjs.org/docs/app/guides/custom-server 🤔 잘못된 부분이나 의문점은 댓글로 달아주세요!"
-  },
-  {
-    "slug": "infrastructure/github-action으로-cicd-파이프라인-구축-1",
-    "title": "GitHub Action으로 CI/CD 파이프라인 구축 (1)",
-    "date": "2024-06-22 17:06",
-    "category": "infrastructure",
-    "tags": [
-      "배포",
-      "infra",
-      "CI/CD",
-      "GitHub Action"
-    ],
-    "isPrivate": false,
-    "excerpt": "서론 이전에는 블로그 글을 보고 GitHub Action 으로 CI/CD를 구축했었다. 당연히 그렇게 구축해서 이해가 많이 부족했기 때문에 이번에는 문서를 보고 이해를 해보고자 한다. GitHub Action GitHub Actions는 빌드, 테스트 및 배포 파이프라인을 자동화할 수 있는 CI/CD(지속적 통합 및…",
-    "searchText": "서론 이전에는 블로그 글을 보고 GitHub Action 으로 CI/CD를 구축했었다. 당연히 그렇게 구축해서 이해가 많이 부족했기 때문에 이번에는 문서를 보고 이해를 해보고자 한다. GitHub Action GitHub Actions는 빌드, 테스트 및 배포 파이프라인을 자동화할 수 있는 CI/CD(지속적 통합 및 지속적 전달) 플랫폼입니다. 리포지토리에 대한 모든 풀 요청을 빌드 및 테스트하거나 병합된 풀 요청을 프로덕션에 배포하는 워크플로를 생성할 수 있습니다. GitHub Actions는 DevOps 이상의 기능을 제공하며 저장소에서 다른 이벤트가 발생할 때 워크플로를 실행할 수 있게 해줍니다. 예를 들어 누군가 저장소에 새 이슈를 생성할 때마다 워크플로를 실행하여 적절한 레이블을 자동으로 추가할 수 있습니다. GitHub는 워크플로를 실행하기 위한 Linux, Windows 및 macOS 가상 머신을 제공하며, 자체 데이터 센터 또는 클라우드 인프라에서 자체 호스팅 실행기를 호스팅할 수도 있습니다. 구성 요소 리포지토리에서 풀 리퀘스트가 열리거나 이슈가 만들어지는 등의 이벤트가 발생할 때 트리거되도록 GitHub 작업 워크플로우를 구성할 수 있습니다. 워크플로에는 순차적으로 또는 병렬로 실행할 수 있는 하나 이상의 작업이 포함됩니다. 각 작업은 자체 가상 머신 런처 내부 또는 컨테이너 내에서 실행되며, 사용자가 정의한 스크립트를 실행하거나 워크플로를 간소화할 수 있는 재사용 가능한 확장인 작업을 실행하는 하나 이상의 단계가 있습니다. Workflows 하나 이상의 작업을 실행하는 구성 가능한 자동화된 프로세스 Workflows는 레포지토리에 체크인된 yaml 파일로 정의되며 레포지토리의 이벤트에 의해 트리거될 때 실행되거나 수동으로 또는 정해진 일정에 따라 트리거 될 수 있음. .github/workflows 디렉토리에 정의되며 레포지토리에는 각각 다른 작업을 수행할 수 있는 여러 Workflows가 있을 수 있음 다른 Workflow 내에서 Workflow를 참조할 수 있음 ex) 풀 리퀘스트를 빌드하고 테스트하는 workflows, 릴리즈가 만들어질 때마다 애플리케이션을 배포하는 workflow, 누군가 새 이슈를 열 때마다 레이블을 추가하는 또 다른 workflow가 있을 수 있음 Event Workflow 실행을 트리거하는 레포지토리의 특정 활동 ex) 누군가가 풀 리퀘스트를 만들거나 이슈를 열거나 레포지토리에 커밋을 푸시할 때 GitHub에서 활동이 시작될 수 있음. 일정에 따라 workflow가 실행되도록 트리거하거나 REST API에 게시하거나 수동으로 트리거할 수도 있음 Jobs 동일한 runner에서 실행되는 Workflow의 단계 집합 각 단계는 실행될 셸 스크립트이거나 실행될 작업 단계는 순서대로 실행되며 서로 종속됨 각 단계는 동일한 runner에서 실행되므로 한 단계에서 다른 단계로 데이터를 공유할 수 있음 작업의 종속성을 다른 작업과 구성할 수 있고 기본적으로 작업은 종속성이 없으며 서로 병렬로 실행됨 한 작업이 다른 작업에 종속된 경우 종속된 작업이 완료될 때까지 기다렸다가 실행할 수 있음 ex) 종속성이 없는 서로 다른 아키텍처에 대한 여러 빌드 작업과 이러한 작업에 종속된 패키징 작업이 있을 수 있음. 빌드 작업은 병렬로 실행되며 모두 성공적으로 완료되면 패키징 작업이 실행됨 Actions 액션은 복잡하지만 자주 반복되는 작업을 수행하는 GitHub Action 플랫폼용 사용자 지정 애플리케이션 액션을 사용하면 workflow 파일에 작성하는 반복적인 코드의 양을 줄일 수 있음 액션은 GitHub에서 git 레포지토리를 가져오거나 빌드 환경에 맞는 올바른 도구 체인을 설정하거나 클라우드 제공업체에 대한 인증을 설정할 수 있음 Runners Runner는 Workflow가 트리거될 때 Workflow를 실행하는 서버 각 러너는 한 번에 하나의 작업을 실행할 수 있음 GitHub는 Workflow를 실행할 수 있는 Ubuntu, Linux, Microsoft Windows 및 macOS Runner를 제공하며 각 Workflow실행은 새로 프로비저닝된 새로운 가상 머신에서 실행됨 workflow 만들기 레포지토리에 .github/workflows/ 디렉토리를 만들어 workflows 파일을 저장 .github/workflows/ 디렉토리에 파일명.yml이라는 새 파일을 만들고 다음 코드 추가 이러한 변경 사항을 커밋하고 GitHub 레포지토리에 푸시! workflow file 이해하기 [선택 사항] GitHub 레포지토리의 \"Actions\" 탭에 표시되는 workflow의 이름. 생략하면 workflow 파일 이름이 대신 사용됨 --- [선택 사항] workflow에서 생성된 workflow 실행 이름으로 레포지토리의 'Action' 탭에 있는 workflow 실행 목록에 표시됨 이 예시는 github 컨텍스트가 있는 표현식을 사용하여 워크플로 실행을 트리거한 Actor의 사용자 이름을 표시함 --- workflow의 트리거를 지정 이 예시에서는 푸시 이벤트를 사용하므로 누군가 레포지토리에 변경 내용을 푸시하거나 풀 리퀘스트를 병합할 때마다 workflow 실행이 트리거 됨 이것은 모든 브랜치에 대한 푸시에 대해 트리거 됨 --- learn-github-actions 워크플로에서 실행되는 모든 작업을 함께 그룹화 --- check-bats-version이라는 작업을 정의 하위 키는 작업의 속성을 정의 --- 최신 버전의 Ubuntu Linux 런처에서 실행되도록 작업을 구성 즉, GitHub에서 호스팅하는 새 가상 머신에서 작업이 실행 --- check-bats-version job에서 실행되는 모든 단계를 함께 그룹화 함 이 섹션 아래에 중첩된 각 항목은 action 혹은 셸 스크립트 --- uses 키워드는 이 단계에서 actions/checkout 액션의 v4를 실행하도록 지정 이 액션은 레포지토리를 runner에 체크 아웃하여 코드(빌드 및 테스트 도구)에 대해 스크립트 또는 기타 작업을 실행할 수 있도록 하는 액션 workflow에서 레포지토리의 코드를 사용할 때마다 체크아웃 액션을 사용해야 함 --- 이 단계에서는 actions/setup-node@v4을 사용하여 지정된 버전의 Node.js를 설치 이렇게 하면 node 및 npm 명령이 모두 경로에 배치됨 --- run 키워드는 job에서 runner에 명령을 실행하도록 지시 이 경우 npm을 사용하여 bats 소프트웨어 테스트 패키지를 설치하고 있음 --- 마지막으로 소프트웨어 버전을 출력하는 매개변수와 함께 bats 명령을 실행 마치며 사실상 GitHub Action 번역한 글이지만 이미 블로그를 보면서 작성했어도 본 적 있어서 그런가 이해가 간다. 그때는 어렴풋이 알고 있었다면 이제는 좀 더 명확하게 알게 되었다. 다음 글은 s3 버킷으로 배포된 개인 프로젝트의 CI/CD 파이프라인을 구축하는 workflow를 문서를 뒤적거리며 침착하게 작성해나가보겠습니다...! GitHub Action으로 CI/CD 파이프라인 구축 (2) 👾 참고 https://docs.github.com/ko/actions/learn-github-actions/understanding-github-actions"
-  },
-  {
-    "slug": "infrastructure/github-action으로-cicd-파이프라인-구축-2",
-    "title": "GitHub Action으로 CICD 파이프라인 구축 (2)",
-    "date": "2024-06-23 11:06",
-    "category": "infrastructure",
-    "tags": [
-      "배포",
-      "infra",
-      "CI/CD",
-      "GitHub Action"
-    ],
-    "isPrivate": false,
-    "excerpt": "서론 이전 글에서 GitHub Action에 대해 기초적인 부분을 알아봤다. 이제 실제로 내가 사용할 workflow 파일을 작성할 차례다. 작성하기 전에 동작 순서 생각하기 트리거 정하기 (나의 경우는 main 브랜치에 push 되었을 때) ubuntu 최신 버전 설치 및 Node.js 설치되어있는지 확인 npm ci를…",
-    "searchText": "서론 이전 글에서 GitHub Action에 대해 기초적인 부분을 알아봤다. 이제 실제로 내가 사용할 workflow 파일을 작성할 차례다. 작성하기 전에 동작 순서 생각하기 트리거 정하기 (나의 경우는 main 브랜치에 push 되었을 때) ubuntu 최신 버전 설치 및 Node.js 설치되어있는지 확인 npm ci를 사용하여 종속성 설치 npm run build를 사용하여 프로젝트 빌드 aws s3에 빌드된 파일 올리기 실제로 작성해보기 문서들을 읽으며 작성하고 market place에서 필요한 action 찾아서 넣어줬습니다! 제가 못찾는건지 AWS S3에 대한 배포 가이드는 없어서 ECR에 대한 가이드를 봤는데, aws에 대한 자격증명을 구성하는 액션이 있어야 하더군요... 그래서 추가해줬는데 이 부분을 보고... access key는 사용자에서 가져오면 되는데 secret key 어떻게 발급받았는지 까먹어서 aws 문서를 계속 검색하고 검색하고 검색했는데 이 글을 읽고 하려고 했는데 루트 사용자 액세스 키의 대안 띠용 이렇게 권장하지 않는다는 문구가 떠서 바로 IAM 역할로 들어가봤습니다. IAM 역할 경로 기존에 다른 S3 버킷을 업로드할 때 사용한 사용자가 있었는데 그 사용자로 들어간 뒤 보안자격증명 탭 보안 자격 증명 탭으로 이동해줍니다 액세스 키 액세스 키를 만들어줍니다 사용 사례 CLI를 사용해 액세스 할 수 있도록 하는 것이기 때문에 이걸로 선택해줬습니다 액세스 키 모범사례 액세스 키와 시크릿 액세스 키가 발급되고 이렇게 모범 사례에 대한 이야기가 있어 한 번 읽어줍니다 깃허브 secrets and variables 이제 이걸 깃허브 해당 프로젝트 레포지토리 설정으로 들어가서 \"Secrets and variables\"로 들어가 Action 탭으로 가줍니다. 액세스 키 내역 이름을 정하고 키 값을 등록해줍니다. 이렇게 해서 완성!! 마치며 내가 그저 생각으로만 workflow를 구성할 때 놓친 부분이 꽤 있었다. 역시 문서의 중요성 👍 특히 aws에 대한 자격증명에 대한 것을 너무 놓쳐버렸고 레포지토리에서 checkout 해야한다는 것도 잊고 있다가 이 액션은 레포지토리를 runner에 체크 아웃하여 코드(빌드 및 테스트 도구)에 대해 스크립트 또는 기타 작업을 실행할 수 있도록 하는 액션 workflow에서 레포지토리의 코드를 사용할 때마다 체크아웃 액션을 사용해야 함 이라고 적어놓은 것을 보고 넣었다. 역시 공식문서를 잘 읽어야겠으며... 이해를 하고 넘어가는 것이 중요하다. 아직 제대로 실행이 잘 되는지는 테스트 해보지 못해서 테스트 하고 오류가 발생한다면 그 오류를 해결하는 것에 대한 글을 써보겠습니다...! 그런 일이 없기를... 👾참고 AWS Command Line Interface 작업 찾기 및 사용자 지정 GitHub Actions에 대한 워크플로 구문 Amazon Elastic Container Service에 배포 변수 GitHub Actions에서 비밀 사용 AWS 액세스 키 발급하기 AWS security credentials"
-  },
-  {
-    "slug": "infrastructure/내가-마주친-AWS-CodePipeline관련-문제",
-    "title": "AWS CodePipeline에서 겪은 문제들",
-    "date": "2024-06-20 07:06",
-    "category": "infrastructure",
-    "tags": [
-      "AWS",
-      "배포",
-      "infra",
-      "CodePipeline"
-    ],
-    "isPrivate": false,
-    "excerpt": "서론 기존에는 Github Action으로 CI/CD 파이프라인을 구축했는데 이번에 프리티어 기간이 다 되어서 다시 가입하고 재배포하면서 AWS CodePipeline을 사용해서 CI/CD 파이프라인을 구축해보기로 했다. 직접 겪어보는 것이 Github Action과 어떤 식으로 다른지 느끼기 쉬울 것 같아서 그냥…",
-    "searchText": "서론 기존에는 Github Action으로 CI/CD 파이프라인을 구축했는데 이번에 프리티어 기간이 다 되어서 다시 가입하고 재배포하면서 AWS CodePipeline을 사용해서 CI/CD 파이프라인을 구축해보기로 했다. 직접 겪어보는 것이 Github Action과 어떤 식으로 다른지 느끼기 쉬울 것 같아서 그냥 부딪혀보기로 했다. 파이프라인을 구축하기 전에 먼저 했어야 했지만 구축하는 중간에 CI/CD 파이프라인 구축을 돕는 도구들을 찾아봤고 점점... CodePipeline을 선택한 것을 후회하기 시작하게 되었다... 좀 더 알아보고 할 걸... 그래도 여러 삽질이 도움이 되었다고는 생각한다. ^^.. S3 버킷 접근 문제 이 글의 CodePipeline 생성하는 부분부터 참고해서 구축했습니다. 될까? 싶었지만 문제가 발생한다...🥹 이런 에러들이 떴고 여기서 핵심은 이 부분이라고 생각해서 구글링을 해보니 이 스택오버플로우 글에서 \"문제를 해결하려면 CB가 객체를 업로드할 수 있도록 CB 실행 역할 에 인라인 정책을 추가하면 됩니다.\" 라는 문구를 보고 CodeBuild 역할을 찾아 권한을 편집합니다. IAM 역할에서 CodeBuild 서비스에 관한 role이 있을텐데 들어가서 권한에 위의 설정을 추가해줍니다. 환경 변수 설정 내가 민감하다고 생각한 환경변수들은 카카오지도 관련된 값들 (REST API 키, JavaScript 키), 서버주소 였습니다. 처음에는 이 부분을 CodeBuild 의 환경변수에 텍스트로 그대로 넣어줬습니다. 일단 텍스트로 넣어주는 건 보안상 안좋다고 AWS에서 경고를 했고 Code build까지 알맞게 끝마쳤음에도 불구하고 배포 사이트로 가보면 흰 화면만이 나를 반겼습니다.. 환경 변수가 제대로 설정되지 않은 것이었습니다.. 일단 Secrets Manager에서 프로젝트의 환경변수들을 지정해줍니다. 그리고 yml 파일을 이렇게 수정해줍니다. https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secretscli.html 이 게시글을 참고하고 GPT의 도움을 받아 저런 코드가 나왔는데... 그냥 내가 직접 알아볼걸 싶었습니다. 이렇게 했을 때 단기적으로 성공한 것처럼 보였지만 이틀 정도 지나면 다시 환경 변수 값이 없어서 홈페이지가 제대로 동작하지 않았습니다... 찾고 찾다가 https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager 이 글을 읽게 되어 Code Build에서 Secrets Manager 환경변수를 어떻게 가져와야하는지 감을 잡았습니다. yml을 아래처럼 수정해줍니다. Secrets Manager 접근 문제 이렇게 문제가 끝이났나 싶었지만... 다시 한번 내게 오류를 주는 Code Pipeline 오류는 아래와 같습니다. 아.. GetSecretValue action에 관한 접근 권한이 없구나 싶어서 Secrets Manager로 가서 권한을 설정해줍니다. https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessresource-policies.html?icmpid=docsasmhelppanel https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessexamples.html?icmpid=docsasmhelppanel#auth-and-accessexamplesread 이렇게 두개의 AWS 문서를 읽으며 해결해봅니다. 허용하려는 Role의 arn을 넣어줘야합니다! arn:aws:iam::AccountId:role 이 부분이 arn 넣는 부분입니다! 이렇게 하고 났더니 따란,,, build 성공 배포가 잘됩니다.. 하지만 이틀 뒤에도 내 사이트가 멀쩡한지 주기적으로 봐줘야 합니다.. 그때 비로소 성공 여부를 확실히 알 수 있다고 생각합니다... 느낀 점 AWS CodePipeline을 사용하여 CI/CD 파이프라인을 구축하는 것이 Github Actions 보다 훨씬 어려웠다. AWS 로 CI/CD 파이프라인을 구축하면서 느낀 점은 보안을 굉장히 중요시한다는 점이었는데 얼마나 보안에 더 이점이 있는 것인지 궁금해졌다. 그리고 가급적 공식 문서를 읽는 것을 우선 순위로 둬야한다고 생각했다. 사실 방대한 문서에 뭘 읽어야할지 모르겠어서 구글링을 하고 대강 훑어보기만 했는데 역시 바르게 가는 것이 가장 빠르게 가는 것이라는 말에 공감한다... 진작 문서를 파봤다면 더 빨리 성공할 수 있었을텐데... 공식문서 보는 연습을 많이 많이 하자! ☘️틀린 점이 있다면 말씀해주시면 감사하겠습니다! 👾참고 https://pranitagughane7.medium.com/deploy-a-reactapplication-to-aws-s3-and-cloudfront-using-aws-codepipeline-59b9b0c4944a https://stackoverflow.com/questions/66862891/failed-aws-codebuild-when-running-the-aws-s3-cp-recursive-command https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secretscli.html https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessresource-policies.html?icmpid=docsasmhelppanel https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessexamples.html?icmpid=docsasmhelppanel#auth-and-accessexamplesread"
-  },
-  {
-    "slug": "infrastructure/백엔드서버배포기-1",
-    "title": "프론트엔드 개발자의 백엔드 서버 배포기 (1) – Java Spring Boot 백엔드 배포 + Docker 도입기",
-    "date": "2025-04-04 15:00",
-    "category": "infrastructure",
-    "tags": [
-      "AWS",
-      "배포",
-      "infra",
-      "Docker",
-      "백엔드"
-    ],
-    "isPrivate": false,
-    "excerpt": "서론 시작하기에 앞서, 다른 서버를 배포하고 나니 이 방법은 별로 좋지 않다는 판단을 하여 이 글을 통해 배포하시는 것은 추천하지 않습니다! 이전 프로젝트에서 백엔드 담당자분이 서버를 내리시게 되었고, 해당 프로젝트가 다시 필요해졌습니다. 기왕 이렇게 된 김에 직접 배포해보고 싶다는 마음이 생겨, GPT와 Google의…",
-    "searchText": "서론 시작하기에 앞서, 다른 서버를 배포하고 나니 이 방법은 별로 좋지 않다는 판단을 하여 이 글을 통해 배포하시는 것은 추천하지 않습니다! 이전 프로젝트에서 백엔드 담당자분이 서버를 내리시게 되었고, 해당 프로젝트가 다시 필요해졌습니다. 기왕 이렇게 된 김에 직접 배포해보고 싶다는 마음이 생겨, GPT와 Google의 힘을 빌려 백엔드 서버 배포에 도전했습니다. 하지만 결과는 계속 실패... 프론트엔드는 검색과 공식문서 등을 참고해 AWS를 통해 HTTPS로 배포한 경험이 있어서 ‘백엔드도 그냥 따라 하면 되겠지’ 싶었는데, 현실은 달랐습니다. 정작 제가 원하는 수준의 내 환경과 일치하는 실질적인 백엔드 배포 튜토리얼은 찾기 힘들었어요. 그래서 방향을 바꿔, GPT에게 구체적인 요구사항을 주고 단계별로 질문하며 하나씩 배워 나가는 방식으로 접근했습니다. 삽질도 많았지만, 결국 성공했고, 향후 재배포 시를 대비해 A to Z 가이드 형식으로 정리해두려고 합니다. --- 시작 전: 나의 상황 정리 백엔드 개발 경험은 거의 없음 Java나 Spring Boot 문법은 잘 모르지만, 기능 구현 논의 과정은 기억함 서버 접속이나 EC2 초기 설정 정도는 익숙함 GPT와 Google에 전적으로 의존하며 시도 --- 왜 Docker를 도입했는가? 초기에는 Docker 없이 배포를 시도했습니다. EC2에 직접 Spring Boot 프로젝트를 클론하고 빌드한 후, Nginx로 도메인 연결하는 방식이었는데... 계속해서 실패했습니다. 당시에는 이유를 몰랐는데 배포하면서 알아보니 환경 차이와 설정 누락이 계속 문제를 일으킨 것으로 보입니다. 그래서 이번에는 처음부터 Docker를 도입하여 환경을 컨테이너화하고, Docker Compose로 의존 서비스(MySQL, Redis 등)까지 한 번에 실행하는 전략으로 바꾸었습니다. 그 결과, 처음으로 DB 테이블이 잘 생성되고 서버가 꺼지지 않는 것을 봤습니다. (감격 🥹) 매번 바로 꺼지는 것만 봤지 DB 테이블 생성되는거 처음봤습니다.. 물론 DB 테이블 생성된 뒤에도 계속 종료되었는데 그건 아래에서 설명하겠지만 설정 누락 때문이었습니다. ex. jwt 토큰, 리셋 패스워드를 보낼 email, email의 앱 비밀번호 등... | 장점 | 설명 | | ---------------- | ----------------------------------------- | | ✅ 환경 일치 | 내 로컬 환경을 그대로 복제 가능 | | ✅ 재사용성 | 컨테이너 하나 만들면 어디서든 실행 가능 | | ✅ 간편한 배포 | docker-compose 한 줄로 여러 서비스 실행 | | ✅ 유지보수 쉬움 | 설정이 코드로 남아 있어서 추적/수정 쉬움 | | ✅ 의존성 격리 | 시스템에 직접 설치하지 않고도 사용 가능 | --- 🤖 GPT 사용 전략 GPT에게 \"AWS 서버 배포 튜토리얼에 가장 적합한 엔진은 누구냐\"고 물었고, 여러 엔진을 직접 비교해본 결과 gpt-4o가 가장 안정적으로 가이드를 제공했습니다. (처음엔 물어본 엔진이 계속 자기도 할 수 있다고 해서 모든 엔진을 나열하고 물어봤는데 4o를 추천하길래 4o로 진행했습니다) 특히, 모든 단계를 한 번에 알려달라는 식보다는 단계별로 하나씩 질문하고 진행하는 방식이라 백엔드 서버 배포의 지식이 거의 없는 저에게 좋았습니다. --- 🧱 백엔드 기술 스택 Spring Boot 2.7.x / Java 17 MySQL 8 Redis Spring Security + JWT QueryDSL + JPA Swagger JUnit5 / H2 (Test용) Docker + GitHub Actions (CI/CD용) AWS EC2 (Ubuntu 24.04) 도메인: 구매한 도메인 (SSL 적용) --- 1. EC2 인스턴스 접속 --- 2. EC2 서버 초기 세팅 🔧 2-1. 시스템 패키지 업데이트 문제 발생: Ubuntu 24.04 (noble)에서는 certbot PPA가 아직 공식적으로 지원되지 않음 → Snap으로 설치 필요 ✅ Certbot 설치 (Snap 방식) 정상 설치 확인: 🔧 2-2. 필수 패키지 설치 🔧 2-3. Docker 설치 Docker Compose 설치: 도커 권한 부여: ⚠️ 반드시 로그아웃 후 재접속 또는 newgrp docker 실행 필요 설치 확인: 🔧 2-4. Java 17 설치 --- 3. Spring Boot 프로젝트 GitHub에서 클론 --- 4. 환경 설정 파일 작성 작성할 파일 목록: | 파일명 | 위치 | 설명 | | -------------------- | ------------------ | ------------------------------------------------- | | Dockerfile | 루트 | JAR 파일을 기반으로 Spring Boot 애플리케이션 실행 | | docker-compose.yml | 루트 | Spring, MySQL, Redis 컨테이너 통합 실행 | | application-prod.yml | src/main/resources | 프로덕션 환경 전용 설정 | | .env | 루트 | 민감한 설정 값 관리 (환경 변수화) | ❗ 주의: 소스 코드에서 @Value로 선언된 모든 항목을 .env와 application-prod.yml에서 반드시 설정해야 합니다. 또 EC2에 저장되는 이미지를 불러와야하기 때문에 이미지 경로 또한 설정합니다. 설정하지 않으면 이미지가 url 형식이 아닌 images/이미지이름.확장자로 데이터가 넘어오기 때문에 확인해보셔야합니다. 백엔드에서 이미지 처리하는 여러 방법이 있지만 기존 프로젝트에서는 이렇게 하는 것 같아서 이 방법으로 진행했습니다. 예시: --- 5. Dockerfile --- 6. docker-compose.yml --- 7. application-prod.yml --- 8. .env --- 9. 빌드 및 실행 📦 JAR 파일 빌드 JAR 파일 생성 위치: 🚀 Docker Compose 실행 --- 다음 편에서는 도메인 연결과 HTTPS 설정, Nginx 리버스 프록시 구성 그리고 약간의 기존의 백엔드 코드를 수정한 것을 다룰 예정입니다! 😎"
-  },
-  {
-    "slug": "infrastructure/백엔드서버배포기-2",
-    "title": "백엔드 서버 배포기 (2) – HTTPS 설정 및 백엔드/프론트엔드 소스코드 수정",
-    "date": "2025-04-09 09:00",
-    "category": "infrastructure",
-    "tags": [
-      "AWS",
-      "배포",
-      "infra",
-      "Docker",
-      "백엔드"
-    ],
-    "isPrivate": false,
-    "excerpt": "✅ 1단계: 도메인 A 레코드 설정 💡 목표 구매한 도메인을 EC2 퍼블릭 IP와 연결하여 접근 가능하게 만들기 1. 도메인 관리 콘솔 접속 저는 가비아에서 도메인을 구매했고, AWS Route 53에 네임서버를 연결해둔 상태입니다. 도메인을 구매한 플랫폼 또는 Route 53에 접속하여 A 레코드를 설정합니다. 참고…",
-    "searchText": "✅ 1단계: 도메인 A 레코드 설정 💡 목표 구매한 도메인을 EC2 퍼블릭 IP와 연결하여 접근 가능하게 만들기 1. 도메인 관리 콘솔 접속 저는 가비아에서 도메인을 구매했고, AWS Route 53에 네임서버를 연결해둔 상태입니다. 도메인을 구매한 플랫폼 또는 Route 53에 접속하여 A 레코드를 설정합니다. 참고 자료 [[네트워크] SSL/TLS 인증서 발급 및 HTTPS 전환하기](https://velog.io/@hyensukim/%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-SSLTLS-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89-%EB%B0%8F-HTTPS-%EC%A0%84%ED%99%98%ED%95%98%EA%B8%B0) 2. A 레코드 추가 | Name | Type | Value | | ---- | ---- | ------------------------ | | @ | A | EC2 퍼블릭 IPv4 주소 | TTL(Time to Live)은 기본값(300)으로 설정하면 됩니다. --- ✅ 2단계: EC2에 Nginx 설치 설치 확인: --- ✅ 3단계: Nginx 리버스 프록시 설정 💡 목표 도메인으로 들어온 HTTP 요청을 내부 Spring Boot 서버(8080 포트)로 전달하기 설정 절차 기본 설정 백업: 새 설정 파일 열기: 아래 내용 작성 (도메인과 포트는 본인에 맞게 수정): 저장 및 종료 (Ctrl + O, Enter, Ctrl + X) 설정 적용: --- ✅ 4단계: Certbot으로 HTTPS 인증서 발급 1. 인증서 발급 실행 이메일 입력 약관 동의 (Y) 리다이렉션 설정 (2번 권장: HTTP ➜ HTTPS 자동 리다이렉트) --- ✅ 5단계: HTTPS 정상 동작 확인 브라우저에서 https://duck-map.shop 접속 🔒 자물쇠 아이콘이 보이면 성공 Swagger 페이지가 있다면 https://duck-map.shop/swagger 도 열어보기 --- ✅ 6단계 (선택): 인증서 자동 갱신 테스트 --- ✅ 💡 위 단계들은 \"HTTPS 적용 및 리버스 프록시 구성\" 실습의 연장선입니다. --- 🎯 백엔드 및 프론트엔드 소스코드 수정: 그룹 아티스트 렌더링 로직 개선 초기 상태에서는 그룹 아티스트와 그룹 멤버들이 한 화면에 모두 노출되는 방식이었습니다. 기존 방식 예시 하지만 기대했던 흐름은 다음과 같았습니다: 처음에는 그룹만 리스트에 표시되고, 특정 그룹을 클릭했을 때 해당 그룹의 멤버들만 동적으로 렌더링되도록 처리 수정된 방식 예시1 수정된 방식 예시2 그런데 관리자 페이지에서도 동일한 API를 사용하고 있었고, 그 경우는 모든 아티스트가 한 번에 보이는 것이 관리 측면에서 더 유리했습니다. 그래서 조건 분기를 추가하여 관리자는 기존처럼 전체 리스트를 보여주고, 일반 사용자는 그룹/멤버 분리 방식으로 렌더링하도록 개선했습니다. 이 수정은 GPT와 협업하며 내부 코드 흐름을 분석해가며 진행했으며, 예상했던 흐름대로 로직을 구현했습니다. --- 🔧 프론트엔드 로직 요약 📌 상태 관리 추가 📌 그룹 멤버 호출 (RTK Query) 📌 아티스트 클릭 핸들링 📌 조건부 렌더링 📌 뒤로가기 버튼 구현 --- 🐞 발견한 오류 및 다음 개선 계획 이벤트 무한스크롤 시 좋아요 클릭하면 중복 렌더링되는 현상 이벤트/리뷰 사진 이동 버튼이 새로고침해야만 보이는 문제 로그아웃 후 다른 계정 로그인 시 이전 계정 캐시가 남는 문제 이미지 업로드 실패 시 대기 모달이 안 사라지는 이슈 해당 오류들을 다음 블로그 글에서 하나씩 해결해나갈 예정입니다. 감사합니다 🙇‍♀️"
-  },
-  {
-    "slug": "infrastructure/캠스터디-프로젝트-백엔드-배포",
-    "title": "캠스터디 프로젝트 서버 배포 및 SSH 접속 불가 이슈 해결",
-    "date": "2025-04-20 16:24",
-    "category": "infrastructure",
-    "tags": [
-      "AWS",
-      "배포",
-      "infra",
-      "Docker",
-      "백엔드",
-      "SSH",
-      "문제해결",
-      "캠스터디"
-    ],
-    "isPrivate": false,
-    "excerpt": "서론 캠스터디 프로젝트를 진행하면서 초기에 빠른 개발을 위해 Supabase로 백엔드를 구축했으나, 실제 서비스 운영 하는 방식과 가장 가깝게 설정하고 싶어서 API를 따로 분리해서 만들기로 결정하였습니다. 백엔드 코드를 GPT의 도움으로 작성하였습니다. 본 게시물에서는 EC2와 Docker를 활용한 서버 배포 과정과…",
-    "searchText": "서론 캠스터디 프로젝트를 진행하면서 초기에 빠른 개발을 위해 Supabase로 백엔드를 구축했으나, 실제 서비스 운영 하는 방식과 가장 가깝게 설정하고 싶어서 API를 따로 분리해서 만들기로 결정하였습니다. 백엔드 코드를 GPT의 도움으로 작성하였습니다. 본 게시물에서는 EC2와 Docker를 활용한 서버 배포 과정과 배포 후 지속적으로 발생한 SSH 접속 불가 문제를 해결한 과정을 기록했습니다. 사용한 기술 스택 및 환경 AWS EC2 Docker Docker Compose MySQL Spring Boot 배포 과정 기존의 배포 방식과 달리 Docker를 이용한 컨테이너 기반의 배포를 진행했습니다. 아래 블로그 글을 참고하여 진행했습니다. 📘 참고 문서: [[Docker] 도커로 EC2에 서버 배포하기](https://ye-ryung.tistory.com/116) 주요 Dockerfile 설정: Docker Hub에 이미지 등록 후, EC2에서 아래의 Docker Compose 설정으로 배포했습니다: 🔥 발생한 문제 및 원인 분석 배포 후 일정 시간이 지나면 서버가 정상적으로 동작하지 않았고, 심지어 SSH 접속조차 불가능했습니다. EC2의 상태 검사는 2개 중 1개만 통과하는 상태였습니다. 로그 확인 결과 다음의 에러가 나타났습니다: 이는 MySQL 프로세스가 메모리 부족으로 인해 커널에서 강제 종료된(OOM Kill) 현상이었습니다. 당시 EC2 메모리 상태: 총 메모리: 957.4 MiB MySQL 사용: 370MB (%MEM 37.8) Java 애플리케이션 사용: 207MB (%MEM 21.2) 남은 여유 메모리: 69.6 MiB 해결 방안 Swap 메모리 설정 메모리 부족 문제를 해결하기 위해 Swap 메모리를 추가했습니다. MySQL 메모리 제한 MySQL 컨테이너의 메모리 사용량을 제한했습니다. | 설정 항목 | 설명 | | ---------------------------- | ----------------------- | | innodbbufferpoolsize=128M | InnoDB 캐시 메모리 크기 | | maxconnections=50 | 최대 동시 접속 수 제한 | | tableopencache=200 | 테이블 캐시 개수 | | innodblogbuffersize=16M | 로그 버퍼 크기 | 설정 변경 후에는 반드시 Docker 컨테이너를 재시작해야 합니다. 개선된 결과 | 컨테이너 | 변경 전 | 변경 후 | 차이 | | -------- | --------- | --------- | ------- | | MySQL | 370MiB | 248.6MiB | ↓121MiB | | Backend | 거의 동일 | 거의 동일 | 유지됨 | 현재 안정적으로 서버가 운영 중입니다. 다시는 이런 문제로 글을 쓰지 않기를 바랍니다... 제발!"
   },
   {
     "slug": "Nextjs/Next.js에서-React Query+Axios로-SSR-적용하며-삽질한-후기",
@@ -352,6 +189,19 @@
     "searchText": "이미지 프리뷰 나타내기 로 입력한 파일의 URL에 직접 접근할 수 없는 이유 브라우저는 “동일 출처 정책”(Same-Origin Policy)을 구현하여 한 출처에서 로드된 문서나 스크립트가 다른 출처의 리소스와 상호 작용하지 못하도록 합니다. 이는 브라우저에서 실행 중인 스크립트가 다른 출처로 간주되어 사용자 시스템의 파일에 직접 액세스할 수 없음을 의미합니다. 이 정책은 악성 웹사이트가 잠재적으로 민감한 로컬 파일을 읽을 수 있는 위험을 완화하는 데 도움이 됩니다. 따라서, 브라우저에서 실행되는 스크립트는 로컬 파일에 직접 접근할 수 없습니다. 로컬 파일은 다른 출처로 간주되기 때문입니다. 만약 브라우저가 로컬 파일의 URL을 직접 읽을 수 있다면 보안상의 문제가 발생할 수 있으므로 URL.createObjectURL()을 통해 객체의 URL을 생성해야 합니다. 의 files를 console.log로 출력해보면 다음과 같이 나옵니다. files-console.log-예시 URL.createObjectURL을 사용하면 다음과 같이 URL을 생성할 수 있습니다. URL.careatObjectURL console.log 출력 예시 MDN 문서의 예제에서도 preview 를 나타낼 때 URL.createObjectURL을 사용하는 것을 볼 수 있습니다. https://developer.mozilla.org/ko/docs/Web/HTML/Element/input/file#%EC%98%88%EC%A0%9C React에서 적용한 코드 이미지 서버에 전송하기 file을 FormData로 전송해야하는 이유 FormData는 이미지 파일과 같은 바이너리 파일 데이터 양식을 서버로 보내야 할 경우에 사용됩니다. 스택오버플로우에서는 FormData가 파일을 전송하는 유일하게 합리적인 방법이라고 설명하고 있습니다. Why should FormData be used when uploading a file via AJAX? “FormData 객체를 사용하면 키/값 쌍 집합을 컴파일하여 Fetch 또는 XMLHttpRequest API를 사용하여 전송할 수 있습니다. 주로 양식 데이터를 전송하는 데 사용되지만 키 데이터를 전송하기 위해 양식과 독립적으로 사용할 수도 있습니다. “ 라고 합니다. 처음에는 이 방법을 몰라 여러 가지로 시도해보았는데, URL.createObjectURL()로 생성된 값 그대로 보내기 File을 FormData를 거치지 않고 그대로 보내기 이 두 가지 방법이었습니다… 이러한 방법들은 서버에서 바이너리 형식의 데이터를 요구했기 때문에 제대로 작동하지 않습니다. async await 사용 이유 이미지를 먼저 서버에 보내 URL 값을 받아온 후, 그 URL 값과 함께 다른 form에 입력된 값들을 전달해야 했습니다. 그래서 비동기적으로 작동하도록 async/await을 사용하기로 했습니다. 그렇기 때문에 비동기적으로 작동해야 하기 때문에 async await 을 사용하기로 했다. 비동기 작업의 필요성 비동기 작업을 통해 이미지를 업로드한 후 반환된 URL을 받아 다른 데이터와 함께 서버에 전송할 수 있습니다. 이를 통해 전체 프로세스가 원활하게 진행되도록 합니다. React 적용 코드 📍틀린 부분이 있다면 말해주세요! 참고 Why local links are disabled by default in modern browsers? async function - JavaScript | MDN Blob - Web API | MDN"
   },
   {
+    "slug": "React&JS/Send-data-with-useNavigate",
+    "title": "useNavigate로 데이터 보내기",
+    "date": "2022-10-21 02:28",
+    "category": "React&JS",
+    "tags": [
+      "React",
+      "useNavigate"
+    ],
+    "isPrivate": false,
+    "excerpt": "1. useNavigate로 데이터 보내기 특정 이벤트 이후 페이지를 이동할 때 사용된다. 예를 들어, 양식(form)을 제출한 후에 페이지를 이동하고 싶을 때 유용하게 사용할 수 있다. 사용 예시 먼저 useNavigate를 가져온 후, navigate로 선언합니다. to에는 이동하고자 하는 URL을, state에는…",
+    "searchText": "1. useNavigate로 데이터 보내기 특정 이벤트 이후 페이지를 이동할 때 사용된다. 예를 들어, 양식(form)을 제출한 후에 페이지를 이동하고 싶을 때 유용하게 사용할 수 있다. 사용 예시 먼저 useNavigate를 가져온 후, navigate로 선언합니다. to에는 이동하고자 하는 URL을, state에는 전달하고 싶은 데이터를 넣어줍니다. 2. 활용 예시 상품 선택 후 주문 페이지로 이동할 때, 상품을 수정할 때 axios로 데이터를 다시 불러오는 것보다 useNavigate를 사용하여 데이터를 전달하는 것이 더 효율적이라는 생각을 가지게 되었다. 먼저, 상품 등록 시 productBoxData라는 이름으로 null을 보내준다. (아무 것도 보내지 않을 경우 오류가 발생한다.) 만약 상품을 수정버튼을 누른다면 이미 등록된 data를 보내준다. data를 가져와서 활용하는 법은 먼저 useLocation을 import 한 후, productBoxData와 같이 원하는 변수명을 사용하여 할당해줍니다. 📌틀린 점이나 용어 혼용을 한 경우가 있다면 댓글 남겨주세요!"
+  },
+  {
     "slug": "React&JS/inputs-management",
     "title": "여러개의 input 상태 관리",
     "date": "2022-09-19 01:10",
@@ -423,19 +273,6 @@
     "isPrivate": false,
     "excerpt": "1.개요 이번 원티드 프리온보딩 인턴십 사전과제에서 redirect 요구사항을 어떻게 구현할지 고민을 하게 되었습니다. 이에 대해 검색을 하다가 좋은 글을 찾아서 해답을 얻을 수 있었다! 2. Redirect? 사용자를 한 URL (사용자가 클릭하거나 입력한 URL)에서 다른 URL(새로운 목적지)로 보내는 것을 의미.…",
     "searchText": "1.개요 이번 원티드 프리온보딩 인턴십 사전과제에서 redirect 요구사항을 어떻게 구현할지 고민을 하게 되었습니다. 이에 대해 검색을 하다가 좋은 글을 찾아서 해답을 얻을 수 있었다! 2. Redirect? 사용자를 한 URL (사용자가 클릭하거나 입력한 URL)에서 다른 URL(새로운 목적지)로 보내는 것을 의미. Redirect가 중요한 이유: 이전 URL이 더 이상 존재하지 않을 때 다른 URL로 트래픽 전달 이전 페이지에서 링크된 백링크가 새 페이지로 이동할 때 권한을 전달 404 페이지나 중복된 페이지에 대한 방문을 방지하여 전반적인 사용자 경험 개선 사전 과제에서는 token의 유무에 따라 Redirect 처리를 하라고 되어 있었다. 보통, 존재하지 않는 URL에 접근해 404페이지가 뜨는 것을 방지하거나 인증이 필요한 URL인데 인증없이 접근하거나 했을 때 사용하는 걸로 보인다. 3. 해결 방법 Redirect를 제대로 처리해본 경험이 없어서 검색을 해보다가 잘 설명된 블로그 글을 발견할 수 있었다. (아래 참고에 링크 첨부) Route의 element에 를 주면 되는데, 나는 token의 유무에 따라 element의 값을 혹은 줬다. 그 전에 token 값이 있는지 없는지를 알아보기 위한 함수를 만들었다. useHasToken() 함수는 React의 Context API를 사용하여 현재 로그인한 사용자의 인증 토큰 여부를 확인한다. useContext hook을 사용하여 AuthContext 객체에서 token 값을 가져와서 해당 값이 null이 아닌지 확인하고, true 또는 false 값을 반환한다! 그리고 RedirectRoute 함수는 path 를 받아와서 해당 경로에 대한 컴포넌트를 반환한다. useHasToken 함수를 사용하여 현재 로그인한 사용자의 인증 토큰 여부를 확인하고, switch 문을 사용하여 path 값에 따라 반환할 컴포넌트를 결정한다. 마지막으로 element 에 를 전달하여 해당 경로에 대한 컴포넌트를 렌더링한다. 이 부분은 원하는 경로에 맞게 수정하여 사용할 수 있다. 이렇게 하니 token 값의 여부에 따라 Redirect 처리를 할 수 있었는데, 이게 가장 좋은 방법인지는 모르습니다. 만약 더 좋은 방법이 있다면 알려주시면 감사하겠습니다. 다음에 더 좋은 방법을 찾는다면 다시 포스팅 하겠습니다. :) 📍틀린 부분이 있다면 말해주세요! 참고 https://www.semrush.com/blog/redirects/ https://stackabuse.com/redirects-in-react-router/"
-  },
-  {
-    "slug": "React&JS/Send-data-with-useNavigate",
-    "title": "useNavigate로 데이터 보내기",
-    "date": "2022-10-21 02:28",
-    "category": "React&JS",
-    "tags": [
-      "React",
-      "useNavigate"
-    ],
-    "isPrivate": false,
-    "excerpt": "1. useNavigate로 데이터 보내기 특정 이벤트 이후 페이지를 이동할 때 사용된다. 예를 들어, 양식(form)을 제출한 후에 페이지를 이동하고 싶을 때 유용하게 사용할 수 있다. 사용 예시 먼저 useNavigate를 가져온 후, navigate로 선언합니다. to에는 이동하고자 하는 URL을, state에는…",
-    "searchText": "1. useNavigate로 데이터 보내기 특정 이벤트 이후 페이지를 이동할 때 사용된다. 예를 들어, 양식(form)을 제출한 후에 페이지를 이동하고 싶을 때 유용하게 사용할 수 있다. 사용 예시 먼저 useNavigate를 가져온 후, navigate로 선언합니다. to에는 이동하고자 하는 URL을, state에는 전달하고 싶은 데이터를 넣어줍니다. 2. 활용 예시 상품 선택 후 주문 페이지로 이동할 때, 상품을 수정할 때 axios로 데이터를 다시 불러오는 것보다 useNavigate를 사용하여 데이터를 전달하는 것이 더 효율적이라는 생각을 가지게 되었다. 먼저, 상품 등록 시 productBoxData라는 이름으로 null을 보내준다. (아무 것도 보내지 않을 경우 오류가 발생한다.) 만약 상품을 수정버튼을 누른다면 이미 등록된 data를 보내준다. data를 가져와서 활용하는 법은 먼저 useLocation을 import 한 후, productBoxData와 같이 원하는 변수명을 사용하여 할당해줍니다. 📌틀린 점이나 용어 혼용을 한 경우가 있다면 댓글 남겨주세요!"
   },
   {
     "slug": "React&JS/send-to-image-server",
@@ -537,19 +374,6 @@
     "searchText": "어떤 방식으로 할지 논의 프로젝트에서 다국어(i18n) 설정이 필요한 상황이 생겼고, 백엔드와 협업하여 어떻게 처리할지를 논의했습니다. 두 가지 선택지 서버에서 현재 언어에 맞춰 텍스트 자체를 내려주는 방식 서버는 코드값만 주고, 프론트에서 언어 설정에 따라 번역 처리하는 방식 팀에서는 두 번째 방식을 채택했습니다. 이유는 아래에서 자세히 설명합니다. 서버는 \"APPLE\" 같은 코드값만 응답하고, 프론트는 클라이언트에 설정된 언어에 따라 해당 코드를 \"사과\" 혹은 \"apple\"로 매핑하는 구조입니다. 🤔 왜 첫 번째 방식이 어려운가? 1. 서버의 로직 복잡도 증가 서버 API가 모든 응답을 언어에 따라 분기 처리해야 함 각 필드별로 언어를 고려한 응답 템플릿 구성 필요 테스트 및 유지보수가 훨씬 어려워짐 2. 언어 리소스 관리의 비효율 백엔드에서 모든 다국어 리소스를 직접 보유/관리해야 함 단순 UI 문구 변경도 서버 배포가 필요함 (프론트 민첩성 저하) 3. UX 및 캐싱 문제 언어 변경 시 새 API 호출이 필요해짐 → 화면 깜빡임, UX 지연 발생 프론트에서 번역을 처리하면 즉시 전환 가능 (클라이언트 주도 i18n의 장점) --- 우리가 채택한 방식: 코드 기반 다국어 매핑 서버는 영어 코드값(또는 숫자 ID 등)만 내려주고, 프론트는 해당 코드를 클라이언트 언어 상태에 따라 텍스트로 매핑합니다. 예시: 프론트에서는 useLanguagesStore의 상태값을 통해 현재 언어를 가져오고, 아래와 같은 유틸 훅을 통해 매핑합니다: 이 구조 덕분에 서버에서는 언어 관련 로직이 완전히 제거되었고, 프론트는 빠르게 텍스트를 전환할 수 있게 되었습니다. 💡 장점 요약 | 항목 | 설명 | | ---------------- | -------------------------------------------------- | | 프론트 중심 i18n | 클라이언트에서만 언어 전환 처리 → 서버 로직 단순화 | | 빠른 텍스트 변경 | 배포 없이 언어 파일만 수정 가능 | | 유연한 확장성 | 언어 추가 시 서버 수정 없이 대응 가능 | | 즉각 전환 가능 | React 상태 변경만으로 실시간 언어 변경 지원 | --- 개선할 수 있는 점 현재는 언어별 텍스트를 객체에 하드코딩하고 있는데, 아래처럼 개선할 수 있습니다. 개선 예시: i18next + JSON 리소스 방식 1. locales/kr/translation.json 2. locales/en/translation.json 3. i18next 설정 (i18n.js) 4. 실제 사용 코드"
   },
   {
-    "slug": "study/모던-자바스크립트-딥다이브-스터디-회고",
-    "title": "📘 모던 자바스크립트 딥다이브 스터디 회고",
-    "date": "2025-03-18 18:06",
-    "category": "study",
-    "tags": [
-      "스터디",
-      "회고"
-    ],
-    "isPrivate": false,
-    "excerpt": "2025년 3월 16일부로 약 10개월간 이어졌던 『모던 자바스크립트 딥다이브』 스터디를 마무리했습니다. 늘 미루기만 하며 완독하지 못했던 책을 이번 스터디를 통해 처음부터 끝까지 읽어낼 수 있었습니다. 운영과 참여를 함께 하며 느낀 점들을 기록으로 남겨둡니다. 다음 스터디는 더 나은 방향으로 운영할 수 있길 기대하며…",
-    "searchText": "2025년 3월 16일부로 약 10개월간 이어졌던 『모던 자바스크립트 딥다이브』 스터디를 마무리했습니다. 늘 미루기만 하며 완독하지 못했던 책을 이번 스터디를 통해 처음부터 끝까지 읽어낼 수 있었습니다. 운영과 참여를 함께 하며 느낀 점들을 기록으로 남겨둡니다. 다음 스터디는 더 나은 방향으로 운영할 수 있길 기대하며 시작합니다. --- 📅 스터디 기간 2024.05.20 2025.03.16 꽤 긴 기간 동안 스터디를 운영했습니다. 이처럼 길어진 이유는 스터디 운영 방식과 방향성에 대한 실험과 조율이 있었기 때문입니다. --- 🧠 스터디 방식 스터디 시작 전, 어떤 방식으로 운영할지를 많이 고민했습니다. 과거 부트캠프에서 axios와 fetch 관련 집필 프로젝트에 참여한 경험을 떠올리며 구성했죠. 진행 방식: 모든 인원이 동일한 분량을 읽고 함께 토론하는 방식 → 단순 정리보다 실무 연결과 깊은 이해를 목표로 운영 툴: 지역적 제약으로 Gather로 진행 진행자 선정: 매주 사다리타기로 돌아가며 선정 토론 유도: 질문 리스트를 미리 정하고, 선정된 질문에 대해 Notion에 정리 참여율: 일부 주차는 건너뛰기도 했지만, 대부분 성실히 참여해 완독에 성공 총 6명으로 시작해 5명이 끝까지 함께했습니다. --- 👍 좋았던 점 이론 → 실무로 연결해보는 사고 전환의 계기 스터디 이후 나누던 취업, 면접, 직장 이야기로 심리적 리프레시 ‘약속’이라는 형태로 책을 꾸준히 읽을 수 있었던 동기 부여 일요일 8시 고정 스터디 덕분에 주말 리듬 조절 가능 실무에서 안다고 생각했던 JS의 사각지대 재발견 --- 🛠 개선할 점 분량을 너무 작게 잡아 기간이 지나치게 길어짐 → 다음엔 마감일 설정 & 핵심 챕터 중심으로 조정 필요 스터디 방식이 초반에 정립되지 않아 비효율 → 후반부 방식을 초기에 적용했다면 더 좋았을 것 단순 정리를 넘는 심화 질문 도출 및 사례 정리의 어려움 → 토론 중심 스터디는 사전 준비의 훈련이 필요함을 느낌 --- 📚 다음에 해보고 싶은 스터디 책은 혼자 읽어도 충분한 경우가 많지만, 실제 프로젝트에 접목하며 읽어야 효과적인 책들도 있습니다. 다음에는 아래와 같은 책으로 실습 중심의 스터디를 운영해보고 싶습니다: 『쏙쏙 들어오는 함수형 코딩』 『클린 코드』 💡 다른 사람들의 코드 적용 사례를 공유하는 구조가 특히 도움이 될 것 같습니다. 다음번에는 블로그에도 정리하면서 읽어보려고 합니다. 이번 스터디에서 정리한 것은 다소 미흡하기도 하고 깊이가 그렇게 깊지는 않아서 아쉬움이 많이 남습니다. --- 💬 마무리 아쉬움도 있었지만, 그래도 ‘시작하지 않았다면 아무것도 없었을 것’이라는 사실 하나는 분명합니다. 다음엔 더 나은 방식으로, 더 잘하고 싶다는 마음이 들게 해준 스터디였습니다."
-  },
-  {
     "slug": "Web API/setInterval과-requestAnimationFrame",
     "title": "setInterval과 requestAnimationFrame",
     "date": "2025-06-02 22:53",
@@ -567,5 +391,181 @@
     "isPrivate": false,
     "excerpt": "서론 시간의 흐름에 따라 스타일을 “조금씩” 바꾸는 UI는 생각보다 자주 등장합니다. (예: 로딩 바, 물이 차오르는 게이지, 숫자 카운트업, 스켈레톤 shimmer 등) 처음엔 setInterval로 “n ms마다 width를 +1%” 같은 방식이 떠오르는데, 막상 해보면 프레임(리페인트) 타이밍과 안 맞아서 미묘하게…",
     "searchText": "서론 시간의 흐름에 따라 스타일을 “조금씩” 바꾸는 UI는 생각보다 자주 등장합니다. (예: 로딩 바, 물이 차오르는 게이지, 숫자 카운트업, 스켈레톤 shimmer 등) 처음엔 setInterval로 “n ms마다 width를 +1%” 같은 방식이 떠오르는데, 막상 해보면 프레임(리페인트) 타이밍과 안 맞아서 미묘하게 뚝뚝 끊기거나, 탭이 백그라운드로 가면 진행이 틀어지거나(스로틀링), 콜백이 조금만 무거워도 시간이 드리프트(누적 오차)되는 문제가 생깁니다. 그래서 “화면에 그리는 애니메이션”이라면 requestAnimationFrame(이하 rAF)를 기본 선택지로 두는 게 안전합니다. rAF는 다음 리페인트 직전에 콜백을 호출하도록 브라우저에 요청하는 방식이라, 렌더링 루프와 자연스럽게 맞물립니다. 이 글에서는 setTimeout, setInterval, requestAnimationFrame을 “어떤 상황에 무엇을 쓰면 좋은지” 관점에서 정리해보겠습니다. --- JS 타이머를 쓰기 전에 꼭 알아둘 것 1) “정확히 그 시간에 실행”이 아니라 “그 시간 이후 가능한 빨리 실행” setTimeout(1000)이라고 해서 정확히 1000ms에 실행되는 게 아니라, 최소 1000ms가 지난 뒤 (그리고 메인 스레드가 한가해졌을 때) 실행됩니다. 2) 백그라운드 탭에서는 타이머/애니메이션이 느려지거나 멈춘다 대부분의 브라우저는 성능/배터리를 위해 백그라운드 탭에서 setTimeout/setInterval을 스로틀링하고, requestAnimationFrame 콜백은 아예 중지하는 쪽을 택합니다. 특히 Chrome은 “숨김 상태 + 조용한 페이지 + 체인 타이머” 같은 조건에서 타이머를 더 강하게 제한하는 정책(“intensive throttling”)도 소개하고 있어요. --- setTimeout setTimeout()은 지정한 시간이 지난 뒤 함수를 한 번 실행하는 타이머를 설정합니다. 언제 쓰면 좋은가 1회 지연 실행(툴팁 300ms 뒤 표시, 토스트 자동 닫기 등) 디바운스(입력 멈춘 뒤 검색) setInterval 대신 재귀 setTimeout으로 “드리프트 보정”이 필요할 때 재귀 setTimeout 패턴 (드리프트 줄이기) --- setInterval setInterval()은 고정된 시간 지연을 두고 함수를 반복 호출합니다. 나중에 clearInterval()로 취소할 수 있도록 interval ID를 반환합니다. 장점 구현이 단순함: “매 1초마다 폴링”, “매 5초마다 배치 작업” 같은 비-애니메이션 작업에 편함 흔한 함정 1) 렌더링 타이밍과 독립적이라 ‘부드러움’이 보장되지 않음 브라우저는 리페인트 주기가 있는데, setInterval(16)로 60fps를 흉내내도 프레임과 안 맞는 순간이 생겨 끊김이 보일 수 있어요. 2) 탭이 백그라운드로 가면 스로틀링으로 시간 기반 UI가 틀어질 수 있음 카운트다운/진행바를 “tick 수”로 계산하면, 백그라운드 탭에서 tick이 듬성듬성 실행되어 실제 시간과 UI가 어긋납니다. ✅ 해결의 핵심은 “tick 횟수”가 아니라 실제 경과 시간을 기준으로 계산하는 것(= rAF 방식과 동일한 사고방식)입니다. --- requestAnimationFrame (rAF) requestAnimationFrame()은 브라우저가 다음 리페인트 직전에 지정된 함수를 호출하도록 요청합니다. 콜백은 보통 디스플레이 주사율에 맞춰 호출됩니다. 왜 애니메이션에 유리한가 리페인트 타이밍에 맞춰 호출 → 자연스럽게 부드럽게 보임 콜백에 timestamp가 들어와서 “시간 기반 애니메이션”을 만들기 쉬움 백그라운드 탭에서는 보통 중지되어 불필요한 CPU/GPU 사용을 줄임 --- 비교 한눈에 보기 | 구분 | setTimeout | setInterval | requestAnimationFrame | | ------------- | ------------------- | ---------------------- | ---------------------------------- | | 실행 | 1회 | 반복 | 리페인트 직전 반복(직접 루프 구성) | | 주 목적 | 지연 실행 | 주기 작업 | 화면 애니메이션/렌더링 업데이트 | | 정확도 | “최소 지연 후 실행” | 드리프트/스로틀링 영향 | timestamp 기반으로 보정 쉬움 | | 백그라운드 탭 | 스로틀링됨 | 스로틀링됨 | 보통 중지됨 | | 추천 용도 | 디바운스/지연 | 폴링/주기 갱신 | 진행바/트랜지션/게임루프 | --- 실전 예제: “물 차오르는” 게이지 1) setInterval로 구현 (쉽지만 시간 오차가 나기 쉬움) 이 방식은 “20ms마다 +1%”라서, 스로틀링/메인스레드 혼잡에 따라 완주 시간이 달라질 수 있어요. 2) rAF + 시간기반으로 구현 핵심은 +1% 같은 “프레임 의존 업데이트” 대신, 경과시간 / duration으로 진행도를 계산하는 것입니다. --- React에서 안전하게 쓰는 패턴 rAF 애니메이션 컴포넌트 예시 React에서 포인트 rafId/intervalId는 useRef에 넣고 cleanup에서 취소 상태 업데이트가 잦으면 렌더가 부담될 수 있어, DOM 스타일을 직접 건드리는 방식(ref로 element 잡고 style 변경)도 종종 더 낫습니다(상황 따라 선택). --- 결론: 언제 뭘 쓰면 깔끔한가 화면에 보이는 애니메이션/진행도 → requestAnimationFrame (그리고 “시간 기반” 계산) 비주얼이 아닌 주기 작업(폴링/통계/로그) → setInterval 또는 재귀 setTimeout 백그라운드에서도 정확해야 하는 시간 표시(카운트다운 등) → 타이머 tick이 아니라 Date.now()/performance.now()로 “실제 시간”을 기준으로 다시 계산 + visibilitychange 같은 이벤트로 동기화 --- 참고 👀 MDN setInterval MDN clearInterval MDN setTimeout MDN requestAnimationFrame MDN Page Visibility API Chrome 타이머 스로틀링(Chrome 88)"
+  },
+  {
+    "slug": "axios/Axios와Tanstack-Query-사용-시-모범-사례-정리",
+    "title": "Axios + Tanstack Query 사용 시 모범 사례 정리",
+    "date": "2025-04-19 23:11",
+    "category": "axios",
+    "tags": [
+      "axios",
+      "모범사례"
+    ],
+    "isPrivate": false,
+    "excerpt": "물론! 아래는 마크다운 문법만으로 구성된 전체 블로그 글이야. 복붙해서 바로 블로그에 사용할 수 있어. --- Axios + Tanstack Query 사용 시 모범 사례 정리 ✨ 회사 프로젝트에서는 늘 바쁘게 시작하게 되어, 이전에 써왔던 방식만 재사용하곤 했습니다. 이번에는 개인 프로젝트를 하며 여유롭게 자료를…",
+    "searchText": "물론! 아래는 마크다운 문법만으로 구성된 전체 블로그 글이야. 복붙해서 바로 블로그에 사용할 수 있어. --- Axios + Tanstack Query 사용 시 모범 사례 정리 ✨ 회사 프로젝트에서는 늘 바쁘게 시작하게 되어, 이전에 써왔던 방식만 재사용하곤 했습니다. 이번에는 개인 프로젝트를 하며 여유롭게 자료를 찾아보았고, 그 과정에서 좋은 아키텍처를 정리하게 되어 이렇게 공유합니다. 이 글은 React + Tanstack Query + Axios 조합으로 클라이언트 데이터를 관리하는 패턴을 정리한 내용입니다. 참고한 글: Axios + React Query 모범 패턴 - Part 1 Axios + React Query 모범 패턴 - Part 2 Next.js에서 React Query 사용하기 --- 1. Axios 인스턴스 구성 Axios는 인스턴스를 싱글톤으로 관리하면 설정 재사용과 유지보수에 유리합니다. --- 2. Axios 인터셉터 설정 ✅ 요청 인터셉터 매 요청마다 쿠키에서 AccessToken을 읽어 자동으로 Authorization 헤더에 추가합니다. 응답 인터셉터 401 응답 시 쿠키 삭제 후 로그인 페이지로 이동, 403은 에러 데이터를 그대로 반환합니다. --- 3. API 추상화: endpoint와 서비스 분리 Endpoint 선언 서비스 클래스 request.ts는 client를 wrapping한 함수로, 응답 전처리 등을 한곳에서 관리할 수 있도록 도와줍니다. --- 4. Tanstack Query 설정 QueryClientProvider --- 5. useQuery / useMutation 구조화 useQuery 예시 useMutation 예시 --- 왜 이 구조가 좋은가? 일관성: 모든 요청 흐름이 비슷한 패턴으로 유지되어 가독성과 유지보수에 유리합니다. 분리된 관심사: 컴포넌트는 UI만, 서비스는 데이터만 담당하게 분리됩니다. 테스트 용이성: 서비스 레이어 단독 테스트 가능. 오류 추적 용이: meta.ERRORSOURCE로 문제 발생 위치 추적이 쉬워집니다. React Query의 이점: 자동 캐싱, 오류 처리, re-fetching, Devtools 활용 가능. 마무리 사실 클래스를 많이 사용해본 적이 없는데 모범 사례 관련해서 검색할 때 클래스를 활용한 해결방법이 많이 나오던데 클래스에 대한 공부를 더욱 해야할 것 같다. 사실 이 모범 사례를 100% 활용한 것 같지는 않다. 계속 프로젝트를 유지보수하면서 수정해나가고 활용해볼텐데 또 느낀 점이 생긴다면 또 글을 작성하도록 하겠습니다. 읽어주셔서 감사합니다!"
+  },
+  {
+    "slug": "axios/axios-create",
+    "title": "axios.create([config])",
+    "date": "2022-09-10 21:06",
+    "category": "axios",
+    "tags": [
+      "axios"
+    ],
+    "isPrivate": false,
+    "excerpt": "이전에 youth-gallery 팀 프로젝트를 진행할 때 baseURL과 headers를 매번 적어주었는데 오타로 인한 오류가 발생할 수 있기 때문에 개인 프로젝트에서는 axios.create()를 사용하기로 결정하였다. 1. axios.create axios.create()는 Axios 라이브러리에서 제공하는 함수로,…",
+    "searchText": "이전에 youth-gallery 팀 프로젝트를 진행할 때 baseURL과 headers를 매번 적어주었는데 오타로 인한 오류가 발생할 수 있기 때문에 개인 프로젝트에서는 axios.create()를 사용하기로 결정하였다. 1. axios.create axios.create()는 Axios 라이브러리에서 제공하는 함수로, 미리 정의된 기본 설정을 갖는 새로운 Axios 인스턴스를 생성하는 데 사용된다. 이 인스턴스를 사용하여 HTTP 요청을 보낼 수 있습니다. baseURL, headers, timeout 등을 설정할 수 있습니다. 2. 활용 예시 우선 나는 토큰을 필요로하는 경우와 토큰을 필요로하지 않는 경우로 나눠서 작성하였다. (혹시 다른 좋은 방법이 있다면 제안해주시면 감사하겠습니다! 😊) client.js (토큰이 필요없는 경우) instance.js (토큰이 필요할 경우) 이렇게 만들어주고 axios를 사용하는 파일에 가서 👇 이런 식으로 사용해주면 된다. 이렇게 설정을 해두니 오타나 실수로 인한 오류를 방지할 수 있어서 좋았다. 참고 https://yamoo9.github.io/axios/guide/api.html"
+  },
+  {
+    "slug": "axios/axios-interceptor",
+    "title": "axios 커스텀 hook interceptors",
+    "date": "2022-12-11 18:50",
+    "category": "axios",
+    "tags": [
+      "axios"
+    ],
+    "isPrivate": false,
+    "excerpt": "1. 문제 상황 로그아웃 후에 다른 계정으로 로그인하면 처음에는 이전 계정의 장바구니 목록이 렌더링되고, 페이지를 새로 고침한 후에야 현재 계정의 장바구니 정보를 가져옴 이 문제를 해결하기 위해 useEffect나 useState를 사용하고 여러 가지 시도를 해봤지만 모두 실패했다. 이 과정에서 개발에 많은 시간을…",
+    "searchText": "1. 문제 상황 로그아웃 후에 다른 계정으로 로그인하면 처음에는 이전 계정의 장바구니 목록이 렌더링되고, 페이지를 새로 고침한 후에야 현재 계정의 장바구니 정보를 가져옴 이 문제를 해결하기 위해 useEffect나 useState를 사용하고 여러 가지 시도를 해봤지만 모두 실패했다. 이 과정에서 개발에 많은 시간을 소비했다... 혹시나 싶어서 내가 만든 axios 커스텀 hook 인 instance를 살펴봤다. instance.js: 서버와 통신할 때 baseURL과 headers에 로그인 토큰을 설정해주는 커스텀 훅. 로그인 토큰을 로컬 스토리지에 저장했었는데, 처음에 렌더링될 때 토큰이 개발자 도구에 표시되지 않아서 문제가 axios 커스텀 훅에서 발생한 것 같았다. 조금씩 윤곽이 잡히는 기분으로 찾아보다가 interceptors라는 것을 알게 되었다! interceptors는 then 또는 catch로 처리되기 전에 요청과 응답을 가로챌수 있다고 한다. 요청을 보내기 전에 먼저 로컬스토리지의 token을 header를 설정해주니 말끔히 해결 됐다. 2. 해결 방법 해결 전 코드 해결 후 코드 참고 https://axios-http.com/kr/docs/interceptors https://yamoo9.github.io/axios/guide/config-defaults.html#%EA%B8%80%EB%A1%9C%EB%B2%8C-axios-%EA%B8%B0%EB%B3%B8-defaults-%EC%84%A4%EC%A0%95"
+  },
+  {
+    "slug": "http/204-status",
+    "title": "204 status",
+    "date": "2022-10-14 23:09",
+    "category": "http",
+    "tags": [
+      "http",
+      "204",
+      "status"
+    ],
+    "isPrivate": false,
+    "excerpt": "1. 문제 상황 axios.delete로 서버와 통신이 성공했는데 화면에서 바로 적용이 되지 않는 현상을 발견했다. 이 때 status를 살펴보니 204 status였다. 204 status는 어떤 상태를 말하는걸까? 204 No Content 서버가 요청을 성공적으로 수행하였으며 응답 콘텐츠에 보낼 추가 콘텐츠가 없음을…",
+    "searchText": "1. 문제 상황 axios.delete로 서버와 통신이 성공했는데 화면에서 바로 적용이 되지 않는 현상을 발견했다. 이 때 status를 살펴보니 204 status였다. 204 status는 어떤 상태를 말하는걸까? 204 No Content 서버가 요청을 성공적으로 수행하였으며 응답 콘텐츠에 보낼 추가 콘텐츠가 없음을 나타낸다. PUT, PATCH에 응답할 때 서버가 대체/업데이트된 리소스를 반환하거나, DELETE에 응답할 때 일반적으로 삭제 후 반환할 것이 없기 때문에 사용된다고 하였다. 아, 삭제 후에 반환할 것이 없어서 204 status가 떴구나 이해할 수 있었다. 사실 PUT과 PATCH를 사용했을 때 204 때문에 문제를 겪은 적이 없어 그냥 지나간 것이 아닌가 싶다. 내가 주로 사용했던 상황은 수정 페이지(상품 수정 등)에서 수정을 하고 난 뒤 페이지를 이동했기 때문에 그 페이지에서 다시 GET요청을 실행해 컨텐츠를 불러왔기 때문이다. 하지만 이번에 DELETE요청을 보내는 데이터를 불러오는 페이지에서 삭제 또한 하기 때문에 204 status에 생각해 볼 수 있게 되었다. 새로 고침을 하면 제대로 삭제된 상태가 반영이 되었으나 내가 원하는 건 그게 아니었으니까! 2. 해결 방법 그래서 204 status일 때 상품 데이터를 저장하는 useState에 삭제한 상품을 제외한 상품들을 저장해줘 해결했다. (+ 그냥 추가적으로 궁금해서 정리해 놓은 것) 204 status에 관해서 알아볼 때 Cacheable 이라는 키워드가 있었는데 캐시할 수 있는 HTTP 응답으로 나중에 검색하고 사용하기 위해 저장하여 새 요청을 서버에 저장한다고 한다. 모든 HTTP 응답을 캐시할 수 있는 것은 아니고 캐시할 HTTP 응답에 대한 제약 조건이 있다고 한다. GET, HEAD 메서드는 요청에 사용된 메서드 그 자체로 캐시 가능 POST 또는 PATCH 요청에 대해서는 거의 구현되지 않음. PUT 또는 DELETE 다른 메서드는 캐시 가능하지 않고 그 결과 역시 캐시할 수 없음. 애플리케이션 캐싱에 의해 알려진 응답 상태 코드는 캐시 가능한 것으로 간주 200, 203, 204, 206, 300, 301, 404, 405, 410, 414, 501 상태 코드는 캐싱 가능 응답에는 Cache-Control과 같은 캐싱을 방지하는 특정 헤더가 있다. 번역된 글이라서 이해하기 다소 어려운 감이 있다... 캐싱은 주어진 리소스의 복사본을 저장하고 있다가 요청 시에 그것을 제공하는 기술이다. 나중에 사용할 일이 있으면 더 알아봐야겠다. 지금은 사용할 일이 없어서 아예 와닿지가 않는다. 참고 https://en.wikipedia.org/wiki/ListofHTTPstatuscodes#3xxredirection https://developer.mozilla.org/ko/docs/Web/HTTP/Caching https://developer.mozilla.org/ko/docs/Glossary/cacheable"
+  },
+  {
+    "slug": "http/로컬-환경에서-HTTPS로-개발-서버-실행하는-방법",
+    "title": "로컬 환경에서 HTTPS로 개발 서버 실행하는 방법",
+    "date": "2025-07-07 14:54",
+    "category": "http",
+    "tags": [
+      "HTTPS",
+      "웹 보안",
+      "caddy",
+      "mkcert",
+      "Next.js"
+    ],
+    "isPrivate": false,
+    "excerpt": "서론 \"캠스터디\" 프로젝트의 백엔드에서 로그인할 때 헤더에 쿠키를 설정하도록 수정했다. 그런데 문제는 쿠키는 HTTPS 환경에서만 적용된다는 것이었다. 실제 로컬 환경에서는 이 부분을 테스트할 수 없어서 로컬 개발 환경에서도 HTTPS를 설정하는 방법을 찾아보았습니다. 대략 세가지 정도로 정리할 수 있겠습니다. 우선,…",
+    "searchText": "서론 \"캠스터디\" 프로젝트의 백엔드에서 로그인할 때 헤더에 쿠키를 설정하도록 수정했다. 그런데 문제는 쿠키는 HTTPS 환경에서만 적용된다는 것이었다. 실제 로컬 환경에서는 이 부분을 테스트할 수 없어서 로컬 개발 환경에서도 HTTPS를 설정하는 방법을 찾아보았습니다. 대략 세가지 정도로 정리할 수 있겠습니다. 우선, HTTPS가 보안에 유리하고 권장된다는 정도는 알지만 자세히 몰라서 살짝 정리를 해보고 넘어가겠습니다. HTTPS ? 정의 HTTP에 보안 계층 (TLS / SSL)을 추가한 프로토콜. 목적 서버 인증 : 진짜 서버인지 확인 데이터 암호화 : 도청/변조 방지 동작 방식 인증서 교환 서버가 인증기고나에서 발급받은 디지털 인증서를 클라이언트에 제시 클라이언트가 인증기관 서명을 검증 세션 키 생 대칭키 암호화를 위한 임시 '세션 키'를 안전하게 교환 (ECDHE 등) (이게 뭔디?) 암호화 통신 이후 HTTP 요청/응답 전체 (URL, 헤더, 본문, 쿠기 등)를 셋녀 키로 암호화 주요 이점 기밀성 : 중간에서 패킷을 가로채도 내용 해독 불가 무결성 : 전송 중 데이터 변조 시 알아챌 수 있음 인증 : 서버 (및 옵션으로 클라이언트) 신원을 보장 보안 강화 : 중간자 공격 (MITM)/SSL 스트리핑 방어 도입 시 유의 사항 인증서 발급 : 무료 Let's Ecrypt 활용 권장 포트 설정 : HTTPS 기본 443번 강제 HTTPS : HTTP 요청 -> HTTPS 리다이렉트, HSTS 헤더 적용 쿠키 보안: Secure 속성 설정 -> HTTPS에서만 전송 부가기능 및 최신 동향 HTTP/2 , HTTP/3 지원 -> 성능 개선 완전 순방향 비밀성 (PFS) OCSP/CRL 활용한 인증서 폐기 확인 SNI (Server Name Indication) -> 동일 IP에서 여러 도메인 HTTPS 지원 로컬 환경에서 HTTS로 개발서버 실행하는 방법 방법 1. Caddy 사용 Caddy? Go로 작성 사이트, 서비스, 앱을 제공할 수 있는 강력하고 확장 가능한 플랫폼 대부분의 사람이 Caddy를 웹 서버나 프록시로 사용하지만 핵심은 \"서버의 서버\" -> 필요한 모듈만 있으면 어떤 장기 실행 프로세스의 역할도 수행 가능 구성 파일이 필요하지 않지만 대부분의 사람들이 가장 선호하는 방식은 Caddyfile을 사용하는 것 Caddy의 기본 구성 언어는 JSON 모든 주요 플랫폼에서 컴파일되며 런타임 종속성이 없음 내가 설정한 방식 Caddy 설치 저는 Mac OS라서 명령어로 설치를 했습니다. https://caddyserver.com/docs/install 다른 환경에서 설치하는 법은 위의 내용을 참고하시면 될 것 같습니다. Caddyfile 작성 프로젝트 root 경로에 \"Caddyfile\" 을 생성해줍니다. 가장 먼저 입력해야하는 것은 사이트 주소라는데 저는 현재 로컬 환경에서 사용하는 것이기 때문에 localhost를 적어줍니다. reverseproxy localhost:3001 또한 작성하는데, localhost 주소로 들어오는 모든 요청을 백엔드 서버(localhost:3001)로 전달하라는 의미입니다. npm run dev / caddy run 우선 package.json에서 스크립트를 변경해줍니다. 포트를 3001로 지정해줍니다. 이 상태에서 npm run dev를 실행하고 caddy run 을 실행해줍니다. https://localhost.com 로 접속하기 이렇게 설정된 상태로 위의 주소로 접속하면 개발할 때도 HTTPS 환경으로 설정할 수 있습니다. 방법 2. mkcert mkcert는 로컬에서 신뢰할 수 있는 개발 인증서를 만들기 위한 간단한 도구입니다. 구성이 필요하지 않습니다. 라고 github README에 설명이 되어있네요. 그럼 README를 보고 설정을 시작하겠습니다. 설치를 해줍니다. localhost 라는 이름의 인증서를 발급받습니다. localhost.pem / localhost-key.pem이 생성됩니다. root 경로에 server.js 파일을 만들어 줍니다. custom server 파일인데, 이렇게 작성해준 뒤, package.json에서 type: \"module\", script 에서 dev script 를 수정해줍니다. 이렇게 하면 npm run dev 명령어 실행 시 HTTPS 환경의 서버가 띄워집니다. 방법 3. next.js 일 때 사용할 수 있는 방법 (비추) 구글링을 하다가 https://vercel.com/guides/access-nextjs-localhost-https-certificate-self-signed 이 페이지를 발견해서 들어가 봤는데, 비교적 아주 간단한 방법으로 HTTPS 환경으로 설정할 수 있는 것 같아서 바로 시도해봤다. 를 명령어로 입력하면 된다고 하기에 package.json 의 script를 수정했다. 하지만 이렇게 했을 때 HTTPS 환경이 되긴 했지만 문제는 느려도 너무 느렸다. 이런 환경에서 개발을 할 수 없다고 느껴서 이건 비추하겠습니다. --turbo 명령어를 추가해 Turbopack 으로 개발서버를 띄워도 체감상 변화가 없어서 이 방법은 추천하지 않습니다. 마무리 방법 3은 비추를 하기 때문에 방법 1과 2 그러니까 caddy와 mkcert를 둘 다 사용해봤는데, 속도는 체감상 비슷한 느낌이었는데, 사실 이것도 궁금해서 나중에 둘의 속도를 측정해보고자 한다. (사실 금방 할 수 있을 줄 알았는데 생각보다 복잡해보여서 나중으로 미룹니다...) 우선 정말 간단하게 설정했던건 caddy 였고 mkcert는 server.js 파일을 추가로 만들어줘야한다는 점에서 아주 약간 더 복잡했던 것 같다. caddy 또한 caddyfile을 만들지만 안에 작성하는 내용의 양이 확연히 차이나고 사실 문서화도 개인적으로 caddy가 더 잘되어있던 것 같다. 용어 정리 🧹 하이퍼 텍스트 전송 프로토콜 (HTTP) 웹 브라우저와 서버가 \"이 페이지 보여줘\" 같은 요청과 응답을 주고 받는 규칙 암호화 프로토콜 데이터를 읽을 수 없게 뒤섞어(암호화) 전송하고, 받는 쪽에서 다시 풀어주는 (복호화) 약속 SSL/TLS HTTP 같은 통신 위에 \"안전 자물쇠\"를 씌워주는 대표적인 암호화 프로토콜 비대칭 공개키 인프라 (PKI) '공개키'와 '개인키' 두 개의 열쇠를 사용해 암호화/인증을 관리하는 체계 개인키 나만 가지며, 공개키로 암호화된 메세지를 풀어주는 비밀 열쇠 공개키 누구에게나 공개해도 되는 열쇠. 이 키로 암호화된 내용은 오직 대응하는 개인키로만 풀 수 있음 스누핑 네트워크 상을 오가는 데이터를 몰래 훔쳐보는 행위 트래픽 네트워크 상을 오가는 데이터를 몰래 훔쳐보는 행위 SSL 스트리핑 HTTPS 연결을 HTTP로 몰래 바꿔치기해 사용자를 속이는 공격 기법 HSTS 브라우저에게 \"꼭 HTTPS로만 접속해!\"라고 약속하게 하는 보안 헤더 TCP/IP 인터넷 통신의 기본 규칙 모음. 데이터 패킷을 나누고 주소에 맞게 전달하는 방법을 정의 HTTP 트랙잭션 클라이언트가 서버에 요청 -> 서버가 응답하는 한 사이클 암호화 계층 원본 데이터를 보기 어려운 형태로 바꾸는 '보안 포장지' 멀웨어 (Malware) 악성 소프트웨어의 총칭. 바이러스/랜섬웨어/트로이목마 등이 포함 악의적인 토르 노드 (Malicious Tor Node) Tor 네트워크를 통해 트래픽을 중계하면서 데이터를 훔치거나 변조하려는 노드 토르 프로젝트 사용자 프라이버시 보호를 위해 인터넷 트래픽을 다중 중계(라우팅)하여 익명성을 제공하는 오픈소스 프로젝트 HTTPS 에브리웨어 가능하면 모든 사이트를 HTTPS로 접속하도록 자동 변환해 주는 브라우저 확장 기능 (이제 대부분 브라우저에 내장) 순방향 비밀성 과거에 주고받은 암호화 통신이 나중에 키가 유출돼도 해독되지 않도록 하는 특성 참고 📚 https://www.cloudflare.com/ko-kr/learning/ssl/what-is-https/ https://en.wikipedia.org/wiki/HTTPS https://caddyserver.com/ https://github.com/FiloSottile/mkcert https://nextjs.org/docs/app/guides/custom-server 🤔 잘못된 부분이나 의문점은 댓글로 달아주세요!"
+  },
+  {
+    "slug": "infrastructure/github-action으로-cicd-파이프라인-구축-1",
+    "title": "GitHub Action으로 CI/CD 파이프라인 구축 (1)",
+    "date": "2024-06-22 17:06",
+    "category": "infrastructure",
+    "tags": [
+      "배포",
+      "infra",
+      "CI/CD",
+      "GitHub Action"
+    ],
+    "isPrivate": false,
+    "excerpt": "서론 이전에는 블로그 글을 보고 GitHub Action 으로 CI/CD를 구축했었다. 당연히 그렇게 구축해서 이해가 많이 부족했기 때문에 이번에는 문서를 보고 이해를 해보고자 한다. GitHub Action GitHub Actions는 빌드, 테스트 및 배포 파이프라인을 자동화할 수 있는 CI/CD(지속적 통합 및…",
+    "searchText": "서론 이전에는 블로그 글을 보고 GitHub Action 으로 CI/CD를 구축했었다. 당연히 그렇게 구축해서 이해가 많이 부족했기 때문에 이번에는 문서를 보고 이해를 해보고자 한다. GitHub Action GitHub Actions는 빌드, 테스트 및 배포 파이프라인을 자동화할 수 있는 CI/CD(지속적 통합 및 지속적 전달) 플랫폼입니다. 리포지토리에 대한 모든 풀 요청을 빌드 및 테스트하거나 병합된 풀 요청을 프로덕션에 배포하는 워크플로를 생성할 수 있습니다. GitHub Actions는 DevOps 이상의 기능을 제공하며 저장소에서 다른 이벤트가 발생할 때 워크플로를 실행할 수 있게 해줍니다. 예를 들어 누군가 저장소에 새 이슈를 생성할 때마다 워크플로를 실행하여 적절한 레이블을 자동으로 추가할 수 있습니다. GitHub는 워크플로를 실행하기 위한 Linux, Windows 및 macOS 가상 머신을 제공하며, 자체 데이터 센터 또는 클라우드 인프라에서 자체 호스팅 실행기를 호스팅할 수도 있습니다. 구성 요소 리포지토리에서 풀 리퀘스트가 열리거나 이슈가 만들어지는 등의 이벤트가 발생할 때 트리거되도록 GitHub 작업 워크플로우를 구성할 수 있습니다. 워크플로에는 순차적으로 또는 병렬로 실행할 수 있는 하나 이상의 작업이 포함됩니다. 각 작업은 자체 가상 머신 런처 내부 또는 컨테이너 내에서 실행되며, 사용자가 정의한 스크립트를 실행하거나 워크플로를 간소화할 수 있는 재사용 가능한 확장인 작업을 실행하는 하나 이상의 단계가 있습니다. Workflows 하나 이상의 작업을 실행하는 구성 가능한 자동화된 프로세스 Workflows는 레포지토리에 체크인된 yaml 파일로 정의되며 레포지토리의 이벤트에 의해 트리거될 때 실행되거나 수동으로 또는 정해진 일정에 따라 트리거 될 수 있음. .github/workflows 디렉토리에 정의되며 레포지토리에는 각각 다른 작업을 수행할 수 있는 여러 Workflows가 있을 수 있음 다른 Workflow 내에서 Workflow를 참조할 수 있음 ex) 풀 리퀘스트를 빌드하고 테스트하는 workflows, 릴리즈가 만들어질 때마다 애플리케이션을 배포하는 workflow, 누군가 새 이슈를 열 때마다 레이블을 추가하는 또 다른 workflow가 있을 수 있음 Event Workflow 실행을 트리거하는 레포지토리의 특정 활동 ex) 누군가가 풀 리퀘스트를 만들거나 이슈를 열거나 레포지토리에 커밋을 푸시할 때 GitHub에서 활동이 시작될 수 있음. 일정에 따라 workflow가 실행되도록 트리거하거나 REST API에 게시하거나 수동으로 트리거할 수도 있음 Jobs 동일한 runner에서 실행되는 Workflow의 단계 집합 각 단계는 실행될 셸 스크립트이거나 실행될 작업 단계는 순서대로 실행되며 서로 종속됨 각 단계는 동일한 runner에서 실행되므로 한 단계에서 다른 단계로 데이터를 공유할 수 있음 작업의 종속성을 다른 작업과 구성할 수 있고 기본적으로 작업은 종속성이 없으며 서로 병렬로 실행됨 한 작업이 다른 작업에 종속된 경우 종속된 작업이 완료될 때까지 기다렸다가 실행할 수 있음 ex) 종속성이 없는 서로 다른 아키텍처에 대한 여러 빌드 작업과 이러한 작업에 종속된 패키징 작업이 있을 수 있음. 빌드 작업은 병렬로 실행되며 모두 성공적으로 완료되면 패키징 작업이 실행됨 Actions 액션은 복잡하지만 자주 반복되는 작업을 수행하는 GitHub Action 플랫폼용 사용자 지정 애플리케이션 액션을 사용하면 workflow 파일에 작성하는 반복적인 코드의 양을 줄일 수 있음 액션은 GitHub에서 git 레포지토리를 가져오거나 빌드 환경에 맞는 올바른 도구 체인을 설정하거나 클라우드 제공업체에 대한 인증을 설정할 수 있음 Runners Runner는 Workflow가 트리거될 때 Workflow를 실행하는 서버 각 러너는 한 번에 하나의 작업을 실행할 수 있음 GitHub는 Workflow를 실행할 수 있는 Ubuntu, Linux, Microsoft Windows 및 macOS Runner를 제공하며 각 Workflow실행은 새로 프로비저닝된 새로운 가상 머신에서 실행됨 workflow 만들기 레포지토리에 .github/workflows/ 디렉토리를 만들어 workflows 파일을 저장 .github/workflows/ 디렉토리에 파일명.yml이라는 새 파일을 만들고 다음 코드 추가 이러한 변경 사항을 커밋하고 GitHub 레포지토리에 푸시! workflow file 이해하기 [선택 사항] GitHub 레포지토리의 \"Actions\" 탭에 표시되는 workflow의 이름. 생략하면 workflow 파일 이름이 대신 사용됨 --- [선택 사항] workflow에서 생성된 workflow 실행 이름으로 레포지토리의 'Action' 탭에 있는 workflow 실행 목록에 표시됨 이 예시는 github 컨텍스트가 있는 표현식을 사용하여 워크플로 실행을 트리거한 Actor의 사용자 이름을 표시함 --- workflow의 트리거를 지정 이 예시에서는 푸시 이벤트를 사용하므로 누군가 레포지토리에 변경 내용을 푸시하거나 풀 리퀘스트를 병합할 때마다 workflow 실행이 트리거 됨 이것은 모든 브랜치에 대한 푸시에 대해 트리거 됨 --- learn-github-actions 워크플로에서 실행되는 모든 작업을 함께 그룹화 --- check-bats-version이라는 작업을 정의 하위 키는 작업의 속성을 정의 --- 최신 버전의 Ubuntu Linux 런처에서 실행되도록 작업을 구성 즉, GitHub에서 호스팅하는 새 가상 머신에서 작업이 실행 --- check-bats-version job에서 실행되는 모든 단계를 함께 그룹화 함 이 섹션 아래에 중첩된 각 항목은 action 혹은 셸 스크립트 --- uses 키워드는 이 단계에서 actions/checkout 액션의 v4를 실행하도록 지정 이 액션은 레포지토리를 runner에 체크 아웃하여 코드(빌드 및 테스트 도구)에 대해 스크립트 또는 기타 작업을 실행할 수 있도록 하는 액션 workflow에서 레포지토리의 코드를 사용할 때마다 체크아웃 액션을 사용해야 함 --- 이 단계에서는 actions/setup-node@v4을 사용하여 지정된 버전의 Node.js를 설치 이렇게 하면 node 및 npm 명령이 모두 경로에 배치됨 --- run 키워드는 job에서 runner에 명령을 실행하도록 지시 이 경우 npm을 사용하여 bats 소프트웨어 테스트 패키지를 설치하고 있음 --- 마지막으로 소프트웨어 버전을 출력하는 매개변수와 함께 bats 명령을 실행 마치며 사실상 GitHub Action 번역한 글이지만 이미 블로그를 보면서 작성했어도 본 적 있어서 그런가 이해가 간다. 그때는 어렴풋이 알고 있었다면 이제는 좀 더 명확하게 알게 되었다. 다음 글은 s3 버킷으로 배포된 개인 프로젝트의 CI/CD 파이프라인을 구축하는 workflow를 문서를 뒤적거리며 침착하게 작성해나가보겠습니다...! GitHub Action으로 CI/CD 파이프라인 구축 (2) 👾 참고 https://docs.github.com/ko/actions/learn-github-actions/understanding-github-actions"
+  },
+  {
+    "slug": "infrastructure/github-action으로-cicd-파이프라인-구축-2",
+    "title": "GitHub Action으로 CICD 파이프라인 구축 (2)",
+    "date": "2024-06-23 11:06",
+    "category": "infrastructure",
+    "tags": [
+      "배포",
+      "infra",
+      "CI/CD",
+      "GitHub Action"
+    ],
+    "isPrivate": false,
+    "excerpt": "서론 이전 글에서 GitHub Action에 대해 기초적인 부분을 알아봤다. 이제 실제로 내가 사용할 workflow 파일을 작성할 차례다. 작성하기 전에 동작 순서 생각하기 트리거 정하기 (나의 경우는 main 브랜치에 push 되었을 때) ubuntu 최신 버전 설치 및 Node.js 설치되어있는지 확인 npm ci를…",
+    "searchText": "서론 이전 글에서 GitHub Action에 대해 기초적인 부분을 알아봤다. 이제 실제로 내가 사용할 workflow 파일을 작성할 차례다. 작성하기 전에 동작 순서 생각하기 트리거 정하기 (나의 경우는 main 브랜치에 push 되었을 때) ubuntu 최신 버전 설치 및 Node.js 설치되어있는지 확인 npm ci를 사용하여 종속성 설치 npm run build를 사용하여 프로젝트 빌드 aws s3에 빌드된 파일 올리기 실제로 작성해보기 문서들을 읽으며 작성하고 market place에서 필요한 action 찾아서 넣어줬습니다! 제가 못찾는건지 AWS S3에 대한 배포 가이드는 없어서 ECR에 대한 가이드를 봤는데, aws에 대한 자격증명을 구성하는 액션이 있어야 하더군요... 그래서 추가해줬는데 이 부분을 보고... access key는 사용자에서 가져오면 되는데 secret key 어떻게 발급받았는지 까먹어서 aws 문서를 계속 검색하고 검색하고 검색했는데 이 글을 읽고 하려고 했는데 루트 사용자 액세스 키의 대안 띠용 이렇게 권장하지 않는다는 문구가 떠서 바로 IAM 역할로 들어가봤습니다. IAM 역할 경로 기존에 다른 S3 버킷을 업로드할 때 사용한 사용자가 있었는데 그 사용자로 들어간 뒤 보안자격증명 탭 보안 자격 증명 탭으로 이동해줍니다 액세스 키 액세스 키를 만들어줍니다 사용 사례 CLI를 사용해 액세스 할 수 있도록 하는 것이기 때문에 이걸로 선택해줬습니다 액세스 키 모범사례 액세스 키와 시크릿 액세스 키가 발급되고 이렇게 모범 사례에 대한 이야기가 있어 한 번 읽어줍니다 깃허브 secrets and variables 이제 이걸 깃허브 해당 프로젝트 레포지토리 설정으로 들어가서 \"Secrets and variables\"로 들어가 Action 탭으로 가줍니다. 액세스 키 내역 이름을 정하고 키 값을 등록해줍니다. 이렇게 해서 완성!! 마치며 내가 그저 생각으로만 workflow를 구성할 때 놓친 부분이 꽤 있었다. 역시 문서의 중요성 👍 특히 aws에 대한 자격증명에 대한 것을 너무 놓쳐버렸고 레포지토리에서 checkout 해야한다는 것도 잊고 있다가 이 액션은 레포지토리를 runner에 체크 아웃하여 코드(빌드 및 테스트 도구)에 대해 스크립트 또는 기타 작업을 실행할 수 있도록 하는 액션 workflow에서 레포지토리의 코드를 사용할 때마다 체크아웃 액션을 사용해야 함 이라고 적어놓은 것을 보고 넣었다. 역시 공식문서를 잘 읽어야겠으며... 이해를 하고 넘어가는 것이 중요하다. 아직 제대로 실행이 잘 되는지는 테스트 해보지 못해서 테스트 하고 오류가 발생한다면 그 오류를 해결하는 것에 대한 글을 써보겠습니다...! 그런 일이 없기를... 👾참고 AWS Command Line Interface 작업 찾기 및 사용자 지정 GitHub Actions에 대한 워크플로 구문 Amazon Elastic Container Service에 배포 변수 GitHub Actions에서 비밀 사용 AWS 액세스 키 발급하기 AWS security credentials"
+  },
+  {
+    "slug": "infrastructure/내가-마주친-AWS-CodePipeline관련-문제",
+    "title": "AWS CodePipeline에서 겪은 문제들",
+    "date": "2024-06-20 07:06",
+    "category": "infrastructure",
+    "tags": [
+      "AWS",
+      "배포",
+      "infra",
+      "CodePipeline"
+    ],
+    "isPrivate": false,
+    "excerpt": "서론 기존에는 Github Action으로 CI/CD 파이프라인을 구축했는데 이번에 프리티어 기간이 다 되어서 다시 가입하고 재배포하면서 AWS CodePipeline을 사용해서 CI/CD 파이프라인을 구축해보기로 했다. 직접 겪어보는 것이 Github Action과 어떤 식으로 다른지 느끼기 쉬울 것 같아서 그냥…",
+    "searchText": "서론 기존에는 Github Action으로 CI/CD 파이프라인을 구축했는데 이번에 프리티어 기간이 다 되어서 다시 가입하고 재배포하면서 AWS CodePipeline을 사용해서 CI/CD 파이프라인을 구축해보기로 했다. 직접 겪어보는 것이 Github Action과 어떤 식으로 다른지 느끼기 쉬울 것 같아서 그냥 부딪혀보기로 했다. 파이프라인을 구축하기 전에 먼저 했어야 했지만 구축하는 중간에 CI/CD 파이프라인 구축을 돕는 도구들을 찾아봤고 점점... CodePipeline을 선택한 것을 후회하기 시작하게 되었다... 좀 더 알아보고 할 걸... 그래도 여러 삽질이 도움이 되었다고는 생각한다. ^^.. S3 버킷 접근 문제 이 글의 CodePipeline 생성하는 부분부터 참고해서 구축했습니다. 될까? 싶었지만 문제가 발생한다...🥹 이런 에러들이 떴고 여기서 핵심은 이 부분이라고 생각해서 구글링을 해보니 이 스택오버플로우 글에서 \"문제를 해결하려면 CB가 객체를 업로드할 수 있도록 CB 실행 역할 에 인라인 정책을 추가하면 됩니다.\" 라는 문구를 보고 CodeBuild 역할을 찾아 권한을 편집합니다. IAM 역할에서 CodeBuild 서비스에 관한 role이 있을텐데 들어가서 권한에 위의 설정을 추가해줍니다. 환경 변수 설정 내가 민감하다고 생각한 환경변수들은 카카오지도 관련된 값들 (REST API 키, JavaScript 키), 서버주소 였습니다. 처음에는 이 부분을 CodeBuild 의 환경변수에 텍스트로 그대로 넣어줬습니다. 일단 텍스트로 넣어주는 건 보안상 안좋다고 AWS에서 경고를 했고 Code build까지 알맞게 끝마쳤음에도 불구하고 배포 사이트로 가보면 흰 화면만이 나를 반겼습니다.. 환경 변수가 제대로 설정되지 않은 것이었습니다.. 일단 Secrets Manager에서 프로젝트의 환경변수들을 지정해줍니다. 그리고 yml 파일을 이렇게 수정해줍니다. https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secretscli.html 이 게시글을 참고하고 GPT의 도움을 받아 저런 코드가 나왔는데... 그냥 내가 직접 알아볼걸 싶었습니다. 이렇게 했을 때 단기적으로 성공한 것처럼 보였지만 이틀 정도 지나면 다시 환경 변수 값이 없어서 홈페이지가 제대로 동작하지 않았습니다... 찾고 찾다가 https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager 이 글을 읽게 되어 Code Build에서 Secrets Manager 환경변수를 어떻게 가져와야하는지 감을 잡았습니다. yml을 아래처럼 수정해줍니다. Secrets Manager 접근 문제 이렇게 문제가 끝이났나 싶었지만... 다시 한번 내게 오류를 주는 Code Pipeline 오류는 아래와 같습니다. 아.. GetSecretValue action에 관한 접근 권한이 없구나 싶어서 Secrets Manager로 가서 권한을 설정해줍니다. https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessresource-policies.html?icmpid=docsasmhelppanel https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessexamples.html?icmpid=docsasmhelppanel#auth-and-accessexamplesread 이렇게 두개의 AWS 문서를 읽으며 해결해봅니다. 허용하려는 Role의 arn을 넣어줘야합니다! arn:aws:iam::AccountId:role 이 부분이 arn 넣는 부분입니다! 이렇게 하고 났더니 따란,,, build 성공 배포가 잘됩니다.. 하지만 이틀 뒤에도 내 사이트가 멀쩡한지 주기적으로 봐줘야 합니다.. 그때 비로소 성공 여부를 확실히 알 수 있다고 생각합니다... 느낀 점 AWS CodePipeline을 사용하여 CI/CD 파이프라인을 구축하는 것이 Github Actions 보다 훨씬 어려웠다. AWS 로 CI/CD 파이프라인을 구축하면서 느낀 점은 보안을 굉장히 중요시한다는 점이었는데 얼마나 보안에 더 이점이 있는 것인지 궁금해졌다. 그리고 가급적 공식 문서를 읽는 것을 우선 순위로 둬야한다고 생각했다. 사실 방대한 문서에 뭘 읽어야할지 모르겠어서 구글링을 하고 대강 훑어보기만 했는데 역시 바르게 가는 것이 가장 빠르게 가는 것이라는 말에 공감한다... 진작 문서를 파봤다면 더 빨리 성공할 수 있었을텐데... 공식문서 보는 연습을 많이 많이 하자! ☘️틀린 점이 있다면 말씀해주시면 감사하겠습니다! 👾참고 https://pranitagughane7.medium.com/deploy-a-reactapplication-to-aws-s3-and-cloudfront-using-aws-codepipeline-59b9b0c4944a https://stackoverflow.com/questions/66862891/failed-aws-codebuild-when-running-the-aws-s3-cp-recursive-command https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secretscli.html https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessresource-policies.html?icmpid=docsasmhelppanel https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-accessexamples.html?icmpid=docsasmhelppanel#auth-and-accessexamplesread"
+  },
+  {
+    "slug": "infrastructure/백엔드서버배포기-1",
+    "title": "프론트엔드 개발자의 백엔드 서버 배포기 (1) – Java Spring Boot 백엔드 배포 + Docker 도입기",
+    "date": "2025-04-04 15:00",
+    "category": "infrastructure",
+    "tags": [
+      "AWS",
+      "배포",
+      "infra",
+      "Docker",
+      "백엔드"
+    ],
+    "isPrivate": false,
+    "excerpt": "서론 시작하기에 앞서, 다른 서버를 배포하고 나니 이 방법은 별로 좋지 않다는 판단을 하여 이 글을 통해 배포하시는 것은 추천하지 않습니다! 이전 프로젝트에서 백엔드 담당자분이 서버를 내리시게 되었고, 해당 프로젝트가 다시 필요해졌습니다. 기왕 이렇게 된 김에 직접 배포해보고 싶다는 마음이 생겨, GPT와 Google의…",
+    "searchText": "서론 시작하기에 앞서, 다른 서버를 배포하고 나니 이 방법은 별로 좋지 않다는 판단을 하여 이 글을 통해 배포하시는 것은 추천하지 않습니다! 이전 프로젝트에서 백엔드 담당자분이 서버를 내리시게 되었고, 해당 프로젝트가 다시 필요해졌습니다. 기왕 이렇게 된 김에 직접 배포해보고 싶다는 마음이 생겨, GPT와 Google의 힘을 빌려 백엔드 서버 배포에 도전했습니다. 하지만 결과는 계속 실패... 프론트엔드는 검색과 공식문서 등을 참고해 AWS를 통해 HTTPS로 배포한 경험이 있어서 ‘백엔드도 그냥 따라 하면 되겠지’ 싶었는데, 현실은 달랐습니다. 정작 제가 원하는 수준의 내 환경과 일치하는 실질적인 백엔드 배포 튜토리얼은 찾기 힘들었어요. 그래서 방향을 바꿔, GPT에게 구체적인 요구사항을 주고 단계별로 질문하며 하나씩 배워 나가는 방식으로 접근했습니다. 삽질도 많았지만, 결국 성공했고, 향후 재배포 시를 대비해 A to Z 가이드 형식으로 정리해두려고 합니다. --- 시작 전: 나의 상황 정리 백엔드 개발 경험은 거의 없음 Java나 Spring Boot 문법은 잘 모르지만, 기능 구현 논의 과정은 기억함 서버 접속이나 EC2 초기 설정 정도는 익숙함 GPT와 Google에 전적으로 의존하며 시도 --- 왜 Docker를 도입했는가? 초기에는 Docker 없이 배포를 시도했습니다. EC2에 직접 Spring Boot 프로젝트를 클론하고 빌드한 후, Nginx로 도메인 연결하는 방식이었는데... 계속해서 실패했습니다. 당시에는 이유를 몰랐는데 배포하면서 알아보니 환경 차이와 설정 누락이 계속 문제를 일으킨 것으로 보입니다. 그래서 이번에는 처음부터 Docker를 도입하여 환경을 컨테이너화하고, Docker Compose로 의존 서비스(MySQL, Redis 등)까지 한 번에 실행하는 전략으로 바꾸었습니다. 그 결과, 처음으로 DB 테이블이 잘 생성되고 서버가 꺼지지 않는 것을 봤습니다. (감격 🥹) 매번 바로 꺼지는 것만 봤지 DB 테이블 생성되는거 처음봤습니다.. 물론 DB 테이블 생성된 뒤에도 계속 종료되었는데 그건 아래에서 설명하겠지만 설정 누락 때문이었습니다. ex. jwt 토큰, 리셋 패스워드를 보낼 email, email의 앱 비밀번호 등... | 장점 | 설명 | | ---------------- | ----------------------------------------- | | ✅ 환경 일치 | 내 로컬 환경을 그대로 복제 가능 | | ✅ 재사용성 | 컨테이너 하나 만들면 어디서든 실행 가능 | | ✅ 간편한 배포 | docker-compose 한 줄로 여러 서비스 실행 | | ✅ 유지보수 쉬움 | 설정이 코드로 남아 있어서 추적/수정 쉬움 | | ✅ 의존성 격리 | 시스템에 직접 설치하지 않고도 사용 가능 | --- 🤖 GPT 사용 전략 GPT에게 \"AWS 서버 배포 튜토리얼에 가장 적합한 엔진은 누구냐\"고 물었고, 여러 엔진을 직접 비교해본 결과 gpt-4o가 가장 안정적으로 가이드를 제공했습니다. (처음엔 물어본 엔진이 계속 자기도 할 수 있다고 해서 모든 엔진을 나열하고 물어봤는데 4o를 추천하길래 4o로 진행했습니다) 특히, 모든 단계를 한 번에 알려달라는 식보다는 단계별로 하나씩 질문하고 진행하는 방식이라 백엔드 서버 배포의 지식이 거의 없는 저에게 좋았습니다. --- 🧱 백엔드 기술 스택 Spring Boot 2.7.x / Java 17 MySQL 8 Redis Spring Security + JWT QueryDSL + JPA Swagger JUnit5 / H2 (Test용) Docker + GitHub Actions (CI/CD용) AWS EC2 (Ubuntu 24.04) 도메인: 구매한 도메인 (SSL 적용) --- 1. EC2 인스턴스 접속 --- 2. EC2 서버 초기 세팅 🔧 2-1. 시스템 패키지 업데이트 문제 발생: Ubuntu 24.04 (noble)에서는 certbot PPA가 아직 공식적으로 지원되지 않음 → Snap으로 설치 필요 ✅ Certbot 설치 (Snap 방식) 정상 설치 확인: 🔧 2-2. 필수 패키지 설치 🔧 2-3. Docker 설치 Docker Compose 설치: 도커 권한 부여: ⚠️ 반드시 로그아웃 후 재접속 또는 newgrp docker 실행 필요 설치 확인: 🔧 2-4. Java 17 설치 --- 3. Spring Boot 프로젝트 GitHub에서 클론 --- 4. 환경 설정 파일 작성 작성할 파일 목록: | 파일명 | 위치 | 설명 | | -------------------- | ------------------ | ------------------------------------------------- | | Dockerfile | 루트 | JAR 파일을 기반으로 Spring Boot 애플리케이션 실행 | | docker-compose.yml | 루트 | Spring, MySQL, Redis 컨테이너 통합 실행 | | application-prod.yml | src/main/resources | 프로덕션 환경 전용 설정 | | .env | 루트 | 민감한 설정 값 관리 (환경 변수화) | ❗ 주의: 소스 코드에서 @Value로 선언된 모든 항목을 .env와 application-prod.yml에서 반드시 설정해야 합니다. 또 EC2에 저장되는 이미지를 불러와야하기 때문에 이미지 경로 또한 설정합니다. 설정하지 않으면 이미지가 url 형식이 아닌 images/이미지이름.확장자로 데이터가 넘어오기 때문에 확인해보셔야합니다. 백엔드에서 이미지 처리하는 여러 방법이 있지만 기존 프로젝트에서는 이렇게 하는 것 같아서 이 방법으로 진행했습니다. 예시: --- 5. Dockerfile --- 6. docker-compose.yml --- 7. application-prod.yml --- 8. .env --- 9. 빌드 및 실행 📦 JAR 파일 빌드 JAR 파일 생성 위치: 🚀 Docker Compose 실행 --- 다음 편에서는 도메인 연결과 HTTPS 설정, Nginx 리버스 프록시 구성 그리고 약간의 기존의 백엔드 코드를 수정한 것을 다룰 예정입니다! 😎"
+  },
+  {
+    "slug": "infrastructure/백엔드서버배포기-2",
+    "title": "백엔드 서버 배포기 (2) – HTTPS 설정 및 백엔드/프론트엔드 소스코드 수정",
+    "date": "2025-04-09 09:00",
+    "category": "infrastructure",
+    "tags": [
+      "AWS",
+      "배포",
+      "infra",
+      "Docker",
+      "백엔드"
+    ],
+    "isPrivate": false,
+    "excerpt": "✅ 1단계: 도메인 A 레코드 설정 💡 목표 구매한 도메인을 EC2 퍼블릭 IP와 연결하여 접근 가능하게 만들기 1. 도메인 관리 콘솔 접속 저는 가비아에서 도메인을 구매했고, AWS Route 53에 네임서버를 연결해둔 상태입니다. 도메인을 구매한 플랫폼 또는 Route 53에 접속하여 A 레코드를 설정합니다. 참고…",
+    "searchText": "✅ 1단계: 도메인 A 레코드 설정 💡 목표 구매한 도메인을 EC2 퍼블릭 IP와 연결하여 접근 가능하게 만들기 1. 도메인 관리 콘솔 접속 저는 가비아에서 도메인을 구매했고, AWS Route 53에 네임서버를 연결해둔 상태입니다. 도메인을 구매한 플랫폼 또는 Route 53에 접속하여 A 레코드를 설정합니다. 참고 자료 [[네트워크] SSL/TLS 인증서 발급 및 HTTPS 전환하기](https://velog.io/@hyensukim/%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-SSLTLS-%EC%9D%B8%EC%A6%9D%EC%84%9C-%EB%B0%9C%EA%B8%89-%EB%B0%8F-HTTPS-%EC%A0%84%ED%99%98%ED%95%98%EA%B8%B0) 2. A 레코드 추가 | Name | Type | Value | | ---- | ---- | ------------------------ | | @ | A | EC2 퍼블릭 IPv4 주소 | TTL(Time to Live)은 기본값(300)으로 설정하면 됩니다. --- ✅ 2단계: EC2에 Nginx 설치 설치 확인: --- ✅ 3단계: Nginx 리버스 프록시 설정 💡 목표 도메인으로 들어온 HTTP 요청을 내부 Spring Boot 서버(8080 포트)로 전달하기 설정 절차 기본 설정 백업: 새 설정 파일 열기: 아래 내용 작성 (도메인과 포트는 본인에 맞게 수정): 저장 및 종료 (Ctrl + O, Enter, Ctrl + X) 설정 적용: --- ✅ 4단계: Certbot으로 HTTPS 인증서 발급 1. 인증서 발급 실행 이메일 입력 약관 동의 (Y) 리다이렉션 설정 (2번 권장: HTTP ➜ HTTPS 자동 리다이렉트) --- ✅ 5단계: HTTPS 정상 동작 확인 브라우저에서 https://duck-map.shop 접속 🔒 자물쇠 아이콘이 보이면 성공 Swagger 페이지가 있다면 https://duck-map.shop/swagger 도 열어보기 --- ✅ 6단계 (선택): 인증서 자동 갱신 테스트 --- ✅ 💡 위 단계들은 \"HTTPS 적용 및 리버스 프록시 구성\" 실습의 연장선입니다. --- 🎯 백엔드 및 프론트엔드 소스코드 수정: 그룹 아티스트 렌더링 로직 개선 초기 상태에서는 그룹 아티스트와 그룹 멤버들이 한 화면에 모두 노출되는 방식이었습니다. 기존 방식 예시 하지만 기대했던 흐름은 다음과 같았습니다: 처음에는 그룹만 리스트에 표시되고, 특정 그룹을 클릭했을 때 해당 그룹의 멤버들만 동적으로 렌더링되도록 처리 수정된 방식 예시1 수정된 방식 예시2 그런데 관리자 페이지에서도 동일한 API를 사용하고 있었고, 그 경우는 모든 아티스트가 한 번에 보이는 것이 관리 측면에서 더 유리했습니다. 그래서 조건 분기를 추가하여 관리자는 기존처럼 전체 리스트를 보여주고, 일반 사용자는 그룹/멤버 분리 방식으로 렌더링하도록 개선했습니다. 이 수정은 GPT와 협업하며 내부 코드 흐름을 분석해가며 진행했으며, 예상했던 흐름대로 로직을 구현했습니다. --- 🔧 프론트엔드 로직 요약 📌 상태 관리 추가 📌 그룹 멤버 호출 (RTK Query) 📌 아티스트 클릭 핸들링 📌 조건부 렌더링 📌 뒤로가기 버튼 구현 --- 🐞 발견한 오류 및 다음 개선 계획 이벤트 무한스크롤 시 좋아요 클릭하면 중복 렌더링되는 현상 이벤트/리뷰 사진 이동 버튼이 새로고침해야만 보이는 문제 로그아웃 후 다른 계정 로그인 시 이전 계정 캐시가 남는 문제 이미지 업로드 실패 시 대기 모달이 안 사라지는 이슈 해당 오류들을 다음 블로그 글에서 하나씩 해결해나갈 예정입니다. 감사합니다 🙇‍♀️"
+  },
+  {
+    "slug": "infrastructure/캠스터디-프로젝트-백엔드-배포",
+    "title": "캠스터디 프로젝트 서버 배포 및 SSH 접속 불가 이슈 해결",
+    "date": "2025-04-20 16:24",
+    "category": "infrastructure",
+    "tags": [
+      "AWS",
+      "배포",
+      "infra",
+      "Docker",
+      "백엔드",
+      "SSH",
+      "문제해결",
+      "캠스터디"
+    ],
+    "isPrivate": false,
+    "excerpt": "서론 캠스터디 프로젝트를 진행하면서 초기에 빠른 개발을 위해 Supabase로 백엔드를 구축했으나, 실제 서비스 운영 하는 방식과 가장 가깝게 설정하고 싶어서 API를 따로 분리해서 만들기로 결정하였습니다. 백엔드 코드를 GPT의 도움으로 작성하였습니다. 본 게시물에서는 EC2와 Docker를 활용한 서버 배포 과정과…",
+    "searchText": "서론 캠스터디 프로젝트를 진행하면서 초기에 빠른 개발을 위해 Supabase로 백엔드를 구축했으나, 실제 서비스 운영 하는 방식과 가장 가깝게 설정하고 싶어서 API를 따로 분리해서 만들기로 결정하였습니다. 백엔드 코드를 GPT의 도움으로 작성하였습니다. 본 게시물에서는 EC2와 Docker를 활용한 서버 배포 과정과 배포 후 지속적으로 발생한 SSH 접속 불가 문제를 해결한 과정을 기록했습니다. 사용한 기술 스택 및 환경 AWS EC2 Docker Docker Compose MySQL Spring Boot 배포 과정 기존의 배포 방식과 달리 Docker를 이용한 컨테이너 기반의 배포를 진행했습니다. 아래 블로그 글을 참고하여 진행했습니다. 📘 참고 문서: [[Docker] 도커로 EC2에 서버 배포하기](https://ye-ryung.tistory.com/116) 주요 Dockerfile 설정: Docker Hub에 이미지 등록 후, EC2에서 아래의 Docker Compose 설정으로 배포했습니다: 🔥 발생한 문제 및 원인 분석 배포 후 일정 시간이 지나면 서버가 정상적으로 동작하지 않았고, 심지어 SSH 접속조차 불가능했습니다. EC2의 상태 검사는 2개 중 1개만 통과하는 상태였습니다. 로그 확인 결과 다음의 에러가 나타났습니다: 이는 MySQL 프로세스가 메모리 부족으로 인해 커널에서 강제 종료된(OOM Kill) 현상이었습니다. 당시 EC2 메모리 상태: 총 메모리: 957.4 MiB MySQL 사용: 370MB (%MEM 37.8) Java 애플리케이션 사용: 207MB (%MEM 21.2) 남은 여유 메모리: 69.6 MiB 해결 방안 Swap 메모리 설정 메모리 부족 문제를 해결하기 위해 Swap 메모리를 추가했습니다. MySQL 메모리 제한 MySQL 컨테이너의 메모리 사용량을 제한했습니다. | 설정 항목 | 설명 | | ---------------------------- | ----------------------- | | innodbbufferpoolsize=128M | InnoDB 캐시 메모리 크기 | | maxconnections=50 | 최대 동시 접속 수 제한 | | tableopencache=200 | 테이블 캐시 개수 | | innodblogbuffersize=16M | 로그 버퍼 크기 | 설정 변경 후에는 반드시 Docker 컨테이너를 재시작해야 합니다. 개선된 결과 | 컨테이너 | 변경 전 | 변경 후 | 차이 | | -------- | --------- | --------- | ------- | | MySQL | 370MiB | 248.6MiB | ↓121MiB | | Backend | 거의 동일 | 거의 동일 | 유지됨 | 현재 안정적으로 서버가 운영 중입니다. 다시는 이런 문제로 글을 쓰지 않기를 바랍니다... 제발!"
+  },
+  {
+    "slug": "study/모던-자바스크립트-딥다이브-스터디-회고",
+    "title": "📘 모던 자바스크립트 딥다이브 스터디 회고",
+    "date": "2025-03-18 18:06",
+    "category": "study",
+    "tags": [
+      "스터디",
+      "회고"
+    ],
+    "isPrivate": false,
+    "excerpt": "2025년 3월 16일부로 약 10개월간 이어졌던 『모던 자바스크립트 딥다이브』 스터디를 마무리했습니다. 늘 미루기만 하며 완독하지 못했던 책을 이번 스터디를 통해 처음부터 끝까지 읽어낼 수 있었습니다. 운영과 참여를 함께 하며 느낀 점들을 기록으로 남겨둡니다. 다음 스터디는 더 나은 방향으로 운영할 수 있길 기대하며…",
+    "searchText": "2025년 3월 16일부로 약 10개월간 이어졌던 『모던 자바스크립트 딥다이브』 스터디를 마무리했습니다. 늘 미루기만 하며 완독하지 못했던 책을 이번 스터디를 통해 처음부터 끝까지 읽어낼 수 있었습니다. 운영과 참여를 함께 하며 느낀 점들을 기록으로 남겨둡니다. 다음 스터디는 더 나은 방향으로 운영할 수 있길 기대하며 시작합니다. --- 📅 스터디 기간 2024.05.20 2025.03.16 꽤 긴 기간 동안 스터디를 운영했습니다. 이처럼 길어진 이유는 스터디 운영 방식과 방향성에 대한 실험과 조율이 있었기 때문입니다. --- 🧠 스터디 방식 스터디 시작 전, 어떤 방식으로 운영할지를 많이 고민했습니다. 과거 부트캠프에서 axios와 fetch 관련 집필 프로젝트에 참여한 경험을 떠올리며 구성했죠. 진행 방식: 모든 인원이 동일한 분량을 읽고 함께 토론하는 방식 → 단순 정리보다 실무 연결과 깊은 이해를 목표로 운영 툴: 지역적 제약으로 Gather로 진행 진행자 선정: 매주 사다리타기로 돌아가며 선정 토론 유도: 질문 리스트를 미리 정하고, 선정된 질문에 대해 Notion에 정리 참여율: 일부 주차는 건너뛰기도 했지만, 대부분 성실히 참여해 완독에 성공 총 6명으로 시작해 5명이 끝까지 함께했습니다. --- 👍 좋았던 점 이론 → 실무로 연결해보는 사고 전환의 계기 스터디 이후 나누던 취업, 면접, 직장 이야기로 심리적 리프레시 ‘약속’이라는 형태로 책을 꾸준히 읽을 수 있었던 동기 부여 일요일 8시 고정 스터디 덕분에 주말 리듬 조절 가능 실무에서 안다고 생각했던 JS의 사각지대 재발견 --- 🛠 개선할 점 분량을 너무 작게 잡아 기간이 지나치게 길어짐 → 다음엔 마감일 설정 & 핵심 챕터 중심으로 조정 필요 스터디 방식이 초반에 정립되지 않아 비효율 → 후반부 방식을 초기에 적용했다면 더 좋았을 것 단순 정리를 넘는 심화 질문 도출 및 사례 정리의 어려움 → 토론 중심 스터디는 사전 준비의 훈련이 필요함을 느낌 --- 📚 다음에 해보고 싶은 스터디 책은 혼자 읽어도 충분한 경우가 많지만, 실제 프로젝트에 접목하며 읽어야 효과적인 책들도 있습니다. 다음에는 아래와 같은 책으로 실습 중심의 스터디를 운영해보고 싶습니다: 『쏙쏙 들어오는 함수형 코딩』 『클린 코드』 💡 다른 사람들의 코드 적용 사례를 공유하는 구조가 특히 도움이 될 것 같습니다. 다음번에는 블로그에도 정리하면서 읽어보려고 합니다. 이번 스터디에서 정리한 것은 다소 미흡하기도 하고 깊이가 그렇게 깊지는 않아서 아쉬움이 많이 남습니다. --- 💬 마무리 아쉬움도 있었지만, 그래도 ‘시작하지 않았다면 아무것도 없었을 것’이라는 사실 하나는 분명합니다. 다음엔 더 나은 방식으로, 더 잘하고 싶다는 마음이 들게 해준 스터디였습니다."
   }
 ]

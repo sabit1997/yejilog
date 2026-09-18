@@ -31,6 +31,11 @@ const blogConfig = {
   projects: {
     pinned: ["cam-study", "yejilog", "ddeugeul-bogeul", "algorithm-note"],
   },
+  repo: {
+    owner: "sabit1997",
+    name: "yejilog",
+    branch: "main",
+  },
 } as const;
 
 export default blogConfig;

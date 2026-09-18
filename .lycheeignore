@@ -1,0 +1,9 @@
+# 코드 예제/문서에서 자주 등장하는 자리표시자
+^https?://example\.com
+^https?://example\.org
+^https?://localhost
+^https?://127\.0\.0\.1
+^https?://0\.0\.0\.0
+
+# 스크린샷/이미지 CDN이 외부 봇 요청을 차단하는 경우
+^https?://.*\.githubusercontent\.com/

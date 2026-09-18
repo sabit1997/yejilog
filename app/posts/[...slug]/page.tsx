@@ -51,6 +51,10 @@ export async function generateMetadata({
 
   const description = toDescription(post.markdown) || blogConfig.description;
   const canonicalPath = `/posts/${post.slug}`;
+  const encodedSlug = post.slug
+    .split("/")
+    .map((s) => encodeURIComponent(s))
+    .join("/");
 
   return {
     title: post.title,
@@ -61,7 +65,20 @@ export async function generateMetadata({
       title: post.title,
       description,
       url: `${SITE_URL}${canonicalPath}`,
-      images: [{ url: `${SITE_URL}/og-default.png`, width: 1200, height: 630 }],
+      images: [
+        {
+          url: `${SITE_URL}/api/og/${encodedSlug}`,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: [`${SITE_URL}/api/og/${encodedSlug}`],
     },
   };
 }

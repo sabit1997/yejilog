@@ -84,11 +84,24 @@ const posts = allMdFiles
       category: data.category || "",
       tags: data.tags || [],
       isPrivate: data.isPrivate || false,
+      publishAt: data.publishAt || null,
       excerpt: createExcerpt(searchText),
       searchText,
     };
   })
-  .filter((post) => !post.isPrivate);
+  .filter((post) => !post.isPrivate)
+  .filter((post) => {
+    if (!post.publishAt) return true;
+    const t = new Date(post.publishAt).getTime();
+    if (Number.isNaN(t)) return true;
+    return t <= Date.now();
+  })
+  // publishAt은 공개 검색 인덱스에 노출할 필요 없다. 필터 통과 후 제거.
+  .map((post) => {
+    const { publishAt: _publishAt, ...rest } = post;
+    void _publishAt;
+    return rest;
+  });
 
 fs.writeFileSync(outputPath, JSON.stringify(posts, null, 2), "utf-8");
 module.exports = { createExcerpt, markdownToPlainText };
