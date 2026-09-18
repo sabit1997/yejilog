@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { toValidDate } from "@/utils/posts";
+import { listPostPaths, readPost } from "@/lib/admin/github";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
@@ -13,6 +14,8 @@ export interface AdminPostSummary {
   category: string;
   tags: string[];
   isPrivate: boolean;
+  /** true면 로컬 FS/배포본에는 아직 없고 GitHub에만 있는 파일 */
+  pendingDeploy?: boolean;
 }
 
 function collectMarkdownFiles(dir: string, files: string[] = []): string[] {
@@ -33,26 +36,67 @@ function toDateString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
+function parseFrontmatter(
+  relativePath: string,
+  raw: string,
+  pendingDeploy = false
+): AdminPostSummary {
+  const { data } = matter(raw);
+  return {
+    slug: relativePath.replace(/\.md$/, "").split(path.sep).join("/"),
+    title: typeof data.title === "string" ? data.title : relativePath,
+    date: toDateString(data.date),
+    category: typeof data.category === "string" ? data.category : "",
+    tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
+    isPrivate: data.isPrivate === true,
+    ...(pendingDeploy ? { pendingDeploy } : {}),
+  };
+}
+
 export function listAllPostsForAdmin(): AdminPostSummary[] {
   const files = collectMarkdownFiles(postsDirectory);
-
   return files
     .map((fullPath) => {
       const relative = path.relative(postsDirectory, fullPath);
-      const { data } = matter(fs.readFileSync(fullPath, "utf8"));
-
-      return {
-        slug: relative.replace(/\.md$/, "").split(path.sep).join("/"),
-        title: typeof data.title === "string" ? data.title : relative,
-        date: toDateString(data.date),
-        category: typeof data.category === "string" ? data.category : "",
-        tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
-        isPrivate: data.isPrivate === true,
-      } satisfies AdminPostSummary;
+      const raw = fs.readFileSync(fullPath, "utf8");
+      return parseFrontmatter(relative, raw);
     })
-    .sort((a, b) => {
-      const ta = toValidDate(a.date)?.getTime() ?? 0;
-      const tb = toValidDate(b.date)?.getTime() ?? 0;
-      return tb - ta;
-    });
+    .sort(sortByDateDesc);
+}
+
+/**
+ * FS + GitHub 병합 목록. FS에 없지만 리포에 있는 파일(방금 커밋된 것 등)은 pendingDeploy=true로 붙는다.
+ */
+export async function listAllPostsForAdminFresh(): Promise<AdminPostSummary[]> {
+  const fsList = listAllPostsForAdmin();
+  const fsPaths = new Set(fsList.map((p) => `posts/${p.slug}.md`));
+
+  let remotePaths: string[] = [];
+  try {
+    remotePaths = await listPostPaths();
+  } catch {
+    return fsList;
+  }
+
+  const missing = remotePaths.filter((p) => !fsPaths.has(p));
+  if (missing.length === 0) return fsList;
+
+  const fetched = await Promise.all(
+    missing.map(async (p) => {
+      const res = await readPost(p);
+      if (!res) return null;
+      const relative = p.replace(/^posts\//, "");
+      return parseFrontmatter(relative, res.content, true);
+    })
+  );
+
+  return [...fsList, ...fetched.filter((x): x is AdminPostSummary => !!x)].sort(
+    sortByDateDesc
+  );
+}
+
+function sortByDateDesc(a: AdminPostSummary, b: AdminPostSummary) {
+  const ta = toValidDate(a.date)?.getTime() ?? 0;
+  const tb = toValidDate(b.date)?.getTime() ?? 0;
+  return tb - ta;
 }

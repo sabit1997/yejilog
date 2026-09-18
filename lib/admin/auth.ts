@@ -19,6 +19,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GitHub({
       clientId,
       clientSecret,
+      authorization: { params: { scope: "read:user repo" } },
     }),
   ],
   pages: {
@@ -30,14 +31,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const login = (profile as { login?: string } | undefined)?.login;
       return login === ADMIN_LOGIN;
     },
-    async jwt({ token, profile }) {
+    async jwt({ token, profile, account }) {
       const login = (profile as { login?: string } | undefined)?.login;
       if (login) token.login = login;
+      if (account?.access_token) token.accessToken = account.access_token;
       return token;
     },
     async session({ session, token }) {
       if (session.user && typeof token.login === "string") {
         session.user.login = token.login;
+      }
+      if (typeof token.accessToken === "string") {
+        session.accessToken = token.accessToken;
       }
       return session;
     },

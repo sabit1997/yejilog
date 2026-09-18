@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { auth, signOut } from "@/lib/admin/auth";
-import { listAllPostsForAdmin } from "@/lib/admin/posts";
+import { listAllPostsForAdminFresh } from "@/lib/admin/posts";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const session = await auth();
-  const posts = listAllPostsForAdmin();
+  const posts = await listAllPostsForAdminFresh();
   const drafts = posts.filter((p) => p.isPrivate);
   const published = posts.filter((p) => !p.isPrivate);
 
@@ -22,9 +24,10 @@ export default async function AdminPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/admin/new"
-            className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800"
+            className="rounded-md px-3 py-1.5 text-sm font-medium"
+            style={{ background: "var(--ink)", color: "var(--bg)" }}
           >
-            새 글
+            + 새 글
           </Link>
           <form
             action={async () => {
@@ -73,6 +76,7 @@ function PostSection({
     date: string;
     category: string;
     tags: string[];
+    pendingDeploy?: boolean;
   }[];
   emptyLabel: string;
   isDraft?: boolean;
@@ -97,6 +101,11 @@ function PostSection({
                   {isDraft && (
                     <span className="shrink-0 rounded-sm bg-amber-100 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-amber-800">
                       draft
+                    </span>
+                  )}
+                  {post.pendingDeploy && (
+                    <span className="shrink-0 rounded-sm bg-blue-100 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-blue-800">
+                      배포 대기
                     </span>
                   )}
                 </div>
