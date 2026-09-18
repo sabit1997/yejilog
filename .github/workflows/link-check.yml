@@ -1,0 +1,63 @@
+name: Link check
+
+on:
+  pull_request:
+    paths:
+      - "posts/**/*.md"
+      - ".github/workflows/link-check.yml"
+      - ".lycheeignore"
+  schedule:
+    # 매주 월요일 UTC 00시 = KST 09시. 주말에 쌓인 링크 죽음을 월요일 아침에 확인.
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  linkcheck:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache lychee results
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      - name: Link check
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --cache
+            --max-cache-age 7d
+            --no-progress
+            --max-concurrency 4
+            --retry-wait-time 2
+            --exclude-mail
+            --accept 200,201,202,203,204,301,302,303,304,307,308,403,429
+            'posts/**/*.md'
+          format: markdown
+          output: ./lychee-report.md
+          fail: false
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.lychee.outputs.exit_code != '0'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: ./lychee-report.md
+
+      - name: Open issue on scheduled failure
+        if: github.event_name == 'schedule' && steps.lychee.outputs.exit_code != '0'
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "Weekly link check: broken links detected"
+          content-filepath: ./lychee-report.md
+          labels: |
+            link-check
+            automated
