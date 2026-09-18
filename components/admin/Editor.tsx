@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
+import { EditorView } from "@codemirror/view";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
@@ -37,6 +38,8 @@ export function Editor({
   const [body, setBody] = useState(initial.body);
   const [saving, startSaving] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(0);
+  const viewRef = useRef<EditorView | null>(null);
 
   const tags = useMemo(
     () =>
@@ -77,6 +80,85 @@ export function Editor({
     });
   };
 
+  const insertAtCursor = useCallback((view: EditorView, text: string) => {
+    const { from, to } = view.state.selection.main;
+    view.dispatch({
+      changes: { from, to, insert: text },
+      selection: { anchor: from + text.length },
+    });
+    view.focus();
+  }, []);
+
+  const uploadImage = useCallback(async (file: File): Promise<string | null> => {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    if (!res.ok) {
+      setError(`이미지 업로드 실패: ${await res.text()}`);
+      return null;
+    }
+    const data = (await res.json()) as { url: string };
+    return data.url;
+  }, []);
+
+  const handleImageFiles = useCallback(
+    async (view: EditorView, files: File[]) => {
+      const images = files.filter((f) => f.type.startsWith("image/"));
+      if (images.length === 0) return false;
+      setError(null);
+      setUploading((n) => n + images.length);
+      try {
+        for (const file of images) {
+          const url = await uploadImage(file);
+          if (url) {
+            const alt = file.name.replace(/\.[^.]+$/, "");
+            insertAtCursor(view, `\n![${alt}](${url})\n`);
+          }
+          setUploading((n) => Math.max(0, n - 1));
+        }
+      } finally {
+        setUploading(0);
+      }
+      return true;
+    },
+    [insertAtCursor, uploadImage]
+  );
+
+  const extensions = useMemo(
+    () => [
+      markdown(),
+      EditorView.domEventHandlers({
+        drop(event, view) {
+          const files = event.dataTransfer?.files;
+          if (!files || files.length === 0) return false;
+          const imgs = Array.from(files).filter((f) =>
+            f.type.startsWith("image/")
+          );
+          if (imgs.length === 0) return false;
+          event.preventDefault();
+          void handleImageFiles(view, imgs);
+          return true;
+        },
+        paste(event, view) {
+          const items = event.clipboardData?.items;
+          if (!items) return false;
+          const files: File[] = [];
+          for (const item of Array.from(items)) {
+            if (item.kind === "file" && item.type.startsWith("image/")) {
+              const f = item.getAsFile();
+              if (f) files.push(f);
+            }
+          }
+          if (files.length === 0) return false;
+          event.preventDefault();
+          void handleImageFiles(view, files);
+          return true;
+        },
+      }),
+    ],
+    [handleImageFiles]
+  );
+
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col">
       <header className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-neutral-200 bg-white/60 px-4 py-3">
@@ -96,7 +178,12 @@ export function Editor({
           드래프트
         </label>
         <div className="flex items-center gap-2">
-          {!canSave && (
+          {uploading > 0 && (
+            <span className="text-xs text-blue-600">
+              이미지 업로드 중 ({uploading})
+            </span>
+          )}
+          {!canSave && uploading === 0 && (
             <span className="text-xs text-neutral-500">
               {title.trim() ? "카테고리 필요" : "제목 필요"}
             </span>
@@ -104,7 +191,7 @@ export function Editor({
           <button
             type="button"
             onClick={handleSave}
-            disabled={!canSave || saving}
+            disabled={!canSave || saving || uploading > 0}
             className="rounded-md px-4 py-1.5 text-sm font-medium disabled:opacity-40"
             style={{ background: "var(--ink)", color: "var(--bg)" }}
           >
@@ -174,8 +261,11 @@ export function Editor({
           <CodeMirror
             value={body}
             onChange={setBody}
-            extensions={[markdown()]}
+            extensions={extensions}
             basicSetup={{ lineNumbers: false, foldGutter: false }}
+            onCreateEditor={(view) => {
+              viewRef.current = view;
+            }}
             className="text-[13px]"
             height="100%"
           />
